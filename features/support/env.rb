@@ -10,4 +10,4 @@ $LOAD_PATH.unshift File.expand_path(
 )
 
 require 'java'
-require 'MSci_Project_Code.jar'
+require 'msci_project_code.jar'

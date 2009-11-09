@@ -13,4 +13,4 @@ require 'rubygems'
 require 'java'
 require 'spec'
 
-require 'MSci_Project_Code.jar'
+require 'msci_project_code.jar'
