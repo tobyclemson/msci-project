@@ -1,0 +1,20 @@
+require 'autotest/run_dependencies'
+
+Autotest::RunDependencies.add do |dependency|
+  dependency.name = "codebase is compiled"
+  dependency.command = "ant clean jar"
+  dependency.satisfied_regexp = /^BUILD SUCCESSFUL$/
+  dependency.errors_regexp = /^\s*\[javac\]\s(.*)$/
+end
+
+Autotest.add_hook :initialize do |autotest|
+  autotest.add_mapping(%r%^src/(.*)\.java$%) { |_, m|
+    ruby_style_name = m[1].gsub(
+      /([A-Z]+)([A-Z][a-z])/,'\1_\2'
+    ).gsub(
+      /([a-z\d])([A-Z])/,'\1_\2'
+    ).tr("-", "_").downcase
+    ["spec/#{ruby_style_name}_spec.rb"]
+  }
+  false
+end
