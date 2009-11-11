@@ -12,9 +12,6 @@ $LOAD_PATH.unshift File.expand_path(
 require 'rubygems'
 require 'java'
 require 'spec'
-
-require 'ruby_mappings'
-require 'streams'
 require 'tools'
 
 Tools.append_to_load_path('dist')
@@ -22,3 +19,6 @@ Tools.append_to_load_path('vendor')
 
 require 'msci-project-code.jar'
 require 'mockito-1.8.0/mockito-all-1.8.0.jar'
+
+require 'ruby_mappings'
+require 'streams'
