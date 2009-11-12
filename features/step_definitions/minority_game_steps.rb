@@ -1,7 +1,7 @@
 Given /^I don't have a minority game instance$/ do
 end
 
-When /^I try to construct a (.*) type minority game$/ do |type|
+When /^I construct a minority game with the value (.*) for the 'type' property$/ do |type|
   @options = Java::JavaUtil::Properties.new
   @options.set_property("type", type)
   @minority_game_instance = MSciProject::MinorityGame::MinorityGame.construct(@options)
