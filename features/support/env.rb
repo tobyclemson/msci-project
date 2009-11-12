@@ -9,7 +9,9 @@ $LOAD_PATH.unshift File.expand_path(
   )
 )
 
+require 'rubygems'
 require 'java'
+require 'activesupport'
 require 'tools'
 
 Tools.append_to_load_path('dist')
