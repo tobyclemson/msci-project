@@ -1,11 +1,18 @@
 package ic.msciproject.minoritygame;
 
-import java.util.Properties;
+import java.util.ArrayList;
 
 public class EvolutionaryMinorityGame extends AbstractMinorityGame {
 
-    public EvolutionaryMinorityGame(Properties properties) {
-        super(properties);
+    public EvolutionaryMinorityGame(){
+        super();
+    }
+
+    public EvolutionaryMinorityGame(
+        ArrayList<AbstractAgent> agents,
+        HistoryString historyString
+    ) {
+        super(agents, historyString);
     }
 
 }

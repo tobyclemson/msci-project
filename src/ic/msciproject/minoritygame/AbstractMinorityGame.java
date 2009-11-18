@@ -1,41 +1,38 @@
 package ic.msciproject.minoritygame;
 
 import java.util.ArrayList;
-import java.util.Properties;
 
 public class AbstractMinorityGame {
 
-    private int numberOfAgents;
     private ArrayList<AbstractAgent> agents;
-    private String agentType;
+    private HistoryString historyString;
 
     public AbstractMinorityGame(){
-        numberOfAgents = 0;
         agents = new ArrayList<AbstractAgent>();
-        agentType = "abstract";
+        historyString = new HistoryString();
     }
 
-    public AbstractMinorityGame(Properties properties){
-        numberOfAgents = Integer.parseInt(
-            properties.getProperty("number-of-agents")
-        );
-        agentType = properties.getProperty("agent-type");
-
-        agents = new ArrayList<AbstractAgent>(numberOfAgents);
-        for(int i = 0; i < numberOfAgents; i++){
-            if(agentType.equals("probabilistic")){
-                agents.add(new ProbabilisticAgent());
-            } else {
-                agents.add(new AbstractAgent());
-            }
-        }
+    public AbstractMinorityGame(
+        ArrayList<AbstractAgent> agents,
+        HistoryString historyString
+    ){
+        this.agents = agents;
+        this.historyString = historyString;
     }
 
     public ArrayList<AbstractAgent> getAgents(){
         return agents;
     }
 
-    public int getNumberOfAgents(){
-        return numberOfAgents;
+    public void setAgents(ArrayList<AbstractAgent> agents){
+        this.agents = agents;
+    }
+
+    public HistoryString getHistoryString(){
+        return historyString;
+    }
+
+    public void setHistoryString(HistoryString historyString) {
+        this.historyString = historyString;
     }
 }

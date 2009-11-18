@@ -3,7 +3,9 @@ module FactoryHelpers
     defaults = {
       "type" => "standard",
       "number-of-agents" => "10",
-      "agent-type" => "abstract"
+      "agent-type" => "basic",
+      "history-string-length" => "2",
+      "number-of-strategies-per-agent" => "2"
     }
     properties = Java::JavaUtil::Properties.new
     defaults.merge(specialisations).each do |property, value|
