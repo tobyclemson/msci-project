@@ -69,10 +69,4 @@ describe MSciProject::MinorityGame::StrategyCollection do
       )
     end
   end
-  
-  #describe "#add" do
-  #  it "adds the supplied strategy to the collection" do
-  #    
-  #  end
-  #end
 end

@@ -17,8 +17,8 @@ describe MSciProject::MinorityGame::Strategy do
   
   describe "constructor" do
     describe "with HashMap argument" do
-      it "throws an InvalidArgumentException unless all of the keys in the " +
-        "supplied HashMap are of the same length" do
+      it "throws an IllegalArgumentException unless all of the keys in the " +
+        "supplied Map are of the same length" do
         mappings = Java::JavaUtil::HashMap.new()
         mappings.put("01", "0")
         mappings.put("100", "1")
@@ -28,9 +28,9 @@ describe MSciProject::MinorityGame::Strategy do
         }.to raise_error(Java::JavaLang::IllegalArgumentException)
       end
       
-      it "throws an InvalidArgumentException unless all string " + 
+      it "throws an IllegalArgumentException unless all string " + 
         "permutations of the supplied key length are present in the " + 
-        "HashMap" do
+        "supplied Map" do
         mappings = Java::JavaUtil::HashMap.new()
         mappings.put("01", "0")
         mappings.put("10", "1")
@@ -41,13 +41,26 @@ describe MSciProject::MinorityGame::Strategy do
         }.to raise_error(Java::JavaLang::IllegalArgumentException)
       end
       
-      it "throws an InvalidArgumentException if an empty HashMap is " + 
+      it "throws an IllegalArgumentException if an empty Map is " + 
         "supplied" do
         empty_map = Java::JavaUtil::HashMap.new()
         
         expect {
           klass.new(empty_map)
         }.to raise_error(Java::JavaLang::IllegalArgumentException)
+      end
+      
+      it "throws an IllegalArgumentException if any of the values in the " +
+        "supplied Map are not '0' or '1'" do
+          mappings = Java::JavaUtil::HashMap.new()
+          mappings.put("01", "A")
+          mappings.put("10", "1")
+          mappings.put("11", "1")
+          mappings.put("00", "0")
+          
+          expect {
+            klass.new(mappings)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
       end
       
       it "sets the mappings to the supplied map" do

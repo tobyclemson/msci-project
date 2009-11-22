@@ -4,71 +4,114 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.HashSet;
 
+/**
+ * The MinorityGameFactory class constructs a minority game with the required
+ * parameters as specified in the Properties object passed to the static
+ * construct method.
+ * @author tobyclemson
+ */
 public class MinorityGameFactory {
+    /**
+     * Constructs a minority game with the specified parameters.
+     * <p>
+     * The supplied Properties object must contain the following properties:
+     *
+     * <ul>
+     *  <li>"type": the type of minority game to construct, currently can be
+     *      one of "standard" or "evolutionary".
+     *  <li>"history-string-length": the length of history string required as a
+     *      string, e.g., "5".
+     *  <li>"number-of-agents": the number of agents required in the game as a
+     *      string, e.g., "10000".
+     *  <li>"agent-type": the type of agents required in the game, currently
+     *      can be one of "basic" or "learning".
+     *  <li>"number-of-strategies-per-agent": the number of strategies required
+     *      for each agent in the game as a string, e.g., "2".
+     * </ul>
+     * <p>
+     * If the Properties object passed to the method does not contain any one
+     * of these properties or the value supplied for any of these properties is
+     * not valid, then an IllegalArgumentException is thrown.
+     *
+     * @param properties A Properties object containing the parameters of the
+     * minority game to construct.
+     * @return An instance of a subclass of AbstractMinorityGame initialised
+     * as requested.
+     * @throws IllegalArgumentException
+     */
     public static AbstractMinorityGame construct(Properties properties) {
         // check the supplied properties are satisfactory, if not, throw an
         // IllegalArgumentException.
         assertPropertiesAreValid(properties);
 
-        // build an empty minority game instance.
-        AbstractMinorityGame minorityGame = new AbstractMinorityGame();
-        String type = properties.getProperty("type");
+        // declare required variables
+        Integer historyStringLength,
+                numberOfAgents,
+                numberOfStrategiesPerAgent;
+        String  agentType,
+                type;
+        HistoryString historyString;
+        ArrayList<AbstractAgent> agents;
+        StrategySpace strategySpace;
+        StrategyCollection strategyCollection;
+        AbstractMinorityGame minorityGame = null;
+        AbstractAgent agent = null;
 
-        if(type.equals("standard")){
-            minorityGame = new StandardMinorityGame();
-        } else if(type.equals("evolutionary")){
-            minorityGame = new EvolutionaryMinorityGame();
-        }
-
-        // assign a HistoryString instance of the required length to the
-        // minority game instance.
-        Integer historyStringLength = Integer.parseInt(
+        // initialise a HistoryString instance of the required length.
+        historyStringLength = Integer.parseInt(
             properties.getProperty("history-string-length")
         );
-        HistoryString historyString = new HistoryString(historyStringLength);
+        historyString = new HistoryString(historyStringLength);
 
-        minorityGame.setHistoryString(historyString);
-
-        // build an array of agents and assign it to the minority game instance.
-        ArrayList<AbstractAgent> agents = new ArrayList<AbstractAgent>();
-        int numberOfAgents = Integer.parseInt(
+        // build an array of agents of the specified type with the required
+        // number of strategies.
+        agents = new ArrayList<AbstractAgent>();
+        numberOfAgents = Integer.parseInt(
             properties.getProperty("number-of-agents")
         );
-        int numberOfStrategiesPerAgent = Integer.parseInt(
+        numberOfStrategiesPerAgent = Integer.parseInt(
             properties.getProperty("number-of-strategies-per-agent")
         );
-        String agentType = properties.getProperty("agent-type");
+        agentType = properties.getProperty("agent-type");
 
         for(int i = 0; i < numberOfAgents; i++){
             // add the required number of strategies to each agent
-            AbstractAgent agent = new AbstractAgent();
-
-            if(agentType.equals("basic")){
-                agent = new BasicAgent();
-            } else if(agentType.equals("learning")){
-                agent = new LearningAgent();
-            }
-
-            StrategySpace strategySpace = new StrategySpace(
-                historyStringLength
-            );
-            StrategyCollection strategyCollection = new StrategyCollection();
+            strategySpace = new StrategySpace(historyStringLength);
+            strategyCollection = new StrategyCollection();
 
             for(int j = 0; j < numberOfStrategiesPerAgent; j++) {
                 strategyCollection.add(strategySpace.generateStrategy());
             }
 
-            agent.setStrategies(strategyCollection);
+            if(agentType.equals("basic")){
+                agent = new BasicAgent(strategyCollection);
+            } else if(agentType.equals("learning")){
+                agent = new LearningAgent(strategyCollection);
+            }
 
             // add the agents to the collection
             agents.add(agent);
         }
 
-        minorityGame.setAgents(agents);
+        // build an minority game instance passing the agents and history
+        // string.
+        type = properties.getProperty("type");
+
+        if(type.equals("standard")){
+            minorityGame = new StandardMinorityGame(agents, historyString);
+        } else if(type.equals("evolutionary")){
+            minorityGame = new EvolutionaryMinorityGame(agents, historyString);
+        }
 
         return minorityGame;
     }
 
+    /**
+     * Checks that the contents of the supplied Properties object are valid,
+     * if not then an IllegalArgumentException is thrown.
+     * @param properties The Properties object to check.
+     * @throws IllegalArgumentException
+     */
     private static void assertPropertiesAreValid(Properties properties){
         assertPropertyExists(properties, "type");
         assertPropertyExists(properties, "history-string-length");
@@ -93,6 +136,13 @@ public class MinorityGameFactory {
         assertPropertyIsNumeric(properties, "number-of-strategies-per-agent");
     }
 
+    /**
+     * Checks that the supplied Properties objects contains the property
+     * specified, throwing an IllegalArgumentException if it doesn't.
+     * @param properties The Properties object to check.
+     * @param property The name of the property to check for.
+     * @throws IllegalArgumentException
+     */
     private static void assertPropertyExists(
         Properties properties, String property
     ){
@@ -104,6 +154,14 @@ public class MinorityGameFactory {
         }
     }
 
+    /**
+     * Checks that the supplied Properties object has a value for the specified
+     * propety that is in the specified set.
+     * @param properties The Properties object to check.
+     * @param property The name of the property of which to check the value.
+     * @param set The set of allowed values for the specified property.
+     * @throws IllegalArgumentException
+     */
     private static void assertPropertyInSet(
         Properties properties, String property, HashSet<String> set
     ){
@@ -116,6 +174,12 @@ public class MinorityGameFactory {
         }
     }
 
+    /**
+     * Checks that the supplied Properties object has a value containing a
+     * string representing a number for the specified property.
+     * @param properties The Properties object to check.
+     * @param property The name of the property of which to check the value.
+     */
     private static void assertPropertyIsNumeric(
         Properties properties, String property
     ){
