@@ -2,7 +2,7 @@ require 'autotest/run_dependencies'
 
 Autotest::RunDependencies.add do |dependency|
   dependency.name = "codebase is compiled"
-  dependency.command = "ant clean jar"
+  dependency.command = "ant clean jar javadoc"
   dependency.satisfied_regexp = /^BUILD SUCCESSFUL$/
   dependency.errors_regexp = /^\s*\[javac\]\s(.*)$/
 end
