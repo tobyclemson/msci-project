@@ -15,6 +15,16 @@ describe MSciProject::MinorityGame::Strategy do
     strategy_instance.should be_a_kind_of(Java::JavaUtil::AbstractMap)
   end
   
+  describe "public interface" do
+    it "has a score instance method" do
+      strategy_instance.should respond_to(:score)
+    end
+    
+    it "has an increment_score instance method" do
+      strategy_instance.should respond_to(:increment_score)
+    end
+  end
+  
   describe "constructor" do
     describe "with HashMap argument" do
       it "throws an IllegalArgumentException unless all of the keys in the " +
@@ -85,6 +95,14 @@ describe MSciProject::MinorityGame::Strategy do
       expect {
         strategy_instance.get("3")
       }.to raise_error(Java::JavaLang::IllegalArgumentException)
+    end
+  end
+
+  describe "#increment_score" do
+    it "adds 1 to the current score" do
+      expect {
+        strategy_instance.increment_score
+      }.to change(strategy_instance, :score).from(0).to(1)
     end
   end
 end

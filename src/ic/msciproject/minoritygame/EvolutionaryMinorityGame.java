@@ -14,15 +14,15 @@ public class EvolutionaryMinorityGame extends AbstractMinorityGame {
 
     /**
      * Constructs an EvolutionaryMinorityGame instance setting the agents and
-     * history string parameters to the supplied ArrayList and HistoryString
-     * instances.
-     * @param agents An ArrayList instance containing the agents associated
-     * with this minority game instance.
+     * history string parameters to the supplied AgentCollection and
+     * HistoryString instances.
+     * @param agents An AgentCollection instance containing the agents
+     * associated with this minority game instance.
      * @param historyString A HistoryString instance to use as the history
      * string for this minority game instance.
      */
     public EvolutionaryMinorityGame(
-        ArrayList<AbstractAgent> agents,
+        AgentCollection agents,
         HistoryString historyString
     ) {
         super(agents, historyString);

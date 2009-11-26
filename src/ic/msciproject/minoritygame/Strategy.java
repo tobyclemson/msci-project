@@ -30,6 +30,15 @@ public class Strategy extends AbstractMap{
     private int keyLength;
 
     /**
+     * An integer representing the score of the Strategy. The score of a
+     * Strategy is incremented if in a given turn it would have resulted in
+     * a correct prediction for the minority choice. The score is incremented
+     * using the {@link #incrementScore} method and returned by the
+     * {@link #getScore} method.
+     */
+    private int score = 0;
+
+    /**
      * Constructs a Strategy instance using the supplied history string to
      * outcome mappings.
      * <p>
@@ -93,7 +102,7 @@ public class Strategy extends AbstractMap{
         valueIterator = valueCollection.iterator();
 
         // create a set containing all valid values for the mappings.
-        validValueSet = new HashSet();
+        validValueSet = new HashSet<String>();
         validValueSet.add("0");
         validValueSet.add("1");
 
@@ -140,5 +149,22 @@ public class Strategy extends AbstractMap{
             throw new IllegalArgumentException();
         }
         return (String) super.get(key);
+    }
+
+    /**
+     * Adds 1 to the Strategy's score.
+     */
+    public void incrementScore() {
+        score++;
+    }
+
+    /**
+     * Returns the score of the Strategy. The score represents the number of
+     * steps in the game so far for which the strategy has made correct
+     * predictions.
+     * @return The score of the strategy.
+     */
+    public int getScore() {
+        return score;
     }
 }

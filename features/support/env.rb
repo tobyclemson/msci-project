@@ -23,5 +23,8 @@ require 'mockito-1.8.0/mockito-all-1.8.0.jar'
 require 'ruby_mappings'
 require 'streams'
 require 'factory_helpers'
+require 'experimentalist'
 
 World(FactoryHelpers)
+
+Mockito = Java::OrgMockito::Mockito

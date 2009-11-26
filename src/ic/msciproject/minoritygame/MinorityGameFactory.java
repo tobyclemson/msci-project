@@ -1,6 +1,5 @@
 package ic.msciproject.minoritygame;
 
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.HashSet;
 
@@ -51,7 +50,7 @@ public class MinorityGameFactory {
         String  agentType,
                 type;
         HistoryString historyString;
-        ArrayList<AbstractAgent> agents;
+        AgentCollection agents;
         StrategySpace strategySpace;
         StrategyCollection strategyCollection;
         AbstractMinorityGame minorityGame = null;
@@ -63,9 +62,9 @@ public class MinorityGameFactory {
         );
         historyString = new HistoryString(historyStringLength);
 
-        // build an array of agents of the specified type with the required
+        // build a collection of agents of the specified type with the required
         // number of strategies.
-        agents = new ArrayList<AbstractAgent>();
+        agents = new AgentCollection();
         numberOfAgents = Integer.parseInt(
             properties.getProperty("number-of-agents")
         );
