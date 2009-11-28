@@ -98,7 +98,8 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
         // iterate through the strategies replacing the highest strategy if the
         // current strategy has a higher score or randomly replicing if the
         // score is the same
-        for(int i = 1; i < storage.size(); i++) {
+        int max = storage.size();
+        for(int i = 1; i < max; i++) {
             currentStrategy = storage.get(i);
 
             if(currentStrategy.getScore() > highestStrategy.getScore()) {
@@ -119,17 +120,14 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
         String minorityChoice, String historyString
     ) {
         // declare required variables
-        Iterator<Strategy> strategyIterator;
-        Strategy currentStrategy;
+        Strategy currentStrategy = null;
         String prediction;
-
-        // obtain an iterator over the strategies
-        strategyIterator = storage.iterator();
 
         // increment the score of each strategy that gives the correct
         // prediction for the supplied history string
-        while(strategyIterator.hasNext()) {
-            currentStrategy = strategyIterator.next();
+        int max = storage.size();
+        for(int i = 0; i < max; i++) {
+            currentStrategy = storage.get(i);
             prediction = currentStrategy.get(historyString);
             if(prediction.equals(minorityChoice)) {
                 currentStrategy.incrementScore();

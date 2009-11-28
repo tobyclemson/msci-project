@@ -1,6 +1,7 @@
 package ic.msciproject.minoritygame;
 
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.HashSet;
  * outcome from the Strategy.
  * @author tobyclemson
  */
-public class Strategy extends AbstractMap{
+public class Strategy extends AbstractMap<String,String>{
 
     /**
      * A String to String Map containing the mappings of history string to
@@ -37,6 +38,8 @@ public class Strategy extends AbstractMap{
      * {@link #getScore} method.
      */
     private int score = 0;
+
+    private Set<String> acceptedKeys;
 
     /**
      * Constructs a Strategy instance using the supplied history string to
@@ -93,7 +96,9 @@ public class Strategy extends AbstractMap{
 
         // if the supplied mapping does not contain all of the required keys
         // throw an IllegalArgumentException.
-        if(!StringPermutator.generateAll(keyLength).equals(keySet)) {
+        acceptedKeys = StringPermutator.generateAll(keyLength);
+
+        if(!keySet.equals(acceptedKeys)) {
             throw new IllegalArgumentException();
         }
 
@@ -145,10 +150,10 @@ public class Strategy extends AbstractMap{
      * @return The predicted outcome as a string, either "0" or "1".
      */
     public String get(String key) {
-        if(!StringPermutator.generateAll(keyLength).contains(key)) {
+        if(!acceptedKeys.contains(key)) {
             throw new IllegalArgumentException();
         }
-        return (String) super.get(key);
+        return mappings.get(key);
     }
 
     /**
