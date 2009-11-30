@@ -40,8 +40,8 @@ Then /^it should have agents that are instances of (.*)$/ do |agent_class_name|
   end
 end
 
-Then /^it should have a history string of length (.*)$/ do |length|
-  @minority_game.history_string.length.should == length.to_i
+Then /^it should have a choice history with initial length (.*)$/ do |length|
+  @minority_game.choice_history.size.should == length.to_i
 end
 
 Then /^a (.*) should be thrown$/ do |exception|

@@ -54,7 +54,7 @@ Feature: Versatile minority game construction
       | jeremy                   |
       | 0.486                    |
     
-  Scenario Outline: contructs a minority game with agents with a particular number of strategies
+  Scenario Outline: constructs a minority game with agents with a particular number of strategies
     Given I have a properties hash
     When I set the 'number-of-strategies-per-agent' property to '<number_of_strategies_per_agent>'
     And I construct a minority game with the properties hash
@@ -82,20 +82,20 @@ Feature: Versatile minority game construction
     
   Scenario Outline: construct a minority game with a history string of a particular length
     Given I have a properties hash
-    When I set the 'history-string-length' property to '<history_string_length>'
+    When I set the 'agent-memory-size' property to '<agent-memory-size>'
     And I construct a minority game with the properties hash
     Then I should have a minority game
-    And it should have a history string of length <history_string_length>
+    And it should have a choice history with initial length <agent-memory-size>
     
     Examples:
-      | history_string_length |
-      | 0                     |
-      | 1                     |
-      | 10                    |
+      | agent-memory-size |
+      | 0                 |
+      | 1                 |
+      | 10                |
     
   Scenario Outline: construct a minority game with a history string of an invalid length
     Given I have a properties hash
-    When I set the 'history-string-length' property to '<invalid_length>'
+    When I set the 'agent-memory-size' property to '<invalid_length>'
     And I construct a minority game with the properties hash
     Then a Java::Lang::IllegalArgumentException should be thrown
 

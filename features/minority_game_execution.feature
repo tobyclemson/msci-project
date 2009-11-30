@@ -37,20 +37,18 @@ Feature: Standard minority game execution
   Scenario: choice attendance varies over time steps
     Given I have a standard minority game
     And I have an experimentalist
-    And I set the experimentalist to record the attendance of choice '0'
+    And I set the experimentalist to record the attendance of choice 'A'
     When I take 100 time steps
     Then the measured attendances should be varied
   
   Scenario: choice attendance is in a valid range given the number of time steps
     Given I have a standard minority game with 10000 agents
     And I have an experimentalist
-    And I set the experimentalist to record the attendance of choice '0'
+    And I set the experimentalist to record the attendance of choice 'A'
     When I take 100 time steps
     Then the measured attendances should range between 0 and 10000
     
-  Scenario: the history string should vary with time
-    Given I have a standard minority game with a history string length of 5
-    And I have an experimentalist
-    And I set the experimentalist to record the history string
+  Scenario: the history string should increase with time
+    Given I have a standard minority game with an agent memory size of 5
     When I take 100 time steps
-    Then the measured history strings should be varied
+    Then the choice history should increase in size by 100

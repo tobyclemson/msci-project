@@ -19,6 +19,10 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
       minority_game_instance.should respond_to(:choice_history)
     end
     
+    it "has an agent_memory_size instance method" do
+      minority_game_instance.should respond_to(:agent_memory_size)
+    end
+    
     it "has a last_minority_size instance method" do
       minority_game_instance.should respond_to(:last_minority_size)
     end

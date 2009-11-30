@@ -11,10 +11,10 @@ Given /^I have a (.*) minority game with (\d*) agents?$/ do |type, agents|
   Given "I construct a minority game with the properties hash"
 end
 
-Given /^I have a (.*) minority game with a history string length of (\d*)?$/ do |type, length|
+Given /^I have a (.*) minority game with an agent memory size of (\d*)?$/ do |type, length|
   Given "I have a properties hash"
   Given "I set the 'type' property to '#{type}'"
-  Given "I set the 'history-string-length' property to '#{length}'"
+  Given "I set the 'agent-memory-size' property to '#{length}'"
   Given "I construct a minority game with the properties hash"
 end
 
@@ -24,18 +24,18 @@ Given /^I have an experimentalist$/ do
   @experimentalist = Experimentalist.new
 end
 
-Given /^I set the experimentalist to record the attendance of choice '(\d)'$/ do |choice|
+Given /^I set the experimentalist to record the attendance of choice '(.)'$/ do |choice|
   @attendances = []
+  
+  @choice = if(choice == "A")
+    MSciProject::MinorityGame::Choice::A
+  else
+    MSciProject::MinorityGame::Choice::B
+  end
+  
   @experimentalist.add_measurement { |minority_game|
     last_attendances = minority_game.agents.last_choice_totals
-    @attendances << last_attendances.get(choice)
-  }
-end
-
-Given /^I set the experimentalist to record the history string$/ do
-  @history_strings = []
-  @experimentalist.add_measurement { |minority_game|
-    @history_strings << minority_game.history_string.to_string
+    @attendances << last_attendances.get(@choice)
   }
 end
 
@@ -102,8 +102,8 @@ Then /^the measured attendances should range between (\d*) and (\d*)$/ do |lower
   end
 end
 
-Then /^the measured history strings should be varied$/ do
-  maximum_unique_strings = 2**(@history_strings.first.length)
-  @history_strings.uniq.size.should be > (0.9 * maximum_unique_strings).to_i
+Then /^the choice history should increase in size by (\d*)$/ do |increase|
+  @minority_game.choice_history.size.should == 
+    @minority_game.agent_memory_size + increase.to_i
 end
 
