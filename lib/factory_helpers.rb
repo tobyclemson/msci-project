@@ -4,7 +4,7 @@ module FactoryHelpers
       "type" => "standard",
       "number-of-agents" => "100",
       "agent-type" => "basic",
-      "history-string-length" => "2",
+      "agent-memory-size" => "2",
       "number-of-strategies-per-agent" => "2"
     }
     properties = Java::JavaUtil::Properties.new

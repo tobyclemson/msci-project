@@ -11,34 +11,43 @@ import java.util.Map;
 public class AbstractMinorityGame {
 
     /**
-     * An AgentCollection instance holding instances AbstractAgent used to
+     * An AgentCollection instance holding AbstractAgent instances used to
      * represent the agents associated with the minority game. This is returned
      * by the {@link #getAgents} method.
      */
     private AgentCollection agents;
 
     /**
-     * A HistoryString instance holding the history string representing a
-     * string of recent outcomes in the minority game. This is returned by the
-     * {@link #getHistoryString} method.
+     * A ChoiceHistory instance holding a list of choices representing the
+     * entire history of recent outcomes in the minority game. This is returned
+     * by the {@link #getChoiceHistory} method.
      */
-    private HistoryString historyString;
+    private ChoiceHistory choiceHistory;
 
     /**
-     * Constructs an AbstractMinorityGame instance setting the agents and
-     * history string parameters to the supplied AgentCollection and
-     * HistoryString instances.
+     * An integer representing the size of the memory of each agent in the game.
+     */
+    private int agentMemorySize;
+
+    /**
+     * Constructs an AbstractMinorityGame instance setting the agents, choice
+     * history and agent memory size attributes to the supplied AgentCollection,
+     * ChoiceHistory and integer instances.
      * @param agents An AgentCollection instance containing the agents
      * associated with this minority game instance.
-     * @param historyString A HistoryString instance to use as the history
-     * string for this minority game instance.
+     * @param choiceHistory A ChoiceHistory instance to use as the history
+     * of outcomes for this minority game instance.
+     * @param agentMemorySize An integer representing the number of past
+     * minority choices each agent can remember.
      */
     public AbstractMinorityGame(
         AgentCollection agents,
-        HistoryString historyString
+        ChoiceHistory choiceHistory,
+        int agentMemorySize
     ){
         this.agents = agents;
-        this.historyString = historyString;
+        this.choiceHistory = choiceHistory;
+        this.agentMemorySize = agentMemorySize;
     }
 
     /**
@@ -47,18 +56,28 @@ public class AbstractMinorityGame {
      * @return An AgentCollection containing the agents associated with the
      * minority game.
      */
-    public AgentCollection getAgents(){
+    public AgentCollection getAgents() {
         return agents;
     }
 
     /**
-     * Returns a HistoryString instance containing a string of the recent
-     * outcomes of time steps in the minority game
-     * @return A HistoryString instance representing the history string for the
-     * minority game.
+     * Returns a ChoiceHistory instance containing a list of Choice values
+     * representing the past minority choices in the minority game.
+     * @return A ChoiceHistory instance representing the history of outcomes
+     * for the minority game.
      */
-    public HistoryString getHistoryString(){
-        return historyString;
+    public ChoiceHistory getChoiceHistory() {
+        return choiceHistory;
+    }
+
+    /**
+     * Returns an integer representing the number of past minority choices each
+     * agent in the game can remember.
+     * @return The number of past minority choices each agent in the game can
+     * remember.
+     */
+    public int getAgentMemorySize() {
+        return agentMemorySize;
     }
 
     /**
@@ -67,39 +86,45 @@ public class AbstractMinorityGame {
      */
     public int getLastMinoritySize() {
         // declare variables
-        Map<String, Integer> lastChoiceTotals;
-        Integer numberChoosingZero, numberChoosingOne;
+        Map<Choice, Integer> lastChoiceTotals;
+        Integer numberChoosingA, numberChoosingB;
         
         // get a mapping of the choices '0' and '1' to the number of agents
         // making that choice in the last step.
         lastChoiceTotals = agents.getLastChoiceTotals();
         
         // retrieve the numbers of agents making each choice.
-        numberChoosingZero = lastChoiceTotals.get("0");
-        numberChoosingOne = lastChoiceTotals.get("1");
+        numberChoosingA = lastChoiceTotals.get(Choice.A);
+        numberChoosingB = lastChoiceTotals.get(Choice.B);
 
         // return the smallest of those numbers.
-        return Math.min(numberChoosingOne, numberChoosingZero);
+        return Math.min(numberChoosingA, numberChoosingB);
     }
 
-    public String getLastMinorityChoice() {
+    /**
+     * Returns the minority choice in the last step.
+     * @return The minority choice in the last step.
+     */
+    public Choice getLastMinorityChoice() {
         // declare variables
-        Map<String, Integer> lastChoiceTotals;
-        Integer numberChoosingZero, numberChoosingOne;
+        Map<Choice, Integer> lastChoiceTotals;
+        Integer numberChoosingA, numberChoosingB;
 
         // get a mapping of the choices '0' and '1' to the number of agents
         // making that choice in the last step.
         lastChoiceTotals = agents.getLastChoiceTotals();
 
         // retrieve the numbers of agents making each choice.
-        numberChoosingZero = lastChoiceTotals.get("0");
-        numberChoosingOne = lastChoiceTotals.get("1");
+        numberChoosingA = lastChoiceTotals.get(Choice.A);
+        numberChoosingB = lastChoiceTotals.get(Choice.B);
 
         // return the smallest of those numbers.
-        if(numberChoosingZero < numberChoosingOne)
-            return "0";
-        else
-            return "1";
+        if(numberChoosingA < numberChoosingB) {
+            return Choice.A;
+        }
+        else {
+            return Choice.B;
+        }
     }
 
     /**
@@ -108,20 +133,28 @@ public class AbstractMinorityGame {
      * The step is taken as follows:
      * <ul>
      *  <li>Tell all agents to make a choice for this time step
-     *  <li>Increment
+     *  <li>Increment the scores of all agents that made the minority choice
+     *  <li>Tell all agents to update their local information given the
+     *      last minority choice and choice history
+     *  <li>Add the most recent minority choice outcome to the choice history
      * </ul>
      */
     public void stepForward() {
         // tell all agents to make a choice for this time step
-        agents.makeChoices(historyString.toString());
+        agents.makeChoices(
+            choiceHistory.asList(agentMemorySize)
+        );
 
         // retrieve the minority choice
-        String minorityChoice = getLastMinorityChoice();
+        Choice minorityChoice = getLastMinorityChoice();
 
         // update based on the minority choice by incrementing agent scores,
-        // telling agents to update and updating history string
+        // telling agents to update and updating the choice history
         agents.incrementScoresForChoice(minorityChoice);
-        agents.updateForChoice(minorityChoice, historyString.toString());
-        historyString.push(minorityChoice);
+        agents.updateForChoice(
+            minorityChoice,
+            choiceHistory.asList(agentMemorySize)
+        );
+        choiceHistory.add(minorityChoice);
     }
 }

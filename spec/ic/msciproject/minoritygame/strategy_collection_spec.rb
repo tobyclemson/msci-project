@@ -4,10 +4,20 @@ describe MSciProject::MinorityGame::StrategyCollection do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::StrategyCollection }
   let(:strategy_collection_instance) { klass.new }
+  let(:a) { 
+    choice_list = Java::JavaUtil::ArrayList.new
+    choice_list.add(package::Choice::A)
+    choice_list 
+  }
+  let(:b) { 
+    choice_list = Java::JavaUtil::ArrayList.new
+    choice_list.add(package::Choice::B)
+    choice_list
+  }
   let(:strategy) { 
     hash_map = Java::JavaUtil::HashMap.new
-    hash_map.put("0", "0")
-    hash_map.put("1", "1")
+    hash_map.put(a, package::Choice::A)
+    hash_map.put(b, package::Choice::B)
     package::Strategy.new(hash_map) 
   }
   
@@ -89,79 +99,79 @@ describe MSciProject::MinorityGame::StrategyCollection do
   end
 
   describe "#random_strategy" do
-    let(:strategy_one) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_two) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_three) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_1) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_2) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_3) { Mockito.mock(package::Strategy.java_class) }
     
     before(:each) do
-      [strategy_one, strategy_two, strategy_three].each do |strategy|
+      [strategy_1, strategy_2, strategy_3].each do |strategy|
         strategy_collection_instance.add(strategy)
       end
     end
     
     it "returns strategies randomly with uniform distribution" do
-      one_count = two_count = three_count = 0;
+      count_1 = count_2 = count_3 = 0;
       
       10000.times do
         case strategy_collection_instance.random_strategy
-          when strategy_one then one_count += 1
-          when strategy_two then two_count += 1
-          when strategy_three then three_count += 1
+          when strategy_1 then count_1 += 1
+          when strategy_2 then count_2 += 1
+          when strategy_3 then count_3 += 1
         end
       end
       
-      [one_count, two_count, three_count].each do |count|
+      [count_1, count_2, count_3].each do |count|
         count.should be_between(3100, 3500)
       end
     end
   end
 
   describe "#highest_scoring_strategy" do
-    let(:strategy_one) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_two) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_three) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_1) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_2) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_3) { Mockito.mock(package::Strategy.java_class) }
     
     before(:each) do
-      [strategy_one, strategy_two, strategy_three].each do |strategy|
+      [strategy_1, strategy_2, strategy_3].each do |strategy|
         strategy_collection_instance.add(strategy)
       end
     end
     
     it "returns the highest scoring strategy if there is only one with " + 
       "that score" do
-      Mockito.when(strategy_one.score).
+      Mockito.when(strategy_1.score).
         then_return(Java::JavaLang::Integer.new(5))
-      Mockito.when(strategy_two.score).
+      Mockito.when(strategy_2.score).
         then_return(Java::JavaLang::Integer.new(2))
-      Mockito.when(strategy_three.score).
+      Mockito.when(strategy_3.score).
         then_return(Java::JavaLang::Integer.new(7))  
         
       strategy_collection_instance.
-        highest_scoring_strategy.should == strategy_three
+        highest_scoring_strategy.should == strategy_3
     end
     
     it "returns one of the highest scoring strategies at random if there " +
       "is more than one with that score" do
-      Mockito.when(strategy_one.score).
+      Mockito.when(strategy_1.score).
         then_return(Java::JavaLang::Integer.new(7))
-      Mockito.when(strategy_two.score).
+      Mockito.when(strategy_2.score).
         then_return(Java::JavaLang::Integer.new(2))
-      Mockito.when(strategy_three.score).
+      Mockito.when(strategy_3.score).
         then_return(Java::JavaLang::Integer.new(7))
         
-        one_count = two_count = three_count = 0;
+        count_1 = count_2 = count_3 = 0;
 
       1000.times do
         case strategy_collection_instance.highest_scoring_strategy
-          when strategy_one then one_count += 1
-          when strategy_two then two_count += 1
-          when strategy_three then three_count += 1
+          when strategy_1 then count_1 += 1
+          when strategy_2 then count_2 += 1
+          when strategy_3 then count_3 += 1
         end
       end
       
-      two_count.should == 0
+      count_2.should == 0
       
-      [one_count, three_count].each do |count|
+      [count_1, count_3].each do |count|
         count.should be_between(460, 540)
       end
     end
@@ -176,33 +186,38 @@ describe MSciProject::MinorityGame::StrategyCollection do
   end
 
   describe "#increment_scores_for_choice" do
-    let(:strategy_one) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_two) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_three) { Mockito.mock(package::Strategy.java_class) }
-
+    let(:strategy_1) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_2) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_3) { Mockito.mock(package::Strategy.java_class) }
+    let(:a_b) { Mockito.mock(Java::JavaUtil::List.java_class) }
+    
     before(:each) do
-      [strategy_one, strategy_two, strategy_three].each do |strategy|
+      [strategy_1, strategy_2, strategy_3].each do |strategy|
         strategy_collection_instance.add(strategy)
       end
       
-      Mockito.when(strategy_one.get("01")).then_return("0")
-      Mockito.when(strategy_two.get("01")).then_return("0")
-      Mockito.when(strategy_three.get("01")).then_return("1")
+      Mockito.when(strategy_1.get(a_b)).then_return(package::Choice::A)
+      Mockito.when(strategy_2.get(a_b)).then_return(package::Choice::A)
+      Mockito.when(strategy_3.get(a_b)).then_return(package::Choice::B)
     end
     
     it "calls increment_score on strategies that give the supplied " +
-      "choice for the supplied history string" do
-      strategy_collection_instance.increment_scores_for_choice("0", "01")
+      "choice for the supplied choice history" do
+      strategy_collection_instance.increment_scores_for_choice(
+        a_b, package::Choice::A
+      )
       
-      Mockito.verify(strategy_one).increment_score
-      Mockito.verify(strategy_two).increment_score
+      Mockito.verify(strategy_1).increment_score
+      Mockito.verify(strategy_2).increment_score
     end
     
     it "doesn't call increment_score on strategies that don't give the " +
-      "supplied choice for the supplied history string" do
-      strategy_collection_instance.increment_scores_for_choice("0", "01")
+      "supplied choice for the supplied choice history" do
+      strategy_collection_instance.increment_scores_for_choice(
+        a_b, package::Choice::A
+      )
 
-      Mockito.verify(strategy_three, Mockito.never).increment_score
+      Mockito.verify(strategy_3, Mockito.never).increment_score
     end
   end
 end

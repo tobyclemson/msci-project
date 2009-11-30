@@ -18,8 +18,8 @@ public class MinorityGameFactory {
      * <ul>
      *  <li>"type": the type of minority game to construct, currently can be
      *      one of "standard" or "evolutionary".
-     *  <li>"history-string-length": the length of history string required as a
-     *      string, e.g., "5".
+     *  <li>"agent-memory-size": the number of past minority choices each agent
+     *      can remember as a string, e.g., "5".
      *  <li>"number-of-agents": the number of agents required in the game as a
      *      string, e.g., "10000".
      *  <li>"agent-type": the type of agents required in the game, currently
@@ -44,23 +44,24 @@ public class MinorityGameFactory {
         assertPropertiesAreValid(properties);
 
         // declare required variables
-        Integer historyStringLength,
+        Integer agentMemorySize,
                 numberOfAgents,
                 numberOfStrategiesPerAgent;
         String  agentType,
                 type;
-        HistoryString historyString;
+        ChoiceHistory choiceHistory;
         AgentCollection agents;
         StrategySpace strategySpace;
         StrategyCollection strategyCollection;
         AbstractMinorityGame minorityGame = null;
         AbstractAgent agent = null;
 
-        // initialise a HistoryString instance of the required length.
-        historyStringLength = Integer.parseInt(
-            properties.getProperty("history-string-length")
+        // initialise a ChoiceHistory instance with an initial length equal to
+        // the .
+        agentMemorySize = Integer.parseInt(
+            properties.getProperty("agent-memory-size")
         );
-        historyString = new HistoryString(historyStringLength);
+        choiceHistory = new ChoiceHistory(agentMemorySize);
 
         // build a collection of agents of the specified type with the required
         // number of strategies.
@@ -75,7 +76,7 @@ public class MinorityGameFactory {
 
         for(int i = 0; i < numberOfAgents; i++){
             // add the required number of strategies to each agent
-            strategySpace = new StrategySpace(historyStringLength);
+            strategySpace = new StrategySpace(agentMemorySize);
             strategyCollection = new StrategyCollection();
 
             for(int j = 0; j < numberOfStrategiesPerAgent; j++) {
@@ -97,9 +98,13 @@ public class MinorityGameFactory {
         type = properties.getProperty("type");
 
         if(type.equals("standard")){
-            minorityGame = new StandardMinorityGame(agents, historyString);
+            minorityGame = new StandardMinorityGame(
+                agents, choiceHistory, agentMemorySize
+            );
         } else if(type.equals("evolutionary")){
-            minorityGame = new EvolutionaryMinorityGame(agents, historyString);
+            minorityGame = new EvolutionaryMinorityGame(
+                agents, choiceHistory, agentMemorySize
+            );
         }
 
         return minorityGame;
@@ -113,7 +118,7 @@ public class MinorityGameFactory {
      */
     private static void assertPropertiesAreValid(Properties properties){
         assertPropertyExists(properties, "type");
-        assertPropertyExists(properties, "history-string-length");
+        assertPropertyExists(properties, "agent-memory-size");
         assertPropertyExists(properties, "number-of-agents");
         assertPropertyExists(properties, "agent-type");
         assertPropertyExists(properties, "number-of-strategies-per-agent");
@@ -124,7 +129,7 @@ public class MinorityGameFactory {
 
         assertPropertyInSet(properties, "type", acceptedTypes);
 
-        assertPropertyIsNumeric(properties, "history-string-length");
+        assertPropertyIsNumeric(properties, "agent-memory-size");
         assertPropertyIsNumeric(properties, "number-of-agents");
 
         HashSet<String> acceptedAgentTypes = new HashSet<String>();

@@ -4,6 +4,7 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 
 /**
@@ -70,32 +71,35 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
     }
 
     /**
-     * Returns a map of the possible choices '0' and '1' to the number of agents
-     * that made that choice in the last step.
+     * Returns a map of the possible choices Choice.A and Choice.B to the
+     * number of agents that made that choice in the last step.
      * @return A map of choice totals.
      */
-    public Map<String, Integer> getLastChoiceTotals() {
+    public Map<Choice, Integer> getLastChoiceTotals() {
         // initialise required variables.
-        HashMap<String, Integer> totals = new HashMap<String, Integer>();
+        HashMap<Choice, Integer> totals = new HashMap<Choice, Integer>();
         Iterator<AbstractAgent> agentIterator = storage.iterator();
-        String choice = "";
-        int choiceZeroTotal = 0;
-        int choiceOneTotal = 0;
+        Choice choice = null;
+        int choiceATotal = 0;
+        int choiceBTotal = 0;
 
         // count the number of agents making the choices "0" and "1" in the
         // last step.
         while(agentIterator.hasNext()) {
             choice = agentIterator.next().getLastChoice();
-            if(choice.equals("0")) {
-                choiceZeroTotal += 1;
-            } else if(choice.equals("1")) {
-                choiceOneTotal += 1;
+            switch(choice) {
+                case A:
+                    choiceATotal++;
+                    break;
+                case B:
+                    choiceBTotal++;
+                    break;
             }
         }
 
         // set the totals for the choice '0' and '1'.
-        totals.put("0", choiceZeroTotal);
-        totals.put("1", choiceOneTotal);
+        totals.put(Choice.A, choiceATotal);
+        totals.put(Choice.B, choiceBTotal);
 
         // return the totals map.
         return totals;
@@ -104,10 +108,10 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
     /**
      * Asks each agent in the collection to make a choice between "0" and "1"
      * using the supplied history string.
-     * @param historyString The history string of minority choices in recent
-     * steps required by the agents to make a choice.
+     * @param choiceHistory A List of Choice instances representing the
+     * past minority choices.
      */
-    public void makeChoices(String historyString) {
+    public void makeChoices(List<Choice> choiceHistory) {
         // declare required variables
         Iterator<AbstractAgent> agentIterator;
         AbstractAgent agent;
@@ -118,11 +122,16 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
         // tell each agent to make a choice
         while(agentIterator.hasNext()) {
             agent = agentIterator.next();
-            agent.makeChoice(historyString);
+            agent.choose(choiceHistory);
         }
     }
 
-    public void incrementScoresForChoice(String minorityChoice) {
+    /**
+     * Increments the score of each agent that made the minority choice in the
+     * last step.
+     * @param minorityChoice The minority choice in the last step.
+     */
+    public void incrementScoresForChoice(Choice minorityChoice) {
         // declare required variables
         Iterator<AbstractAgent> agentIterator;
         AbstractAgent agent;
@@ -133,13 +142,22 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
         // call incrementScore on each agent that made the correct choice
         while(agentIterator.hasNext()) {
             agent = agentIterator.next();
-            if(agent.getLastChoice().equals(minorityChoice))
+            if(agent.getLastChoice().equals(minorityChoice)) {
                 agent.incrementScore();
+            }
         }
     }
 
-    
-    public void updateForChoice(String minorityChoice, String historyString) {
+    /**
+     * Calls update on each stored agent.
+     * @param minorityChoice The minority choice in the last step.
+     * @param choiceHistory The past minority choices as at the start of the
+     * last time step.
+     */
+    public void updateForChoice(
+        Choice minorityChoice,
+        List<Choice> choiceHistory
+    ) {
         // declare required variables
         Iterator<AbstractAgent> agentIterator;
 
@@ -148,7 +166,7 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
 
         // call incrementScore on each agent that made the correct choice
         while(agentIterator.hasNext()) {
-            agentIterator.next().updateForChoice(minorityChoice, historyString);
+            agentIterator.next().update(minorityChoice, choiceHistory);
         }
     }
 }

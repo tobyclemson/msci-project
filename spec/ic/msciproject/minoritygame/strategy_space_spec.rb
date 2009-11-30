@@ -42,7 +42,27 @@ describe MSciProject::MinorityGame::StrategySpace do
 
       key_set = strategy.key_set
       
-      ["00", "01", "10", "11"].each do |key|
+      a = package::Choice::A
+      b = package::Choice::B
+      
+      a_a = Java::JavaUtil::ArrayList.new
+      a_b = Java::JavaUtil::ArrayList.new
+      b_a = Java::JavaUtil::ArrayList.new
+      b_b = Java::JavaUtil::ArrayList.new
+      
+      a_a.add(a)
+      a_a.add(a)
+      
+      a_b.add(a)
+      a_b.add(b)
+      
+      b_a.add(b)
+      b_a.add(a)
+      
+      b_b.add(b)
+      b_b.add(b)
+      
+      [a_a, a_b, b_a, b_b].each do |key|
         key_set.contains(key).should be_true
       end
     end

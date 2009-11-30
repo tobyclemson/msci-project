@@ -90,18 +90,21 @@ describe MSciProject::MinorityGame::AgentCollection do
   describe "#last_choice_totals" do
     it "counts the number of agents making each choice during the last " + 
       "timestep" do
-      choice_zero_agent = Mockito.mock(package::AbstractAgent.java_class)
-      choice_one_agent = Mockito.mock(package::AbstractAgent.java_class)
+      choice_a_agent = Mockito.mock(package::AbstractAgent.java_class)
+      choice_b_agent = Mockito.mock(package::AbstractAgent.java_class)
       
-      Mockito.when(choice_zero_agent.last_choice).thenReturn("0")
-      Mockito.when(choice_one_agent.last_choice).thenReturn("1")
+      Mockito.when(choice_a_agent.last_choice).thenReturn(package::Choice::A)
+      Mockito.when(choice_b_agent.last_choice).thenReturn(package::Choice::B)
       
-      3.times { agent_collection_instance.add(choice_zero_agent) }
-      5.times { agent_collection_instance.add(choice_one_agent) }
+      3.times { agent_collection_instance.add(choice_a_agent) }
+      5.times { agent_collection_instance.add(choice_b_agent) }
       
       totals = agent_collection_instance.last_choice_totals
       
-      {"0" => 3, "1" => 5}.each do |choice, total|
+      {
+        package::Choice::A => 3, 
+        package::Choice::B => 5
+      }.each do |choice, total|
         totals.get(choice).should == total
       end
     end
@@ -109,7 +112,7 @@ describe MSciProject::MinorityGame::AgentCollection do
 
   describe "#make_choices" do
     it "calls make choice on each agent in the collection with the " +
-      "supplied history string" do
+      "supplied choice history" do
       mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
@@ -118,13 +121,13 @@ describe MSciProject::MinorityGame::AgentCollection do
       agent_collection_instance.add(mock_agent_2)
       agent_collection_instance.add(mock_agent_3)
       
-      history_string = package::HistoryString.new(5)
+      choice_history = package::ChoiceHistory.new(5)
       
-      agent_collection_instance.make_choices(history_string.to_string)
+      agent_collection_instance.make_choices(choice_history.as_list(5))
       
-      Mockito.verify(mock_agent_1).make_choice(history_string.to_string)
-      Mockito.verify(mock_agent_2).make_choice(history_string.to_string)
-      Mockito.verify(mock_agent_3).make_choice(history_string.to_string)
+      Mockito.verify(mock_agent_1).choose(choice_history.as_list(5))
+      Mockito.verify(mock_agent_2).choose(choice_history.as_list(5))
+      Mockito.verify(mock_agent_3).choose(choice_history.as_list(5))
     end
   end
 
@@ -135,15 +138,17 @@ describe MSciProject::MinorityGame::AgentCollection do
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
       
-      Mockito.when(mock_agent_1.last_choice).then_return("0")
-      Mockito.when(mock_agent_2.last_choice).then_return("0")
-      Mockito.when(mock_agent_3.last_choice).then_return("1")
+      Mockito.when(mock_agent_1.last_choice).then_return(package::Choice::A)
+      Mockito.when(mock_agent_2.last_choice).then_return(package::Choice::A)
+      Mockito.when(mock_agent_3.last_choice).then_return(package::Choice::B)
 
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         agent_collection_instance.add(agent)
       end
       
-      agent_collection_instance.increment_scores_for_choice("0")
+      agent_collection_instance.increment_scores_for_choice(
+        package::Choice::A
+      )
       
       Mockito.verify(mock_agent_1).increment_score
       Mockito.verify(mock_agent_2).increment_score
@@ -161,10 +166,15 @@ describe MSciProject::MinorityGame::AgentCollection do
         agent_collection_instance.add(agent)
       end
       
-      agent_collection_instance.update_for_choice("1", "01")
+      choice_history = Java::JavaUtil::ArrayList.new
+      choice_history.add(package::Choice::A)
+      choice_history.add(package::Choice::B)
+      
+      agent_collection_instance.update_for_choice(
+        package::Choice::A, choice_history)
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
-        Mockito.verify(agent).update_for_choice("1", "01")
+        Mockito.verify(agent).update(package::Choice::A, choice_history)
       end
     end
   end

@@ -3,6 +3,7 @@ package ic.msciproject.minoritygame;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -23,7 +24,7 @@ public class StrategySpace {
      * A Set of Strings representing the keys required for a strategy generated
      * by the StrategySpace to be valid.
      */
-    private Set<String> requiredKeys;
+    private Set<List<Choice>> requiredKeys;
 
     /**
      * Constructs a StrategySpace for keys of the specified length.
@@ -31,7 +32,7 @@ public class StrategySpace {
      */
     public StrategySpace(int keyLength) {
         this.keyLength = keyLength;
-        this.requiredKeys = StringPermutator.generateAll(keyLength);
+        this.requiredKeys = ChoiceListPermutator.generateAll(keyLength);
     }
 
     /**
@@ -50,7 +51,7 @@ public class StrategySpace {
      */
     public void setKeyLength(int keyLength) {
         this.keyLength = keyLength;
-        this.requiredKeys = StringPermutator.generateAll(keyLength);
+        this.requiredKeys = ChoiceListPermutator.generateAll(keyLength);
     }
 
     /**
@@ -60,27 +61,31 @@ public class StrategySpace {
      */
     public Strategy generateStrategy() {
         // declare required variables
-        HashMap<String, String> mappings;
-        Iterator<String> keyIterator;
-        Random randomNumberGenerator;
+        HashMap<List<Choice>, Choice> mappings;
+        Iterator<List<Choice>> keyIterator;
+        Random indexGenerator;
 
         // create an empty map to hold the history string to outcome
         // predictions.
-        mappings = new HashMap<String, String>();
+        mappings = new HashMap<List<Choice>, Choice>();
         
         // obtain an iterator over all possible keys for a strategy with the
         // specified key length.
         keyIterator = requiredKeys.iterator();
         
-        // create a random number generator to generate outcomes at random.
-        randomNumberGenerator = new Random();
+        // create a random number generator to randomly generate the indices 0
+        // or 1
+        indexGenerator = new Random();
+
+        // create an array of the possible choices
+        Choice choiceSet[] = {Choice.A, Choice.B};
 
         // for each key of the specified length, add an entry to the map with
         // a random outcome.
         while(keyIterator.hasNext()) {
             mappings.put(
                 keyIterator.next(),
-                String.valueOf(randomNumberGenerator.nextInt(2))
+                choiceSet[indexGenerator.nextInt(2)]
             );
         }
 

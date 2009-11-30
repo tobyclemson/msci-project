@@ -1,5 +1,7 @@
 package ic.msciproject.minoritygame;
 
+import java.util.List;
+
 /**
  * The AbstractAgent class implements the basic functionality of an agent in the
  * minority game and all specific agents should extend it.
@@ -19,10 +21,10 @@ public class AbstractAgent {
     private int score = 0;
 
     /**
-     * A String which contains either "0" or "1" representing the last choice
-     * made by this agent.
+     * A Choice instance representing the last choice made by this agent. This
+     * is returned by the {@link #getLastChoice} method.
      */
-    private String lastChoice = null;
+    private Choice lastChoice = null;
 
     /**
      * Constructs an AbstractAgent instance setting the strategies attribute to
@@ -52,12 +54,12 @@ public class AbstractAgent {
     }
 
     /**
-     * Returns the last choice made by the agent, either "0" or "1". If the
-     * {@link #makeChoice} method has not yet been called, an
+     * Returns the last choice made by the agent, either Choice.A or Choice.B.
+     * If the {@link #choose} method has not yet been called, an
      * IllegalStateException is thrown.
      * @return The last choice made by the agent.
      */
-    public String getLastChoice() {
+    public Choice getLastChoice() {
         if(lastChoice == null) {
             throw new IllegalStateException(
                 "No choice has been made yet so no last choice exists."
@@ -67,36 +69,51 @@ public class AbstractAgent {
     }
 
     /**
-     * Calculates this agents choice based on its strategies and returns
-     * either "0" or "1" depending on the outcome of the choice.
-     * @param historyString A string of '0's and '1's representing the minority
-     * choice from a fixed number of previous time steps.
+     * Calculates this agent's choices based on its strategies and returns
+     * a Choice.A or Choice.B representing the outcome of the choice.
+     * @param choiceHistory A List of Choice instances representing a fixed
+     * number of past minority choices in the game.
      * @return The choice made my the agent.
      */
-    public String makeChoice(String historyString) {
+    public Choice choose(List<Choice> choiceHistory) {
         // declare required variables
         Strategy chosenStrategy;
-        String choice;
+        Choice choice;
 
         // if no lastChoice exists, get a strategy at random, otherwise fetch
         // the highest scoring strategy
-        if(lastChoice == null)
+        if(lastChoice == null) {
             chosenStrategy = strategies.getRandomStrategy();
-        else
+        }
+        else {
             chosenStrategy = strategies.getHighestScoringStrategy();
-
+        }
+        
         // use the chosen strategy to calculate the choice
-        lastChoice = choice = chosenStrategy.get(historyString);
+        lastChoice = choice = chosenStrategy.get(choiceHistory);
 
         // return the selected choice
         return choice;
     }
 
+    /**
+     * Increments this agents score by 1.
+     */
     public void incrementScore() {
         score += 1;
     }
 
-    public void updateForChoice(String minorityChoice, String historyString) {
-        strategies.incrementScoresForChoice(minorityChoice, historyString);
+    /**
+     * Updates the agent's local information with respect to the minority
+     * choice and choice history for the last time step.
+     * @param minorityChoice The minority choice for the last time step.
+     * @param choiceHistory The choice history at the start of the last time
+     * step.
+     */
+    public void update(
+        Choice minorityChoice,
+        List<Choice> choiceHistory
+    ) {
+        strategies.incrementScoresForChoice(choiceHistory, minorityChoice);
     }
 }

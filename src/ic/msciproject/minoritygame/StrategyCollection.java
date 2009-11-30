@@ -2,6 +2,7 @@ package ic.msciproject.minoritygame;
 
 import java.util.AbstractCollection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -117,18 +118,18 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
     }
 
     public void incrementScoresForChoice(
-        String minorityChoice, String historyString
+        List<Choice> choiceHistory, Choice minorityChoice
     ) {
         // declare required variables
         Strategy currentStrategy = null;
-        String prediction;
+        Choice prediction;
 
         // increment the score of each strategy that gives the correct
-        // prediction for the supplied history string
+        // prediction for the supplied choice history
         int max = storage.size();
         for(int i = 0; i < max; i++) {
             currentStrategy = storage.get(i);
-            prediction = currentStrategy.get(historyString);
+            prediction = currentStrategy.get(choiceHistory);
             if(prediction.equals(minorityChoice)) {
                 currentStrategy.incrementScore();
             }

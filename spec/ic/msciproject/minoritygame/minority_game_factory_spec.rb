@@ -28,8 +28,8 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
       end
 
       it "throws an IllegalArgumentException if the options object doesn't " +
-        "contain a value for the 'history-string-length' property" do
-        properties.remove("history-string-length")
+        "contain a value for the 'agent-memory-size' property" do
+        properties.remove("agent-memory-size")
         expect { 
           package::MinorityGameFactory.construct(properties) 
         }.to raise_error(
@@ -77,8 +77,8 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
       
       it "throws an IllegalArgumentException if the options object " + 
         "contains anything other than digits for the " + 
-        "'history-string-length' property" do
-        properties.set_property("history-string-length", "non-numeric")
+        "'agent-memory-size' property" do
+        properties.set_property("agent-memory-size", "non-numeric")
         expect {
           package::MinorityGameFactory.construct(properties)
         }.to raise_error(Java::JavaLang::IllegalArgumentException)
@@ -132,13 +132,13 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
     end
     
     describe "minority game dependency generation" do
-      it "initialises the history_string attribute with a HistoryString " + 
-        "instance of the required length" do
-        properties.set_property("history-string-length", "2")
+      it "initialises the choice_history attribute with a ChoiceHistory " + 
+        "instance of the required initial length" do
+        properties.set_property("agent-memory-size", "2")
 
         instance = package::MinorityGameFactory.construct(properties)
-        instance.history_string.should be_a_kind_of(package::HistoryString)
-        instance.history_string.length.should == 2
+        instance.choice_history.should be_a_kind_of(package::ChoiceHistory)
+        instance.choice_history.size.should == 2
       end
 
       it "initialises the agents attribute with the required " +
