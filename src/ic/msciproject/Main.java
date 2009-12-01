@@ -41,31 +41,55 @@ public class Main {
         // initialise game properties
         properties = new Properties();
         properties.setProperty("type", "standard");
-        properties.setProperty("number-of-agents", "1001");
+        properties.setProperty("number-of-agents", "101");
         properties.setProperty("agent-type", "basic");
-        properties.setProperty("number-of-strategies-per-agent", "5");
-        properties.setProperty("agent-memory-size", "5");
+        properties.setProperty("number-of-strategies-per-agent", "2");
+        properties.setProperty("agent-memory-size", "16");
 
         // construct a game using the chosen properties
         minorityGame = MinorityGameFactory.construct(properties);
 
         // open a file to write the data
         outputFile = new FileWriter(
-            "/Users/tobyclemson/Desktop/attendance-vs-time-m=10.csv"
+            "/Users/tobyclemson/Desktop/sigma-m=16.csv"
         );
 
         // create a string builder to hold the data
         output = new StringBuilder();
 
-        // run the game
-        for(int time = 0; time <= 1000; time++) {
-            minorityGame.stepForward();
-            attendance = minorityGame.getAgents().getLastChoiceTotals();
-            output.append(time + "," + attendance.get(Choice.A) + "\n");
-            if(time % 100 == 0) {
-                System.out.printf("Time: %d\n", time);
+
+        for(int run = 0; run < 32; run++) {
+            int sumOfSquares = 0;
+            int sum = 0;
+            int attendanceOfA = 0;
+
+            // run the game
+            for(int time = 0; time <= 10000; time++) {
+                minorityGame.stepForward();
+                attendance = minorityGame.getAgents().getLastChoiceTotals();
+                attendanceOfA = attendance.get(Choice.A);
+                sumOfSquares += Math.pow(attendanceOfA, 2);
+                sum += attendanceOfA;
+                if(time % 100 == 0) {
+                    System.out.printf("Time: %d\n", time);
+                }
             }
+
+            int TimeSteps = 10001;
+            double average, normalisedSumOfSquares, standardDeviation;
+            average = sum/TimeSteps;
+            normalisedSumOfSquares = sumOfSquares/TimeSteps;
+            standardDeviation = Math.sqrt(normalisedSumOfSquares - average*average);
+
+
+
+            // print
+            output.append(standardDeviation + "\n");
         }
+
+
+
+
 
         // write the data to file
         outputFile.write(output.toString());
