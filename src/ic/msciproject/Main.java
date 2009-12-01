@@ -44,27 +44,22 @@ public class Main {
         properties.setProperty("number-of-agents", "101");
         properties.setProperty("agent-type", "basic");
         properties.setProperty("number-of-strategies-per-agent", "2");
-        properties.setProperty("agent-memory-size", "16");
-
-        // construct a game using the chosen properties
-        minorityGame = MinorityGameFactory.construct(properties);
-
-        // open a file to write the data
-        outputFile = new FileWriter(
-            "/Users/tobyclemson/Desktop/sigma-m=16.csv"
-        );
+        properties.setProperty("agent-memory-size", "2");
 
         // create a string builder to hold the data
         output = new StringBuilder();
 
+        for(int run = 0; run < 5; run++) {
+            // construct a game using the chosen properties
+            minorityGame = MinorityGameFactory.construct(properties);
 
-        for(int run = 0; run < 32; run++) {
+            // set up variables to calculate the standard deviation
             int sumOfSquares = 0;
             int sum = 0;
             int attendanceOfA = 0;
 
             // run the game
-            for(int time = 0; time <= 10000; time++) {
+            for(int time = 0; time <= 1000; time++) {
                 minorityGame.stepForward();
                 attendance = minorityGame.getAgents().getLastChoiceTotals();
                 attendanceOfA = attendance.get(Choice.A);
@@ -75,21 +70,20 @@ public class Main {
                 }
             }
 
-            int TimeSteps = 10001;
+            int TimeSteps = 1001;
             double average, normalisedSumOfSquares, standardDeviation;
             average = sum/TimeSteps;
             normalisedSumOfSquares = sumOfSquares/TimeSteps;
             standardDeviation = Math.sqrt(normalisedSumOfSquares - average*average);
 
-
-
             // print
             output.append(standardDeviation + "\n");
         }
 
-
-
-
+        // open a file to write the data
+        outputFile = new FileWriter(
+            "H:/msci-project-data/sigma-m=2.csv"
+        );
 
         // write the data to file
         outputFile.write(output.toString());
