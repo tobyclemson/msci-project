@@ -108,8 +108,9 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
             } else if(
                currentStrategy.getScore() == highestStrategy.getScore()
             ) {
-                if(booleanGenerator.nextBoolean()) 
+                if(booleanGenerator.nextBoolean()) {
                     highestStrategy = currentStrategy;
+                }
             }
         }
 

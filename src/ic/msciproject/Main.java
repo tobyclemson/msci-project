@@ -44,12 +44,12 @@ public class Main {
         properties.setProperty("number-of-agents", "101");
         properties.setProperty("agent-type", "basic");
         properties.setProperty("number-of-strategies-per-agent", "2");
-        properties.setProperty("agent-memory-size", "2");
+        properties.setProperty("agent-memory-size", "8");
 
         // create a string builder to hold the data
         output = new StringBuilder();
 
-        for(int run = 0; run < 5; run++) {
+        for(int run = 0; run < 32; run++) {
             // construct a game using the chosen properties
             minorityGame = MinorityGameFactory.construct(properties);
 
@@ -59,7 +59,7 @@ public class Main {
             int attendanceOfA = 0;
 
             // run the game
-            for(int time = 0; time <= 1000; time++) {
+            for(int time = 0; time <= 10000; time++) {
                 minorityGame.stepForward();
                 attendance = minorityGame.getAgents().getLastChoiceTotals();
                 attendanceOfA = attendance.get(Choice.A);
@@ -70,11 +70,13 @@ public class Main {
                 }
             }
 
-            int TimeSteps = 1001;
-            double average, normalisedSumOfSquares, standardDeviation;
-            average = sum/TimeSteps;
-            normalisedSumOfSquares = sumOfSquares/TimeSteps;
-            standardDeviation = Math.sqrt(normalisedSumOfSquares - average*average);
+            int numberOfTimeSteps = 10001;
+            double meanAttendance, meanSquareAttendance, standardDeviation;
+            meanAttendance = sum/numberOfTimeSteps;
+            meanSquareAttendance = sumOfSquares/numberOfTimeSteps;
+            standardDeviation = Math.sqrt(
+                meanSquareAttendance - Math.pow(meanAttendance, 2)
+            );
 
             // print
             output.append(standardDeviation + "\n");
@@ -82,7 +84,7 @@ public class Main {
 
         // open a file to write the data
         outputFile = new FileWriter(
-            "H:/msci-project-data/sigma-m=2.csv"
+            "/Users/tobyclemson/Desktop/sigma.csv"
         );
 
         // write the data to file
