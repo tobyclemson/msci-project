@@ -18,7 +18,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
   describe ".construct" do
     let(:properties) { properties_hash }
     
-    describe "error handling" do
+    describe "properties hash validation" do
       it "throws an IllegalArgumentException if the options object doesn't " +
         "contain a value for the 'type' property" do
         properties.remove("type")  
@@ -111,6 +111,16 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
           package::MinorityGameFactory.construct(properties)
         }.to raise_error(Java::JavaLang::IllegalArgumentException)
       end
+      
+      it "throws an IllegalArgumentException if the options object " +
+        "contains an even number for the 'number-of-agents' property" do
+        properties.set_property(
+          "number-of-agents", "1000"
+        )
+        expect {
+          package::MinorityGameFactory.construct(properties)
+        }.to raise_error(Java::JavaLang::IllegalArgumentException)
+      end
     end    
     
     it "returns an instance of StandardMinorityGame when the type " + 
@@ -143,9 +153,9 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
 
       it "initialises the agents attribute with the required " +
         "number of agents" do
-        properties.set_property("number-of-agents", "10")
+        properties.set_property("number-of-agents", "101")
         instance = package::MinorityGameFactory.construct(properties)      
-        instance.should have(10).agents
+        instance.should have(101).agents
       end
       
       it "initialises the agents attribute with agents with the required " + 

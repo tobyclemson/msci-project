@@ -1,3 +1,7 @@
+Given /^I have a properties hash$/ do
+  @properties = properties_hash
+end
+
 Given /^I have a (.*) minority game$/ do |type|
   Given "I have a properties hash"
   Given "I set the 'type' property to '#{type}'"
@@ -39,6 +43,32 @@ Given /^I set the experimentalist to record the attendance of choice '(.)'$/ do 
   }
 end
 
+Given /^I set the experimentalist to record the attendance of the minority choice$/ do
+  @attendances = []
+  
+  @experimentalist.add_measurement { |minority_game| 
+    @attendances << minority_game.last_minority_size
+  }
+end
+
+
+Given /^I store the (initial)? choice history$/ do |unnused|
+  @choice_history = @minority_game.choice_history.as_list.clone
+end
+
+When /^I set the '(.*)' property to '(.*)'$/ do |property, value|
+  @properties.set_property(property, value)
+end
+
+When /^I construct a minority game with the properties hash$/ do
+  begin
+    @minority_game =
+      MSciProject::MinorityGame::MinorityGameFactory.construct(@properties)
+  rescue Exception => exception
+    @exception = exception
+  end
+end
+
 When /^I take (a|\d*) time steps?$/ do |steps|
   steps = (steps == "a") ? 1 : steps.to_i
   steps.times do 
@@ -49,12 +79,71 @@ When /^I take (a|\d*) time steps?$/ do |steps|
   end
 end
 
-Then /^the sum of the agents scores should equal the number of agents making the minority choice$/ do
-  total_score = @minority_game.agents.inject(0) do |sum, agent|
-    sum + agent.score
+Then /^I should have a minority game$/ do
+  @minority_game.should be_a_kind_of(
+    MSciProject::MinorityGame::AbstractMinorityGame
+  )
+end
+
+Then /^its class should be (.*)$/ do |class_name|
+  @minority_game.should be_an_instance_of(class_name.constantize)
+end
+
+Then /^it should have (.*) agents$/ do |num|
+  @minority_game.should have(num.to_i).agents
+end
+
+Then /^it should have agents with (.*) strategies$/ do |num|
+  @minority_game.agents.first.strategies.size.should == num.to_i
+end
+
+Then /^it should have agents that are instances of (.*)$/ do |agent_class_name|
+  klass = agent_class_name.constantize
+  @minority_game.agents.each do |agent|
+    agent.should be_a_kind_of(klass)
   end
+end
+
+Then /^it should have a choice history with initial length (.*)$/ do |length|
+  @minority_game.choice_history.size.should == length.to_i
+end
+
+Then /^it should have agents with strategies with (\d*) mappings$/ do |mappings|
+  @minority_game.agents.each do |agent|
+    agent.strategies.each do |strategy|
+      strategy.key_set.size.should == mappings.to_i
+    end
+  end
+end
+
+
+Then /^a (.*) should be thrown$/ do |exception|
+  @exception.cause.should be_a_kind_of(
+    exception.constantize
+  )
+end
+
+Then /^each agent that made the minority choice should have (\d*) point$/ do |points|
+  minority_choice = @minority_game.last_minority_choice
+  agents = @minority_game.agents
   
-  @minority_game.last_minority_size.should == total_score
+  agents.each do |agent|
+    if agent.last_choice == minority_choice
+      agent.score.should == points.to_i
+    end
+  end
+end
+
+Then /^each strategy that would have predicted the correct minority choice given the choice history has (\d*) points?$/ do |score|
+  minority_choice = @minority_game.last_minority_choice
+  
+  @minority_game.agents.each do |agent|
+    agent.strategies.each do |strategy|
+      if strategy.get(@choice_history) == minority_choice
+        strategy.score.should == score.to_i
+      end
+    end
+  end
 end
 
 Then /^some agents should have a non zero score$/ do
@@ -106,4 +195,3 @@ Then /^the choice history should increase in size by (\d*)$/ do |increase|
   @minority_game.choice_history.size.should == 
     @minority_game.agent_memory_size + increase.to_i
 end
-

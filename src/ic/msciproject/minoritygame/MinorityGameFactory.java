@@ -123,21 +123,22 @@ public class MinorityGameFactory {
         assertPropertyExists(properties, "agent-type");
         assertPropertyExists(properties, "number-of-strategies-per-agent");
 
+        assertPropertyIsNumeric(properties, "agent-memory-size");
+        assertPropertyIsNumeric(properties, "number-of-strategies-per-agent");
+
+        assertPropertyIsOdd(properties, "number-of-agents");
+
         HashSet<String> acceptedTypes = new HashSet<String>();
         acceptedTypes.add("standard");
         acceptedTypes.add("evolutionary");
 
         assertPropertyInSet(properties, "type", acceptedTypes);
 
-        assertPropertyIsNumeric(properties, "agent-memory-size");
-        assertPropertyIsNumeric(properties, "number-of-agents");
-
         HashSet<String> acceptedAgentTypes = new HashSet<String>();
         acceptedAgentTypes.add("basic");
         acceptedAgentTypes.add("learning");
 
         assertPropertyInSet(properties, "agent-type", acceptedAgentTypes);
-        assertPropertyIsNumeric(properties, "number-of-strategies-per-agent");
     }
 
     /**
@@ -191,8 +192,21 @@ public class MinorityGameFactory {
         if(!value.matches("\\d*")){
             throw new IllegalArgumentException(
                 "Expected properties object to contain a numeric value for " +
-                "the '" + property +
-                "' property."
+                "the '" + property + "' property."
+            );
+        }
+    }
+
+    private static void assertPropertyIsOdd(
+        Properties properties,
+        String property
+    ) {
+        assertPropertyIsNumeric(properties, property);
+        int value = Integer.parseInt(properties.getProperty(property));
+        if(value % 2 == 0) {
+            throw new IllegalArgumentException(
+                "Expected properties object to contain an odd number for " +
+                "the '" + property + "' property."
             );
         }
     }

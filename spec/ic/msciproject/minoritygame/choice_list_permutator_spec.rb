@@ -1,8 +1,8 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSciProject::MinorityGame::StringPermutator do
+describe MSciProject::MinorityGame::ChoiceListPermutator do
   let(:package) { MSciProject::MinorityGame }
-  let(:klass) { package::StringPermutator }
+  let(:klass) { package::ChoiceListPermutator }
   
   describe ".generate_all" do
     it "returns a set of all possible permutations of lists of the choices " +

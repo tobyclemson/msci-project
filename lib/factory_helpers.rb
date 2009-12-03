@@ -2,7 +2,7 @@ module FactoryHelpers
   def properties_hash(specialisations={})
     defaults = {
       "type" => "standard",
-      "number-of-agents" => "100",
+      "number-of-agents" => "101",
       "agent-type" => "basic",
       "agent-memory-size" => "2",
       "number-of-strategies-per-agent" => "2"
