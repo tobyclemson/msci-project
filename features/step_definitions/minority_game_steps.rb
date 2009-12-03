@@ -15,6 +15,13 @@ Given /^I have a (.*) minority game with (\d*) agents?$/ do |type, agents|
   Given "I construct a minority game with the properties hash"
 end
 
+Given /^I have a (.*) minority game with ([a-zA-Z\-]*) agents?$/ do |type, agent_type|
+  Given "I have a properties hash"
+  Given "I set the 'type' property to '#{type}'"
+  Given "I set the 'agent-type' property to '#{agent_type}'"
+  Given "I construct a minority game with the properties hash"
+end
+
 Given /^I have a (.*) minority game with an agent memory size of (\d*)?$/ do |type, length|
   Given "I have a properties hash"
   Given "I set the 'type' property to '#{type}'"
@@ -29,7 +36,7 @@ Given /^I have an experimentalist$/ do
 end
 
 Given /^I set the experimentalist to record the attendance of choice '(.)'$/ do |choice|
-  @attendances = []
+  @measurements = []
   
   @choice = if(choice == "A")
     MSciProject::MinorityGame::Choice::A
@@ -38,19 +45,28 @@ Given /^I set the experimentalist to record the attendance of choice '(.)'$/ do 
   end
   
   @experimentalist.add_measurement { |minority_game|
-    last_attendances = minority_game.agents.last_choice_totals
-    @attendances << last_attendances.get(@choice)
+    last_measurements = minority_game.agents.last_choice_totals
+    @measurements << last_measurements.get(@choice)
   }
 end
 
 Given /^I set the experimentalist to record the attendance of the minority choice$/ do
-  @attendances = []
+  @measurements = []
   
   @experimentalist.add_measurement { |minority_game| 
-    @attendances << minority_game.last_minority_size
+    @measurements << minority_game.last_minority_size
   }
 end
 
+Given /^I set the experimentalist to record the choices of one agent in the game$/ do
+  @measurements = []
+  
+  agent = @minority_game.agents.first
+  
+  @experimentalist.add_measurement { |minority_game|
+    @measurements << agent.last_choice
+  }
+end
 
 Given /^I store the (initial)? choice history$/ do |unnused|
   @choice_history = @minority_game.choice_history.as_list.clone
@@ -178,15 +194,15 @@ Then /^the strategy scores should range between (\d*) and (\d*)$/ do |lower, upp
   end
 end
 
-Then /^the measured attendances should be varied$/ do
-  total_attendances = @attendances.size
-  unique_threshold = (0.2 * total_attendances).to_i
-  unique_attendances = @attendances.uniq.size
-  unique_attendances.should be > unique_threshold
+Then /^the measured measurements should be varied$/ do
+  total_measurements = @measurements.size
+  unique_threshold = (0.2 * total_measurements).to_i
+  unique_measurements = @measurements.uniq.size
+  unique_measurements.should be > unique_threshold
 end
 
-Then /^the measured attendances should range between (\d*) and (\d*)$/ do |lower, upper|
-  @attendances.each do |attendance|
+Then /^the measured measurements should range between (\d*) and (\d*)$/ do |lower, upper|
+  @measurements.each do |attendance|
     attendance.should be_between(lower.to_i, upper.to_i)
   end
 end
@@ -194,4 +210,19 @@ end
 Then /^the choice history should increase in size by (\d*)$/ do |increase|
   @minority_game.choice_history.size.should == 
     @minority_game.agent_memory_size + increase.to_i
+end
+
+Then /^each choice should have been made approximately an equal number of times$/ do
+  choice_a_count = choice_b_count = 0
+  @measurements.each do |measurement|
+    case measurement
+    when MSciProject::MinorityGame::Choice::A
+      choice_a_count += 1
+    when MSciProject::MinorityGame::Choice::B
+      choice_b_count += 1
+    end
+  end
+  
+  choice_a_count.should be_between(42, 58)
+  choice_b_count.should be_between(42, 58)
 end

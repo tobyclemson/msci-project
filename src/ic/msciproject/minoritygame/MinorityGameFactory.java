@@ -83,10 +83,12 @@ public class MinorityGameFactory {
                 strategyCollection.add(strategySpace.generateStrategy());
             }
 
-            if(agentType.equals("basic")){
+            if(agentType.equals("basic")) {
                 agent = new BasicAgent(strategyCollection);
-            } else if(agentType.equals("learning")){
+            } else if(agentType.equals("learning")) {
                 agent = new LearningAgent(strategyCollection);
+            } else if(agentType.equals("random")) {
+                agent = new RandomAgent(strategyCollection);
             }
 
             // add the agents to the collection
@@ -97,11 +99,11 @@ public class MinorityGameFactory {
         // string.
         type = properties.getProperty("type");
 
-        if(type.equals("standard")){
+        if(type.equals("standard")) {
             minorityGame = new StandardMinorityGame(
                 agents, choiceHistory, agentMemorySize
             );
-        } else if(type.equals("evolutionary")){
+        } else if(type.equals("evolutionary")) {
             minorityGame = new EvolutionaryMinorityGame(
                 agents, choiceHistory, agentMemorySize
             );
@@ -137,6 +139,7 @@ public class MinorityGameFactory {
         HashSet<String> acceptedAgentTypes = new HashSet<String>();
         acceptedAgentTypes.add("basic");
         acceptedAgentTypes.add("learning");
+        acceptedAgentTypes.add("random");
 
         assertPropertyInSet(properties, "agent-type", acceptedAgentTypes);
     }

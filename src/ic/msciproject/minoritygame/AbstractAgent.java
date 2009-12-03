@@ -24,7 +24,7 @@ public class AbstractAgent {
      * A Choice instance representing the last choice made by this agent. This
      * is returned by the {@link #getLastChoice} method.
      */
-    private Choice lastChoice = null;
+    protected Choice lastChoice = null;
 
     /**
      * Constructs an AbstractAgent instance setting the strategies attribute to
