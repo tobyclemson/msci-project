@@ -42,44 +42,56 @@ public class Main {
         properties = new Properties();
         properties.setProperty("type", "standard");
         properties.setProperty("number-of-agents", "101");
-        properties.setProperty("agent-type", "basic");
+        properties.setProperty("agent-type", "random");
         properties.setProperty("number-of-strategies-per-agent", "2");
-        properties.setProperty("agent-memory-size", "8");
+        properties.setProperty("agent-memory-size", "2");
 
         // create a string builder to hold the data
         output = new StringBuilder();
 
-        for(int run = 0; run < 32; run++) {
+        int data[][] = new int[1000][1001];
+
+        for(int run = 0; run < 1000; run++) {
             // construct a game using the chosen properties
             minorityGame = MinorityGameFactory.construct(properties);
 
-            // set up variables to calculate the standard deviation
-            int sumOfSquares = 0;
-            int sum = 0;
             int attendanceOfA = 0;
 
             // run the game
-            for(int time = 0; time <= 10000; time++) {
+            for(int time = 0; time <= 1000; time++) {
                 minorityGame.stepForward();
                 attendance = minorityGame.getAgents().getLastChoiceTotals();
                 attendanceOfA = attendance.get(Choice.A);
-                sumOfSquares += Math.pow(attendanceOfA, 2);
-                sum += attendanceOfA;
+                data[run][time] = attendanceOfA;
                 if(time % 100 == 0) {
                     System.out.printf("Time: %d\n", time);
                 }
             }
+        }
 
-            int numberOfTimeSteps = 10001;
-            double meanAttendance, meanSquareAttendance, standardDeviation;
-            meanAttendance = sum/numberOfTimeSteps;
-            meanSquareAttendance = sumOfSquares/numberOfTimeSteps;
-            standardDeviation = Math.sqrt(
-                meanSquareAttendance - Math.pow(meanAttendance, 2)
-            );
+        int x = 1;
 
-            // print
-            output.append(standardDeviation + "\n");
+        for(int j = 0; j <= 1001; j++) {
+            for(int i = 0; i < 1000; i++) {
+                if(i != 0) {
+                    output.append(",");
+                }
+                if (j == 1001) {
+                    String column = null;
+                    if(i < 26) {
+                        column = String.valueOf((char) (65 + i));
+                    } else {
+                        column = String.valueOf((char) (64 + i/26)) + String.valueOf((char) (65 + i - 26 * (i/26)));
+                    }
+                    
+                    output.append(
+                        "=stdev(" + column + "1:" + column + "1001)"
+                    );
+                } else {
+                    output.append(data[i][j]);
+                }
+            }
+            output.append("\n");
         }
 
         // open a file to write the data
