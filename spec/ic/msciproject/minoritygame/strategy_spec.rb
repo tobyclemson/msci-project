@@ -133,14 +133,10 @@ describe MSciProject::MinorityGame::Strategy do
   describe "#get" do
     it "throws an IllegalArgumentException if the supplied key is of the " + 
       "wrong length" do
-      require 'pp'
-        
       a_a_a = Java::JavaUtil::ArrayList.new
       a_a_a.add(package::Choice::A)
       a_a_a.add(package::Choice::A)
       a_a_a.add(package::Choice::A)
-      
-      pp strategy_instance.get(a)
       
       expect {
         strategy_instance.get(a_a_a)

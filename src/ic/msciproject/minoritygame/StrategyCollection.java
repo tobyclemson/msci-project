@@ -123,13 +123,13 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
     ) {
         // declare required variables
         Strategy currentStrategy = null;
+        Iterator<Strategy> strategyIterator = storage.iterator();
         Choice prediction;
 
         // increment the score of each strategy that gives the correct
         // prediction for the supplied choice history
-        int max = storage.size();
-        for(int i = 0; i < max; i++) {
-            currentStrategy = storage.get(i);
+        while(strategyIterator.hasNext()) {
+            currentStrategy = strategyIterator.next();
             prediction = currentStrategy.get(choiceHistory);
             if(prediction.equals(minorityChoice)) {
                 currentStrategy.incrementScore();

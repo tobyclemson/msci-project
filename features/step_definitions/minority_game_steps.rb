@@ -1,5 +1,20 @@
+# Properties hash related steps
 Given /^I have a properties hash$/ do
   @properties = properties_hash
+end
+
+When /^I set the '(.*)' property to '(.*)'$/ do |property, value|
+  @properties.set_property(property, value)
+end
+
+# Minority game construction steps
+When /^I construct a minority game with the properties hash$/ do
+  begin
+    @minority_game =
+      MSciProject::MinorityGame::MinorityGameFactory.construct(@properties)
+  rescue Exception => exception
+    @exception = exception
+  end
 end
 
 Given /^I have a (.*) minority game$/ do |type|
@@ -22,67 +37,137 @@ Given /^I have a (.*) minority game with ([a-zA-Z\-]*) agents?$/ do |type, agent
   Given "I construct a minority game with the properties hash"
 end
 
-Given /^I have a (.*) minority game with an agent memory size of (\d*)?$/ do |type, length|
+Given /^I have a (.*) minority game with ([a-zA-Z\-]*) agents? with a memory size of (\d*)$/ do |type, agent_type, agent_memory_size|
   Given "I have a properties hash"
   Given "I set the 'type' property to '#{type}'"
-  Given "I set the 'agent-memory-size' property to '#{length}'"
+  Given "I set the 'agent-type' property to '#{agent_type}'"
+  Given "I set the 'agent-memory-size' property to '#{agent_memory_size}'"
   Given "I construct a minority game with the properties hash"
 end
 
-Given /^no time steps have occurred yet$/ do end
-  
+# Experimentalist setup steps
 Given /^I have an experimentalist$/ do
   @experimentalist = Experimentalist.new
 end
 
 Given /^I set the experimentalist to record the attendance of choice '(.)'$/ do |choice|
-  @measurements = []
-  
-  @choice = if(choice == "A")
-    MSciProject::MinorityGame::Choice::A
-  else
-    MSciProject::MinorityGame::Choice::B
+  if choice == "A"
+    @choice = MSciProject::MinorityGame::Choice::A
+  elsif choice == "B"
+    @choice = MSciProject::MinorityGame::Choice::B
   end
   
-  @experimentalist.add_measurement { |minority_game|
-    last_measurements = minority_game.agents.last_choice_totals
-    @measurements << last_measurements.get(@choice)
+  @experimentalist.add_measurement(:choice_attendance) { |minority_game|
+    minority_game.agents.last_choice_totals.get(@choice)
   }
 end
 
-Given /^I set the experimentalist to record the attendance of the minority choice$/ do
-  @measurements = []
-  
-  @experimentalist.add_measurement { |minority_game| 
-    @measurements << minority_game.last_minority_size
+Given /^I set the experimentalist to record the minority choice$/ do
+  @experimentalist.add_measurement(:minority_choice) { |minority_game| 
+    minority_game.last_minority_choice
   }
 end
 
-Given /^I set the experimentalist to record the choices of one agent in the game$/ do
-  @measurements = []
-  
-  agent = @minority_game.agents.first
-  
-  @experimentalist.add_measurement { |minority_game|
-    @measurements << agent.last_choice
+Given /^I set the experimentalist to record the minority size$/ do
+  @experimentalist.add_measurement(:minority_size) { |minority_game| 
+    minority_game.last_minority_size
   }
 end
 
-Given /^I store the (initial)? choice history$/ do |unnused|
-  @choice_history = @minority_game.choice_history.as_list.clone
-end
-
-When /^I set the '(.*)' property to '(.*)'$/ do |property, value|
-  @properties.set_property(property, value)
-end
-
-When /^I construct a minority game with the properties hash$/ do
-  begin
-    @minority_game =
-      MSciProject::MinorityGame::MinorityGameFactory.construct(@properties)
-  rescue Exception => exception
-    @exception = exception
+Given /^I set the experimentalist to record the scores? of (all|one) agents?$/ do |how_many|
+  if how_many == "all"
+    @experimentalist.add_measurement(:agent_score) { |minority_game|
+      scores = []
+      minority_game.agents.each do |agent|
+        scores << agent.score
+      end
+      scores
+    }
+  elsif how_many == "one"
+    @experimentalist.add_measurement(:agent_score) { |minority_game|
+      minority_game.agents.first.score
+    }
   end
+end
+
+Given /^I set the experimentalist to record the choices? of (all|one) agents?$/ do |how_many|
+  if how_many == "all"
+    @experimentalist.add_measurement(:agent_choice) { |minority_game| 
+      last_choices = []
+      minority_game.agents.each do |agent|
+        last_choices << agent.last_choice
+      end
+      last_choices
+    }
+  elsif how_many == "one"
+    @experimentalist.add_measurement(:agent_choice) { |minority_game| 
+      minority_game.agents.first.last_choice
+    }
+  end
+end
+
+Given /^I set the experimentalist to record the initial choice history$/ do
+  first_step = true
+  @experimentalist.add_measurement(:initial_choice_history) do |minority_game|
+    if first_step
+      first_step = false
+      choice_list = minority_game.choice_history.as_list
+      choice_list.sub_list(0, choice_list.size - 1).to_a
+    end
+  end
+end
+
+Given /^I set the experimentalist to record the choice history of the last (\d*) steps at the (start|end) of the step$/ do |distance_into_past, measurement_time|
+  number_of_past_steps = distance_into_past.to_i
+  if measurement_time == "start"
+    @experimentalist.add_measurement(:choice_history) { |minority_game| 
+      minority_game.choice_history.
+        as_list(number_of_past_steps + 1).
+        sub_list(0, number_of_past_steps).
+        to_a
+    }
+  elsif measurement_time == "end"
+    @experimentalist.add_measurement(:choice_history) { |minority_game| 
+      minority_game.choice_history.
+        as_list(number_of_past_steps + 1).
+        sub_list(0, number_of_past_steps).
+        to_a
+    }
+  end
+end
+
+Given /^I set the experimentalist to record the choice history of all steps at the (start|end) of the step$/ do |measurement_time|
+  if measurement_time == "start"
+    @experimentalist.add_measurement(:choice_history) { |minority_game| 
+      choice_list = minority_game.choice_history.as_list
+      choice_list.sub_list(0, choice_list.size - 1).to_a
+    }
+  elsif measurement_time == "end"
+    @experimentalist.add_measurement(:choice_history) { |minority_game| 
+      minority_game.choice_history.as_list.to_a
+    }
+  end
+end
+
+Given /^I set the experimentalist to record the strategy scores$/ do
+  @experimentalist.add_measurement(:strategy_score) { |minority_game| 
+    strategy_array = []
+    minority_game.agents.each do |agent|
+      agent.strategies.each do |strategy|
+        mapping = {}
+        strategy.map.each do |key, value|
+          mapping[key.to_a] = value
+        end
+        score = strategy.score
+        strategy_array << [mapping, score]
+      end
+    end
+    strategy_array
+  }
+end
+
+# Time step related steps
+Given /^no time steps have occurred yet$/ do
 end
 
 When /^I take (a|\d*) time steps?$/ do |steps|
@@ -95,6 +180,222 @@ When /^I take (a|\d*) time steps?$/ do |steps|
   end
 end
 
+# Experimentalist verification steps
+Then /^the minority choice at each time step should be correct with respect to the agent's choices$/ do
+  all_choices = @experimentalist.measurement_results(:agent_choice)
+  all_minority_choices = @experimentalist.measurement_results(:minority_choice)
+  
+  all_choices.each_with_index do |agent_choices, step|
+    choice_a_count = 0
+    choice_b_count = 0
+    
+    agent_choices.each do |choice|
+      if(choice == MSciProject::MinorityGame::Choice::A)
+        choice_a_count += 1
+      elsif(choice == MSciProject::MinorityGame::Choice::B)
+        choice_b_count += 1
+      end
+    end
+    
+    minority_choice = if(choice_a_count < choice_b_count)
+      MSciProject::MinorityGame::Choice::A
+    else
+      MSciProject::MinorityGame::Choice::B
+    end
+    
+    minority_choice.should == all_minority_choices[step]
+  end
+end
+
+Then /^the minority size at each time step should be correct with respect to the agent's choices$/ do
+  choices = @experimentalist.measurement_results(:agent_choice)
+  minority_sizes = @experimentalist.measurement_results(:minority_size)
+  
+  choices.each_with_index do |agent_choices, step|
+    choice_a_count = 0
+    choice_b_count = 0
+    
+    agent_choices.each do |choice|
+      if(choice == MSciProject::MinorityGame::Choice::A)
+        choice_a_count += 1
+      elsif(choice == MSciProject::MinorityGame::Choice::B)
+        choice_b_count += 1
+      end
+    end
+    
+    minority_size = [choice_a_count, choice_b_count].min
+    
+    minority_size.should == minority_sizes[step]
+  end
+end
+
+Then /^the agent scores at each time step should be correct with respect to the minority choice$/ do
+  # fetch the data for each step
+  all_scores = @experimentalist.measurement_results(:agent_score)
+  all_choices = @experimentalist.measurement_results(:agent_choice)
+  all_minority_choices = @experimentalist.measurement_results(:minority_choice)
+  
+  # create an empty data table for the expected scores
+  expected_scores = []
+  
+  # iterate through the minority choices for each time step
+  all_minority_choices.each_with_index do |minority_choice, step|
+    
+    # iterate through the choices made by each agent at this time step
+    all_choices[step].each_with_index do |agent_choice, agent_index|
+      
+      # initialise an array element for this agent if it has not yet been 
+      # initialised
+      expected_scores[agent_index] ||= 0
+      
+      # if the choice made by the agent is equal to the minority choice for 
+      # this step, increment the expected score
+      if agent_choice == minority_choice
+        expected_scores[agent_index] += 1
+      end
+      
+    end
+    
+    # ensure the actual scores are equal to the expected scores
+    all_scores[step].should == expected_scores
+    
+  end
+end
+
+Then /^each choice should have been made approximately an equal number of times$/ do
+  choice_a_count = choice_b_count = 0
+  
+  @experimentalist.measurement_results(:agent_choice).each do |choice|
+    case choice
+    when MSciProject::MinorityGame::Choice::A
+      choice_a_count += 1
+    when MSciProject::MinorityGame::Choice::B
+      choice_b_count += 1
+    end
+  end
+  
+  choice_a_count.should be_between(42, 58)
+  choice_b_count.should be_between(42, 58)
+end
+
+Then /^the choice history at each time step should be correct with respect to the minority choice$/ do
+  initial_choice_history = @experimentalist.measurement_results(
+    :initial_choice_history
+  )
+  choice_histories = @experimentalist.measurement_results(:choice_history)
+  minority_choices = @experimentalist.measurement_results(:minority_choice)
+  
+  choice_list = initial_choice_history
+  
+  minority_choices.each_with_index do |minority_choice, step|
+    choice_list << minority_choice
+    choice_histories[step].should == choice_list
+  end
+end
+
+Then /^the strategy scores at each time step should be correct with respect to the minority choice$/ do
+  # fetch the data for each step
+  strategies_and_scores = @experimentalist.measurement_results(
+    :strategy_score
+  )
+  choice_histories = @experimentalist.measurement_results(
+    :choice_history
+  )
+  minority_choices = @experimentalist.measurement_results(
+    :minority_choice
+  )
+  
+  # create arrays to hold the expected and actual scores at each time step
+  total_number_of_strategies = strategies_and_scores.first.size
+  expected_scores = Array.new(total_number_of_strategies, 0)
+  
+  # iterate through the time steps
+  minority_choices.each_with_index do |minority_choice, step|
+    
+    # reset the array of measured scores
+    actual_scores = Array.new(total_number_of_strategies, 0)
+    
+    # iterate through the strategies
+    strategies_and_scores[step].each_with_index do |strategy_to_score_map, strategy_index|
+      
+      # get the strategy and score
+      strategy = strategy_to_score_map[0]
+      score = strategy_to_score_map[1]
+
+      # increment the expected score if the predicted choice matches the 
+      # minority choice
+      if(strategy[choice_histories[step]] == minority_choice)
+        expected_scores[strategy_index] += 1
+      end
+      
+      # add this score to the array of scores
+      actual_scores[strategy_index] = score
+    end
+    
+    # expect the actual scores array to equal the expected scores array
+    actual_scores.should == expected_scores
+  end
+end
+
+Then /^every step except the first should use the highest scoring strategy$/ do
+  # fetch the data for each step
+  strategies_and_scores = @experimentalist.measurement_results(
+    :strategy_score
+  )
+  choice_histories = @experimentalist.measurement_results(
+    :choice_history
+  )
+  agent_choices = @experimentalist.measurement_results(
+    :agent_choice
+  )
+  
+  # find out the number of strategies per agent
+  strategies_per_agent = @minority_game.agents.first.strategies.size
+  
+  # iterate through the steps
+  choice_histories.each_with_index do |key, step|
+    # skip the first step as the strategy used is initially random
+    next if step == 0
+    
+    # iterate through the agents
+    agent_choices[step].each_with_index do |choice, agent_index|
+      
+      # create arrays to hold the strategies and their scores
+      strategies = []
+      scores = []
+      
+      # get the strategies and scores
+      (0..(strategies_per_agent - 1)).collect do |strategy_index|
+        # the index of the strategy is the number per agent multiplied by 
+        # the index of the agent plus the index of the strategy we want
+        total_index = agent_index * strategies_per_agent + strategy_index
+        
+        # we need the strategy scores at the start of the turn
+        strategy_and_score = strategies_and_scores[step - 1][total_index]
+        
+        # add the strategy and score to the arrays
+        strategies << strategy_and_score[0]
+        scores << strategy_and_score[1]
+      end
+      
+      # get the index of the highest scoring strategy
+      max_score = scores.max
+      
+      # ignore agents with equal scoring strategies
+      if scores.select { |score| score == max_score }.size > 1
+        next
+      else
+        highest_scoring_strategy = strategies[scores.index(max_score)]
+      end
+     
+      # ensure the agent's choice is the same as that predicted by the
+      # highest scoring strategy
+      highest_scoring_strategy[key].should == choice
+    end
+  end   
+end
+
+# Minority game verification steps
 Then /^I should have a minority game$/ do
   @minority_game.should be_a_kind_of(
     MSciProject::MinorityGame::AbstractMinorityGame
@@ -132,97 +433,9 @@ Then /^it should have agents with strategies with (\d*) mappings$/ do |mappings|
   end
 end
 
-
+# Miscellaneous steps
 Then /^a (.*) should be thrown$/ do |exception|
   @exception.cause.should be_a_kind_of(
     exception.constantize
   )
-end
-
-Then /^each agent that made the minority choice should have (\d*) point$/ do |points|
-  minority_choice = @minority_game.last_minority_choice
-  agents = @minority_game.agents
-  
-  agents.each do |agent|
-    if agent.last_choice == minority_choice
-      agent.score.should == points.to_i
-    end
-  end
-end
-
-Then /^each strategy that would have predicted the correct minority choice given the choice history has (\d*) points?$/ do |score|
-  minority_choice = @minority_game.last_minority_choice
-  
-  @minority_game.agents.each do |agent|
-    agent.strategies.each do |strategy|
-      if strategy.get(@choice_history) == minority_choice
-        strategy.score.should == score.to_i
-      end
-    end
-  end
-end
-
-Then /^some agents should have a non zero score$/ do
-  non_zero_scores = false
-  @minority_game.agents.each do |agent|
-    non_zero_scores = true if agent.score > 0
-  end
-  non_zero_scores.should be_true
-end
-
-Then /^some strategies should have a non zero score$/ do
-  non_zero_strategies = false
-  @minority_game.agents.each do |agent|
-    agent.strategies.each do |strategy|
-      non_zero_strategies = true if strategy.score > 0
-    end
-  end
-  non_zero_strategies.should be_true
-end
-
-Then /^the scores should range between (\d*) and (\d*)$/ do |lower, upper|
-  @minority_game.agents.each do |agent|
-    agent.score.should be_between(lower.to_i, upper.to_i)
-  end
-end
-
-Then /^the strategy scores should range between (\d*) and (\d*)$/ do |lower, upper|
-  @minority_game.agents.each do |agent|
-    agent.strategies.each do |strategy|
-      strategy.score.should be_between(lower.to_i, upper.to_i)
-    end
-  end
-end
-
-Then /^the measured measurements should be varied$/ do
-  total_measurements = @measurements.size
-  unique_threshold = (0.2 * total_measurements).to_i
-  unique_measurements = @measurements.uniq.size
-  unique_measurements.should be > unique_threshold
-end
-
-Then /^the measured measurements should range between (\d*) and (\d*)$/ do |lower, upper|
-  @measurements.each do |attendance|
-    attendance.should be_between(lower.to_i, upper.to_i)
-  end
-end
-
-Then /^the choice history should increase in size by (\d*)$/ do |increase|
-  @minority_game.choice_history.size.should == 
-    @minority_game.agent_memory_size + increase.to_i
-end
-
-Then /^each choice should have been made approximately an equal number of times$/ do
-  choice_a_count = choice_b_count = 0
-  @measurements.each do |measurement|
-    case measurement
-    when MSciProject::MinorityGame::Choice::A
-      choice_a_count += 1
-    when MSciProject::MinorityGame::Choice::B
-      choice_b_count += 1
-    end
-  end
-  
-  choice_a_count.should be_between(42, 58)
-  choice_b_count.should be_between(42, 58)
 end

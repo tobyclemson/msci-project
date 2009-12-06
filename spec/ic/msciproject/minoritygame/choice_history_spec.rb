@@ -86,12 +86,10 @@ describe MSciProject::MinorityGame::ChoiceHistory do
         choice_history.add(package::Choice::A)
         list.add(package::Choice::A)
         list.add(package::Choice::B)
-        list.add(package::Choice::A)
-        list.add(package::Choice::B)
         list.add(package::Choice::B)
         list.add(package::Choice::A)
         
-        choice_history.as_list(4).should == list.sub_list(2, 6)
+        choice_history.as_list(4).should == list
       end
       
       it "throws an IndexOutOfBoundsException if the supplied number is " +

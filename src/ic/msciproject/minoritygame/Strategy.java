@@ -133,6 +133,10 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
         return mappings.entrySet();
     }
 
+    public Map<List<Choice>, Choice> getMap() {
+        return mappings;
+    }
+
     /**
      * Returns the outcome corresponding to the supplied history
      * string predicted by the Strategy.
@@ -153,7 +157,7 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
      * Increments the Strategy's score by 1.
      */
     public void incrementScore() {
-        score++;
+        score += 1;
     }
 
     /**
