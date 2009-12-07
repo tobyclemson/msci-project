@@ -44,7 +44,7 @@ describe MSciProject::MinorityGame::ChoiceHistory do
           lists << choice_history.as_list
         end
         
-        lists.uniq.size.should be > 700
+        lists.uniq.size.should be > 800
       end
     end
   end

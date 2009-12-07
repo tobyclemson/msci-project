@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
-import java.util.Random;
+import cern.jet.random.AbstractDistribution;
+import cern.jet.random.Uniform;
+import cern.jet.random.engine.MersenneTwister;
 
 /**
  * Instances of the StrategySpace class represents the space of all possible
@@ -13,6 +15,31 @@ import java.util.Random;
  * @author tobyclemson
  */
 public class StrategySpace {
+    /**
+     * An AbstractDistribution, containing a random number generator that
+     * implements the RandomGenerator interface, which returns random numbers
+     * according to a particular distribution. This is used to populate
+     * strategies with random predictions. By default it is initialised with a
+     * Uniform distribution backed by a MersenneTwister random number engine
+     * initialised with a Date object.
+     */
+    private static AbstractDistribution randomNumberGenerator;
+
+    // initialise the random number generator
+    static {
+        /*
+         * generate an integer at random spanning the entire range of possible
+         * integers as a seed
+         */
+        int randomSeed = (int) ((Math.random() - 0.5) * 2 * Integer.MAX_VALUE);
+
+        /*
+         * construct a uniform distribution backed by a MersenneTwister random
+         * number generator using the random seed and set the static random
+         * number generator to the constructed object.
+         */
+        randomNumberGenerator = new Uniform(new MersenneTwister(randomSeed));
+    }
 
     /**
      * An integer holding the length of the keys in the strategies in this
@@ -63,7 +90,6 @@ public class StrategySpace {
         // declare required variables
         HashMap<List<Choice>, Choice> mappings;
         Iterator<List<Choice>> keyIterator;
-        Random indexGenerator;
 
         // create an empty map to hold the history string to outcome
         // predictions.
@@ -72,10 +98,6 @@ public class StrategySpace {
         // obtain an iterator over all possible keys for a strategy with the
         // specified key length.
         keyIterator = requiredKeys.iterator();
-        
-        // create a random number generator to randomly generate the indices 0
-        // or 1
-        indexGenerator = new Random();
 
         // create an array of the possible choices
         Choice choiceSet[] = {Choice.A, Choice.B};
@@ -85,7 +107,7 @@ public class StrategySpace {
         while(keyIterator.hasNext()) {
             mappings.put(
                 keyIterator.next(),
-                choiceSet[indexGenerator.nextInt(2)]
+                choiceSet[randomNumberGenerator.nextInt()]
             );
         }
 

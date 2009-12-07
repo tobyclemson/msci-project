@@ -73,7 +73,7 @@ public class AbstractAgent {
      * a Choice.A or Choice.B representing the outcome of the choice.
      * @param choiceHistory A List of Choice instances representing a fixed
      * number of past minority choices in the game.
-     * @return The choice made my the agent.
+     * @return The choice made by the agent.
      */
     public Choice choose(List<Choice> choiceHistory) {
         // declare required variables

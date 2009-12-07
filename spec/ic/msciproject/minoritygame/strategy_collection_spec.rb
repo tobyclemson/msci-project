@@ -121,7 +121,7 @@ describe MSciProject::MinorityGame::StrategyCollection do
       end
       
       [count_1, count_2, count_3].each do |count|
-        count.should be_between(3100, 3500)
+        count.should be_between(3200, 3400)
       end
     end
   end

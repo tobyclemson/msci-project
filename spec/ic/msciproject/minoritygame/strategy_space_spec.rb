@@ -70,7 +70,7 @@ describe MSciProject::MinorityGame::StrategySpace do
     it "generates a random strategy each time" do
       strategy_space = klass.new(3)
       strategies = (1..256).collect { strategy_space.generate_strategy }
-      strategies.uniq.length.should be >= 0.5 * 256
+      strategies.uniq.length.should be >= 0.6 * 256
     end
   end
 end

@@ -4,7 +4,9 @@ import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Random;
+import cern.jet.random.AbstractDistribution;
+import cern.jet.random.Uniform;
+import cern.jet.random.engine.MersenneTwister;
 
 /**
  * The StrategyCollection class holds a collection of Strategy objects extending
@@ -12,6 +14,32 @@ import java.util.Random;
  * @author tobyclemson
  */
 public class StrategyCollection extends AbstractCollection<Strategy> {
+
+    /**
+     * An AbstractDistribution, containing a random number generator that
+     * implements the RandomGenerator interface, which returns random numbers
+     * according to a particular distribution. This is used to populate
+     * strategies with random predictions. By default it is initialised with a
+     * Uniform distribution backed by a MersenneTwister random number engine
+     * initialised with a Date object.
+     */
+    private static AbstractDistribution randomNumberGenerator;
+
+    // initialise the random number generator
+    static {
+        /*
+         * generate an integer at random spanning the entire range of possible
+         * integers (except the endpoints) to be used as a seed
+         */
+        int randomSeed = (int) ((Math.random() - 0.5) * 2 * Integer.MAX_VALUE);
+        
+        /*
+         * construct a uniform distribution backed by a MersenneTwister random
+         * number generator using the random seed and set the static random
+         * number generator to the constructed object.
+         */
+        randomNumberGenerator = new Uniform(new MersenneTwister(randomSeed));
+    }
 
     /**
      * An ArrayList of Strategy instances representing the strategies held
@@ -77,9 +105,7 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
      * @return A random strategy from the stored collection.
      */
     public Strategy getRandomStrategy() {
-        Random indexGenerator = new Random();
-        int index = indexGenerator.nextInt(storage.size());
-        return storage.get(index);
+        return storage.get(getRandomIndex(storage.size()));
     }
 
     /**
@@ -94,7 +120,6 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
         // declare required variables
         Strategy currentStrategy = storage.get(0),
                  highestStrategy = storage.get(0);
-        Random booleanGenerator = new Random();
 
         // iterate through the strategies replacing the highest strategy if the
         // current strategy has a higher score or randomly replicing if the
@@ -108,7 +133,7 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
             } else if(
                currentStrategy.getScore() == highestStrategy.getScore()
             ) {
-                if(booleanGenerator.nextBoolean()) {
+                if(randomNumberGenerator.nextInt() == 1) {
                     highestStrategy = currentStrategy;
                 }
             }
@@ -135,5 +160,9 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
                 currentStrategy.incrementScore();
             }
         }
+    }
+
+    private int getRandomIndex(int arraySize) {
+        return (int) (randomNumberGenerator.nextDouble() * arraySize);
     }
 }

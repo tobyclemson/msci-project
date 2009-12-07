@@ -1,8 +1,10 @@
 package ic.msciproject.minoritygame;
 
-import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
+import cern.jet.random.AbstractDistribution;
+import cern.jet.random.Uniform;
+import cern.jet.random.engine.MersenneTwister;
 
 /**
  * The ChoiceHistory class encapsulates the concept of the global history of 
@@ -13,7 +15,33 @@ import java.util.ArrayList;
  * @author tobyclemson
  */
 public class ChoiceHistory {
-    
+
+    /**
+     * An AbstractDistribution, containing a random number generator that
+     * implements the RandomGenerator interface, which returns random numbers
+     * according to a particular distribution. This is used to populate
+     * strategies with random predictions. By default it is initialised with a
+     * Uniform distribution backed by a MersenneTwister random number engine
+     * initialised with a Date object.
+     */
+    private static AbstractDistribution randomNumberGenerator;
+
+    // initialise the random number generator
+    static {
+        /*
+         * generate an integer at random spanning the entire range of possible
+         * integers (except the endpoints) to be used as a seed
+         */
+        int randomSeed = (int) ((Math.random() - 0.5) * 2 * Integer.MAX_VALUE);
+
+        /*
+         * construct a uniform distribution backed by a MersenneTwister random
+         * number generator using the random seed and set the static random
+         * number generator to the constructed object.
+         */
+        randomNumberGenerator = new Uniform(new MersenneTwister(randomSeed));
+    }
+
     /**
      * A List to hold the history of choices. The list is returned by the
      * {@link #asList} method.
@@ -27,13 +55,12 @@ public class ChoiceHistory {
      * populate the history (at random).
      */
     public ChoiceHistory(int initialLength){
-        Random indexGenerator = new Random();
         Choice choiceSet[] = {Choice.A, Choice.B};
 
         this.contents = new ArrayList<Choice>();
 
         for(int i = 0; i < initialLength; i++) {
-            contents.add(choiceSet[indexGenerator.nextInt(2)]);
+            contents.add(choiceSet[randomNumberGenerator.nextInt()]);
         }
     }
 
