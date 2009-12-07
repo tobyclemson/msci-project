@@ -32,7 +32,6 @@ public class Main {
         //});
 
         // declare required variables
-        Map<Choice, Integer> attendance;
         StringBuilder output;
         Properties properties;
         FileWriter outputFile;
@@ -42,68 +41,97 @@ public class Main {
         properties = new Properties();
         properties.setProperty("type", "standard");
         properties.setProperty("number-of-agents", "101");
-        properties.setProperty("agent-type", "random");
+        properties.setProperty("agent-type", "basic");
         properties.setProperty("number-of-strategies-per-agent", "2");
-        properties.setProperty("agent-memory-size", "2");
 
-        // create a string builder to hold the data
-        output = new StringBuilder();
+        // set up the run harness
+        int numberOfRuns = 32;
+        int numberOfTimeSteps = 10000;
 
-        int data[][] = new int[1000][1001];
+        // execute the simulation for values of m between 2 and 16
+        for(int m = 2; m <= 16; m++) {
+            properties.setProperty(
+                "agent-memory-size", new Integer(m).toString()
+            );
 
-        for(int run = 0; run < 1000; run++) {
-            // construct a game using the chosen properties
-            minorityGame = MinorityGameFactory.construct(properties);
+            // create a string builder to hold the data
+            output = new StringBuilder();
 
-            int attendanceOfA = 0;
 
-            // run the game
-            for(int time = 0; time <= 1000; time++) {
-                minorityGame.stepForward();
-                attendance = minorityGame.getAgents().getLastChoiceTotals();
-                attendanceOfA = attendance.get(Choice.A);
-                data[run][time] = attendanceOfA;
-                if(time % 100 == 0) {
-                    System.out.printf("Time: %d\n", time);
+            // create a 2D array to hold the resulting data
+            int data[][] = new int[numberOfRuns][numberOfTimeSteps];
+
+            System.out.println("Starting for m=" + m);
+
+            // run the game the required number of times
+            for(int run = 0; run < numberOfRuns; run++) {
+
+                System.out.println("Executing run " + run);
+
+                // construct a game using the chosen properties
+                minorityGame = MinorityGameFactory.construct(properties);
+
+                // create a variable to store the attendance of choice A at each
+                // time step
+                int attendanceOfA = 0;
+
+                // run the game
+                for(int time = 0; time < numberOfTimeSteps; time++) {
+                    // step forward in time
+                    minorityGame.stepForward();
+
+                    // get the attendance for choice A
+                    attendanceOfA = minorityGame.
+                        getAgents().
+                        getLastChoiceTotals().
+                        get(Choice.A);
+
+                    // set the relevant data point to the attendance
+                    data[run][time] = attendanceOfA;
                 }
             }
-        }
 
-        int x = 1;
-
-        for(int j = 0; j <= 1001; j++) {
-            for(int i = 0; i < 1000; i++) {
-                if(i != 0) {
-                    output.append(",");
-                }
-                if (j == 1001) {
-                    String column = null;
-                    if(i < 26) {
-                        column = String.valueOf((char) (65 + i));
-                    } else {
-                        column = String.valueOf((char) (64 + i/26)) + String.valueOf((char) (65 + i - 26 * (i/26)));
+            // output the results to file
+            for(int j = 0; j <= numberOfTimeSteps; j++) {
+                for(int i = 0; i < numberOfRuns; i++) {
+                    if(i != 0) {
+                        output.append(",");
                     }
-                    
-                    output.append(
-                        "=stdev(" + column + "1:" + column + "1001)"
-                    );
-                } else {
-                    output.append(data[i][j]);
+                    if (j == numberOfTimeSteps) {
+                        String column = null;
+                        if(i < 26) {
+                            column = String.valueOf((char) (65 + i));
+                        } else {
+                            column = String.valueOf((char) (64 + i/26)) +
+                                String.valueOf((char) (65 + i - 26 * (i/26)));
+                        }
+
+                        output.append(
+                            "=stdev(" +
+                            column +
+                            "1:" +
+                            column +
+                            numberOfTimeSteps +
+                            ")"
+                        );
+                    } else {
+                        output.append(data[i][j]);
+                    }
                 }
+                output.append("\n");
             }
-            output.append("\n");
+
+            // open a file to write the data
+            outputFile = new FileWriter(
+                "/Users/tobyclemson/Desktop/sigma-" + m + ".csv"
+            );
+
+            // write the data to file
+            outputFile.write(output.toString());
+
+            // make sure everything is flushed and close the file
+            outputFile.close();
         }
-
-        // open a file to write the data
-        outputFile = new FileWriter(
-            "/Users/tobyclemson/Desktop/sigma.csv"
-        );
-
-        // write the data to file
-        outputFile.write(output.toString());
-
-        // make sure everything is flushed and close the file
-        outputFile.close();
     }
 
     public static void createAndShowGUI() {
