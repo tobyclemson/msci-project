@@ -121,7 +121,7 @@ describe MSciProject::MinorityGame::StrategyCollection do
       end
       
       [count_1, count_2, count_3].each do |count|
-        count.should be_between(3200, 3400)
+        count.should be_between(3100, 3500)
       end
     end
   end
@@ -196,9 +196,12 @@ describe MSciProject::MinorityGame::StrategyCollection do
         strategy_collection_instance.add(strategy)
       end
       
-      Mockito.when(strategy_1.get(a_b)).then_return(package::Choice::A)
-      Mockito.when(strategy_2.get(a_b)).then_return(package::Choice::A)
-      Mockito.when(strategy_3.get(a_b)).then_return(package::Choice::B)
+      Mockito.when(strategy_1.predict_minority_choice(a_b)).
+        then_return(package::Choice::A)
+      Mockito.when(strategy_2.predict_minority_choice(a_b)).
+        then_return(package::Choice::A)
+      Mockito.when(strategy_3.predict_minority_choice(a_b)).
+        then_return(package::Choice::B)
     end
     
     it "calls increment_score on strategies that give the supplied " +

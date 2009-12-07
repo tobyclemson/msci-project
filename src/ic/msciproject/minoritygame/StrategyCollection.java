@@ -155,7 +155,7 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
         // prediction for the supplied choice history
         while(strategyIterator.hasNext()) {
             currentStrategy = strategyIterator.next();
-            prediction = currentStrategy.get(choiceHistory);
+            prediction = currentStrategy.predictMinorityChoice(choiceHistory);
             if(prediction.equals(minorityChoice)) {
                 currentStrategy.incrementScore();
             }

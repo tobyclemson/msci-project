@@ -40,7 +40,7 @@ describe MSciProject::MinorityGame::StrategySpace do
       strategy_space = klass.new(2)
       strategy = strategy_space.generate_strategy
 
-      key_set = strategy.key_set
+      key_set = strategy.map.key_set
       
       a = package::Choice::A
       b = package::Choice::B

@@ -1,11 +1,8 @@
 package ic.msciproject.minoritygame;
 
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
-import java.util.EnumSet;
-import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -13,24 +10,24 @@ import java.util.Iterator;
  * the next outcome in the minority game. A Strategy instance is initialised
  * with a map of choice permutations to predicted outcomes and when an agent has
  * to choose an outcome, the choice history is used to retrieve the predicted
- * outcome for that choice permurarion from the Strategy.
+ * outcome for that choice permutation from the Strategy.
  * @author tobyclemson
  */
-public class Strategy extends AbstractMap<List<Choice>,Choice>{
+public class Strategy {
 
     /**
-     * A Map of List instances containing Choice objects to Choices. The
-     * entries in the map represent predictions of the next minority choice 
-     * for all possible permutations of choice histories of the length
-     * associated with this strategy.
+     * A Map of Lists of Choice objects to Choices. The entries in the map
+     * represent predictions of the next minority choice for all possible
+     * permutations of choice histories of the length associated with this
+     * strategy.
      */
-    private Map<List<Choice>, Choice> mappings;
+    protected Map<List<Choice>, Choice> strategyMap;
 
     /**
      * An integer representing the key length in the mapping of the
      * Strategy. This is returned by the {@link #getKeyLength} method.
      */
-    private int keyLength;
+    protected int keyLength;
 
     /**
      * An integer representing the score of the Strategy. The score of a
@@ -39,13 +36,13 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
      * using the {@link #incrementScore} method and returned by the
      * {@link #getScore} method.
      */
-    private int score = 0;
+    protected int score = 0;
 
     /**
-     * A Set containing all of the possible permutations of choices accepted
-     * as keys by this strategy.
+     * A Set containing all of the possible permutations of choices valid
+     * as input keys for the strategy.
      */
-    private Set<List<Choice>> acceptedKeys;
+    protected Set<List<Choice>> validChoiceHistories;
 
     /**
      * Constructs a Strategy instance using the supplied history string to
@@ -55,14 +52,16 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
      * represent every possible mapping for that key lengthIf this is not true,
      * an IllegalArgumentException is thrown.
      * 
-     * @param mappings A map of all possible input keys of the required length
-     * to predictions for the minority choice given that input key.
+     * @param strategyMap A map of all possible input keys of the required
+     * length to predictions for the minority choice given that input key.
      */
-    public Strategy(Map<List<Choice>, Choice> mappings) {
+    public Strategy(Map<List<Choice>, Choice> strategyMap) {
         // throw an IllegalArgumentException if the supplied map contains no
         // entries
-        if(mappings.isEmpty()) {
-            throw new IllegalArgumentException("Mappings is empty");
+        if(strategyMap.isEmpty()) {
+            throw new IllegalArgumentException(
+                "The supplied Map cannot be empty"
+            );
         }
 
         // declare required variables
@@ -70,16 +69,11 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
         Iterator<List<Choice>> keyIterator;
         List<Choice> currentKey;
 
-        EnumSet<Choice> validValueSet;
-        Iterator<Choice> valueIterator;
-        Collection<Choice> valueCollection;
-        Choice currentValue;
-
         int previousKeyLength, currentKeyLength;
 
-        // get an iterator for the set of keys contained in the supplied
+        // predictMinorityChoice an iterator for the set of keys contained in the supplied
         // mapping
-        keySet = mappings.keySet();
+        keySet = strategyMap.keySet();
         keyIterator = keySet.iterator();
 
         // initialise variables
@@ -96,7 +90,10 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
             if(previousKeyLength == 0) {
                 previousKeyLength = currentKeyLength;
             } else if(currentKeyLength != previousKeyLength) {
-                throw new IllegalArgumentException("Different key lengths");
+                throw new IllegalArgumentException(
+                    "The keys in the supplied Map must all be of the same " +
+                    "length"
+                );
             }
         } while(keyIterator.hasNext());
 
@@ -105,14 +102,18 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
 
         // if the supplied mapping does not contain all of the required keys
         // throw an IllegalArgumentException.
-        acceptedKeys = ChoiceListPermutator.generateAll(keyLength);
+        validChoiceHistories = ChoiceListPermutator.generateAll(keyLength);
 
-        if(!keySet.equals(acceptedKeys)) {
-            throw new IllegalArgumentException("Incorrect keys");
+        if(!keySet.equals(validChoiceHistories)) {
+            throw new IllegalArgumentException(
+                "The set of keys in the supplied map must include all " +
+                "possible permutations of Choice.A and Choice.B of the " + 
+                "required length."
+            );
         }
 
         // if all is well, set the mappings to the supplied mappings object.
-        this.mappings = mappings;
+        this.strategyMap = strategyMap;
     }
 
     /**
@@ -124,40 +125,8 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
         return keyLength;
     }
 
-    /**
-     * Returns a Set view of the mappings contained in the strategy.
-     *
-     * @return The mappings representing this strategy.
-     */
-    public Set<Map.Entry<List<Choice>, Choice>> entrySet() {
-        return mappings.entrySet();
-    }
-
-    public Map<List<Choice>, Choice> getMap() {
-        return mappings;
-    }
-
-    /**
-     * Returns the outcome corresponding to the supplied history
-     * string predicted by the Strategy.
-     * @param key A fixed size list of past minority choices (most recent has
-     * highest index) with the size corresponding to the length of keys in the
-     * strategy.
-     * @return The predicted outcome as a Choice enumeration.
-     */
-    @Override
-    public Choice get(Object key) {
-        if(!acceptedKeys.contains((List<Choice>) key)) {
-            throw new IllegalArgumentException();
-        }
-        return mappings.get((List<Choice>) key);
-    }
-
-    /**
-     * Increments the Strategy's score by 1.
-     */
-    public void incrementScore() {
-        score += 1;
+    public Set<List<Choice>> getValidChoiceHistories() {
+        return validChoiceHistories;
     }
 
     /**
@@ -168,5 +137,41 @@ public class Strategy extends AbstractMap<List<Choice>,Choice>{
      */
     public int getScore() {
         return score;
+    }
+
+    /**
+     * Returns the map of choice histories to choices representing the strategy
+     * used in predicting the next minority choice.
+     * @return The map of choice histories to predictions comprising the
+     * strategy.
+     */
+    public Map<List<Choice>, Choice> getMap() {
+        return strategyMap;
+    }
+
+    /**
+     * Returns the outcome corresponding to the supplied history
+     * string predicted by the Strategy.
+     * @param choiceHistory A fixed size list of past minority choices (most
+     * recent has highest index) with the size corresponding to the length of
+     * keys in the strategy.
+     * @return The predicted outcome for the supplied choiceHistory, either
+     * Choice.A or Choice.B.
+     */
+    public Choice predictMinorityChoice(List<Choice> choiceHistory) {
+        if(!validChoiceHistories.contains(choiceHistory)) {
+            throw new IllegalArgumentException(
+                "The strategy does not contain a prediction for the choice" +
+                "history: " + choiceHistory
+            );
+        }
+        return strategyMap.get(choiceHistory);
+    }
+
+    /**
+     * Increments the Strategy's score by 1.
+     */
+    public void incrementScore() {
+        score += 1;
     }
 }

@@ -80,7 +80,7 @@ public class AbstractAgent {
         Strategy chosenStrategy;
         Choice choice;
 
-        // if no lastChoice exists, get a strategy at random, otherwise fetch
+        // if no lastChoice exists, predictMinorityChoice a strategy at random, otherwise fetch
         // the highest scoring strategy
         if(lastChoice == null) {
             chosenStrategy = strategies.getRandomStrategy();
@@ -90,7 +90,7 @@ public class AbstractAgent {
         }
         
         // use the chosen strategy to calculate the choice
-        lastChoice = choice = chosenStrategy.get(choiceHistory);
+        lastChoice = choice = chosenStrategy.predictMinorityChoice(choiceHistory);
 
         // return the selected choice
         return choice;

@@ -428,7 +428,7 @@ end
 Then /^it should have agents with strategies with (\d*) mappings$/ do |mappings|
   @minority_game.agents.each do |agent|
     agent.strategies.each do |strategy|
-      strategy.key_set.size.should == mappings.to_i
+      strategy.map.key_set.size.should == mappings.to_i
     end
   end
 end

@@ -131,7 +131,8 @@ describe MSciProject::MinorityGame::AbstractAgent do
       
       it "makes a choice based on the random strategy" do
         abstract_agent.choose(a_b)
-        abstract_agent.last_choice.should == random_strategy.get(a_b)
+        abstract_agent.last_choice.should == 
+          random_strategy.predict_minority_choice(a_b)
       end
     end
     
@@ -148,7 +149,7 @@ describe MSciProject::MinorityGame::AbstractAgent do
       it "makes a choice based on the highest scoring strategy" do
         abstract_agent.choose(a_b)
         abstract_agent.last_choice.should == 
-          highest_scoring_strategy.get(a_b)
+          highest_scoring_strategy.predict_minority_choice(a_b)
       end
     end
   end
