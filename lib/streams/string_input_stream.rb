@@ -42,8 +42,6 @@ class StringInputStream < java.io.InputStream
           raise java.lang.IndexOutOfBoundsException
         end
         
-        require 'pp'
-      
         count = 0
         bytes_to_read.times do |i|
           if self.contents.size == 0
@@ -54,7 +52,6 @@ class StringInputStream < java.io.InputStream
           end
         end
         
-        pp arguments[0].join
         return count
       else
         return self.contents.shift[0]
