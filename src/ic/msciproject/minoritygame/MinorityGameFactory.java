@@ -1,7 +1,9 @@
 package ic.msciproject.minoritygame;
 
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * The MinorityGameFactory class constructs a minority game with the required
@@ -52,7 +54,8 @@ public class MinorityGameFactory {
         ChoiceHistory choiceHistory;
         AgentCollection agents;
         StrategySpace strategySpace;
-        StrategyCollection strategyCollection;
+        List<Strategy> strategies;
+        StrategyManager strategyManager;
         AbstractMinorityGame minorityGame = null;
         AbstractAgent agent = null;
 
@@ -77,18 +80,20 @@ public class MinorityGameFactory {
         for(int i = 0; i < numberOfAgents; i++){
             // add the required number of strategies to each agent
             strategySpace = new StrategySpace(agentMemorySize);
-            strategyCollection = new StrategyCollection();
+            strategies = new ArrayList<Strategy>();
 
             for(int j = 0; j < numberOfStrategiesPerAgent; j++) {
-                strategyCollection.add(strategySpace.generateStrategy());
+                strategies.add(strategySpace.generateStrategy());
             }
 
+            strategyManager = new StrategyManager(strategies);
+
             if(agentType.equals("basic")) {
-                agent = new BasicAgent(strategyCollection);
+                agent = new BasicAgent(strategyManager);
             } else if(agentType.equals("learning")) {
-                agent = new LearningAgent(strategyCollection);
+                agent = new LearningAgent(strategyManager);
             } else if(agentType.equals("random")) {
-                agent = new RandomAgent(strategyCollection);
+                agent = new RandomAgent(strategyManager);
             }
 
             // add the agents to the collection

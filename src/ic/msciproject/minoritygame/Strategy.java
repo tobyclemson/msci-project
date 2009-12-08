@@ -125,6 +125,11 @@ public class Strategy {
         return keyLength;
     }
 
+    /**
+     * Returns a Set containing all valid choice histories that can be used as
+     * input to the strategy.
+     * @return All valid choice histories.
+     */
     public Set<List<Choice>> getValidChoiceHistories() {
         return validChoiceHistories;
     }

@@ -3,8 +3,10 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::RandomAgent do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::RandomAgent }
-  let(:empty_strategy_collection) { package::StrategyCollection.new }
-  let(:random_agent_instance) { klass.new(empty_strategy_collection) }
+  let(:empty_strategy_manager) { 
+    package::StrategyManager.new(Java::JavaUtil::ArrayList.new) 
+  }
+  let(:random_agent_instance) { klass.new(empty_strategy_manager) }
   
   it "extends AbstractAgent" do
     random_agent_instance.should be_a_kind_of(package::AbstractAgent)

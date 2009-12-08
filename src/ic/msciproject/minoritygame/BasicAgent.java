@@ -12,12 +12,12 @@ public class BasicAgent extends AbstractAgent {
 
     /**
      * Constructs an instance of BasicAgent setting the strategies attribute
-     * to the supplied StrategyCollection instance.
-     * @param strategyCollection A StrategyCollection instance representing the
+     * to the supplied StrategyManager instance.
+     * @param strategyManager A StrategyManager instance representing the
      * agent's strategies.
      */
-    public BasicAgent(StrategyCollection strategyCollection) {
-        super(strategyCollection);
+    public BasicAgent(StrategyManager strategyManager) {
+        super(strategyManager);
     }
 
 }

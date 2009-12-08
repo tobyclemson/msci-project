@@ -37,8 +37,10 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
   end
   
   describe "constructor" do
-    let(:strategy_collection) { package::StrategyCollection.new }
-    let(:agent) { package::AbstractAgent.new(strategy_collection) }
+    let(:strategy_manager) { 
+      package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
+    }
+    let(:agent) { package::AbstractAgent.new(strategy_manager) }
     
     describe "with agents, choice history and agent memory size arguments" do
       before(:each) do

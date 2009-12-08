@@ -5,7 +5,9 @@ describe MSciProject::MinorityGame::AbstractAgent do
   let(:klass) { package::AbstractAgent }
   
   let(:choice_history) { package::ChoiceHistory.new(2) }
-  let(:empty_strategy_collection) { package::StrategyCollection.new }
+  let(:empty_strategy_manager) { 
+    package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
+  }
   
   let(:a_a) {
     key = Java::JavaUtil::ArrayList.new
@@ -42,17 +44,21 @@ describe MSciProject::MinorityGame::AbstractAgent do
   }
 
   let(:strategy) { package::Strategy.new(map_to_build_strategy) }
-  let(:strategy_collection) { 
-    collection = package::StrategyCollection.new
-    collection.add(strategy)
-    collection
+  let(:strategy_manager) {
+    list = Java::JavaUtil::ArrayList.new
+    list.add(strategy)
+    package::StrategyManager.new(list)
   }
   
-  let(:abstract_agent_instance) { klass.new(empty_strategy_collection) }
+  let(:abstract_agent_instance) { klass.new(empty_strategy_manager) }
   
   describe "public interface" do
     it "has a strategies instance method" do
       abstract_agent_instance.should respond_to(:strategies)
+    end
+    
+    it "has a strategy_manager instance method" do
+      abstract_agent_instance.should respond_to(:strategy_manager)
     end
     
     it "has a score instance method" do
@@ -77,24 +83,31 @@ describe MSciProject::MinorityGame::AbstractAgent do
   end
   
   describe "constructor" do
-    describe "with strategy collection argument" do
-      it "sets the strategies attribute to the supplied strategy collection" do
-        abstract_agent = klass.new(strategy_collection)
-        abstract_agent.strategies.should == strategy_collection
+    describe "with strategy manager argument" do
+      it "sets the strategy_manager attribute to the supplied strategy manager" do
+        abstract_agent = klass.new(strategy_manager)
+        abstract_agent.strategy_manager.should == strategy_manager
       end
+    end
+  end
+  
+  describe "#strategies" do
+    it "returns the list of strategies stored in the strategy manager" do
+      abstract_agent = klass.new(strategy_manager)
+      abstract_agent.strategies.should == strategy_manager.strategies
     end
   end
   
   describe "#last_choice" do
     it "throws an IllegalStateException if no choice has been made yet" do
-      abstract_agent = klass.new(strategy_collection)
+      abstract_agent = klass.new(strategy_manager)
       expect {
         abstract_agent.last_choice
       }.to raise_error(Java::JavaLang::IllegalStateException)
     end
     
     it "doesn't throw an IllegalStateException if a choice has been made" do
-      abstract_agent = klass.new(strategy_collection)
+      abstract_agent = klass.new(strategy_manager)
       abstract_agent.choose(choice_history.as_list(2))
       expect {
         abstract_agent.last_choice
@@ -103,8 +116,8 @@ describe MSciProject::MinorityGame::AbstractAgent do
   end
 
   describe "#choose" do
-    let(:strategy_collection) { 
-      Mockito.mock(package::StrategyCollection.java_class)
+    let(:strategy_manager) { 
+      Mockito.mock(package::StrategyManager.java_class)
     }
     let(:random_strategy) {
       map_to_build_strategy.put(a_b, package::Choice::B)
@@ -114,19 +127,19 @@ describe MSciProject::MinorityGame::AbstractAgent do
       map_to_build_strategy.put(a_b, package::Choice::A)
       package::Strategy.new(map_to_build_strategy)
     }
-    let(:abstract_agent) { klass.new(strategy_collection) }
+    let(:abstract_agent) { klass.new(strategy_manager) }
     
     before(:each) do
-      Mockito.when(strategy_collection.random_strategy).
+      Mockito.when(strategy_manager.random_strategy).
         then_return(random_strategy)
-      Mockito.when(strategy_collection.highest_scoring_strategy).
+      Mockito.when(strategy_manager.highest_scoring_strategy).
         then_return(highest_scoring_strategy)
     end
     
     describe "when making the first choice of the game" do
       it "retrieves a random strategy" do
         abstract_agent.choose(choice_history.as_list(2))
-        Mockito.verify(strategy_collection).random_strategy
+        Mockito.verify(strategy_manager).random_strategy
       end
       
       it "makes a choice based on the random strategy" do
@@ -143,7 +156,7 @@ describe MSciProject::MinorityGame::AbstractAgent do
       
       it "retrieves the highest scoring strategy" do
         abstract_agent.choose(choice_history.as_list(2))
-        Mockito.verify(strategy_collection).highest_scoring_strategy
+        Mockito.verify(strategy_manager).highest_scoring_strategy
       end
       
       it "makes a choice based on the highest scoring strategy" do
@@ -163,15 +176,15 @@ describe MSciProject::MinorityGame::AbstractAgent do
   end
 
   describe "#update" do
-    let(:strategy_collection) { 
-      Mockito.mock(package::StrategyCollection.java_class)
+    let(:strategy_manager) { 
+      Mockito.mock(package::StrategyManager.java_class)
     }
     
-    it "calls increment_scores_for_choice on the strategy collection" do
-      abstract_agent = klass.new(strategy_collection)
+    it "calls increment_scores on the strategy manager" do
+      abstract_agent = klass.new(strategy_manager)
       abstract_agent.update(package::Choice::B, a_b)
-      Mockito.verify(strategy_collection).
-        increment_scores_for_choice(a_b, package::Choice::B)
+      Mockito.verify(strategy_manager).
+        increment_scores(a_b, package::Choice::B)
     end
   end
 end

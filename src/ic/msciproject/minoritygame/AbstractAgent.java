@@ -8,11 +8,12 @@ import java.util.List;
  * @author tobyclemson
  */
 public class AbstractAgent {
+    
     /**
-     * A StrategyCollection instance holding the agent's strategies. This is
+     * A StrategyManager instance holding the agent's strategyManager. This is
      * returned by the {@link #getStrategies} method.
      */
-    private StrategyCollection strategies;
+    private StrategyManager strategyManager;
 
     /**
      * An integer representing the agent's score. This is returned by the
@@ -27,22 +28,31 @@ public class AbstractAgent {
     protected Choice lastChoice = null;
 
     /**
-     * Constructs an AbstractAgent instance setting the strategies attribute to
-     * the supplied StrategyCollection instance.
-     * @param strategyCollection A StrategyCollection instance representing
-     * the agent's strategies.
+     * Constructs an AbstractAgent instance setting the strategyManager 
+     * attribute to the supplied StrategyManager instance.
+     * @param strategyManager A StrategyManager instance representing
+     * the agent's strategyManager.
      */
-    public AbstractAgent(StrategyCollection strategyCollection){
-        this.strategies = strategyCollection;
+    public AbstractAgent(StrategyManager strategyManager){
+        this.strategyManager = strategyManager;
     }
 
     /**
-     * Returns a StrategyCollection containing the strategies associated with
+     * Returns a StrategyManager containing the strategyManager associated with
      * this agent.
-     * @return A StrategyCollection containing the agent's strategies.
+     * @return A StrategyManager containing the agent's strategyManager.
      */
-    public StrategyCollection getStrategies() {
-        return strategies;
+    public List<Strategy> getStrategies() {
+        return strategyManager.getStrategies();
+    }
+
+    /**
+     * Returns the StrategyManager instance associated with this agent
+     * representing the strategies the agent employs to make choices.
+     * @return The StrategyManager instance associates with this agent.
+     */
+    public StrategyManager getStrategyManager() {
+        return this.strategyManager;
     }
 
     /**
@@ -69,28 +79,30 @@ public class AbstractAgent {
     }
 
     /**
-     * Calculates this agent's choices based on its strategies and returns
+     * Calculates this agent's choices based on its strategyManager and returns
      * a Choice.A or Choice.B representing the outcome of the choice.
      * @param choiceHistory A List of Choice instances representing a fixed
      * number of past minority choices in the game.
-     * @return The choice made by the agent.
+     * @return The choice made my the agent.
      */
     public Choice choose(List<Choice> choiceHistory) {
         // declare required variables
         Strategy chosenStrategy;
         Choice choice;
 
-        // if no lastChoice exists, predictMinorityChoice a strategy at random, otherwise fetch
+        // if no lastChoice exists, get a strategy at random, otherwise fetch
         // the highest scoring strategy
         if(lastChoice == null) {
-            chosenStrategy = strategies.getRandomStrategy();
+            chosenStrategy = strategyManager.getRandomStrategy();
         }
         else {
-            chosenStrategy = strategies.getHighestScoringStrategy();
+            chosenStrategy = strategyManager.getHighestScoringStrategy();
         }
         
         // use the chosen strategy to calculate the choice
-        lastChoice = choice = chosenStrategy.predictMinorityChoice(choiceHistory);
+        lastChoice = choice = chosenStrategy.predictMinorityChoice(
+            choiceHistory
+        );
 
         // return the selected choice
         return choice;
@@ -114,6 +126,7 @@ public class AbstractAgent {
         Choice minorityChoice,
         List<Choice> choiceHistory
     ) {
-        strategies.incrementScoresForChoice(choiceHistory, minorityChoice);
+        strategyManager.incrementScores(choiceHistory, minorityChoice);
     }
+
 }

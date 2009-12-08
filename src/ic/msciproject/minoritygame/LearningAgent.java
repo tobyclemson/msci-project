@@ -13,12 +13,12 @@ public class LearningAgent extends AbstractAgent {
 
     /**
      * Constructs an instance of LearningAgent setting the strategies attribute
-     * to the supplied StrategyCollection instance.
-     * @param strategyCollection A StrategyCollection instance representing this
+     * to the supplied StrategyManager instance.
+     * @param strategyManager A StrategyManager instance representing this
      * agent's strategies.
      */
-    public LearningAgent(StrategyCollection strategyCollection) {
-        super(strategyCollection);
+    public LearningAgent(StrategyManager strategyManager) {
+        super(strategyManager);
     }
 
 }

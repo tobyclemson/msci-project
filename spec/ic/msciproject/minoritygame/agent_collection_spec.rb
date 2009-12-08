@@ -3,7 +3,11 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::AgentCollection do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::AgentCollection }
-  let(:agent) { package::AbstractAgent.new(package::StrategyCollection.new) }
+  let(:agent) { 
+    package::AbstractAgent.new(
+      package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
+    ) 
+  }
   let(:agent_collection_instance) { klass.new }
   
   it "extends the AbstractCollection class" do
@@ -37,8 +41,8 @@ describe MSciProject::MinorityGame::AgentCollection do
   describe "constructor" do
     describe "with no arguments" do
       it "initialises an empty collection" do
-        strategy_collection = klass.new
-        strategy_collection.size.should == 0
+        strategy_manager = klass.new
+        strategy_manager.size.should == 0
       end
     end
     

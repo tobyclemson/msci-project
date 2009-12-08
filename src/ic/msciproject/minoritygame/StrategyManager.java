@@ -1,19 +1,17 @@
 package ic.msciproject.minoritygame;
 
-import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import cern.jet.random.AbstractDistribution;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 
 /**
- * The StrategyCollection class holds a collection of Strategy objects extending
+ * The StrategyManager class holds a collection of Strategy objects extending
  * the collection with strategy related functionality.
  * @author tobyclemson
  */
-public class StrategyCollection extends AbstractCollection<Strategy> {
+public class StrategyManager {
 
     /**
      * An AbstractDistribution, containing a random number generator that
@@ -42,60 +40,36 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
     }
 
     /**
-     * An ArrayList of Strategy instances representing the strategies held
-     * by the StrategyCollection.
+     * A List of Strategy instances representing the strategies held by the
+     * StrategyManager.
      */
-    private ArrayList<Strategy> storage;
+    private List<Strategy> strategyStorage;
 
     /**
-     * Constructs an empty StrategyCollection. Strategy objects can be later
-     * added to the collection using the {@link #add(Strategy)} method.
+     * Constructs a StrategyManager instance to act on the supplied strategies.
+     * @param strategies The Strategy objects to be managed by the
+     * StrategyManager.
      */
-    public StrategyCollection() {
-        super();
-        storage = new ArrayList<Strategy>();
+    public StrategyManager(List<Strategy> strategies) {
+        this.strategyStorage = strategies;
     }
 
     /**
-     * Constructs a StrategyCollection instance copying across the strategies
-     * from the supplied StrategyCollection instance.
-     * @param otherStrategyCollection The StrategyCollection instance to be
-     * copied.
+     * Returns an integer representing the number of Strategy instances managed
+     * by the StrategyManager.
+     * @return The number of strategies managed by the strategy manager.
      */
-    public StrategyCollection(StrategyCollection otherStrategyCollection) {
-        ArrayList<Strategy> other_storage = otherStrategyCollection.storage;
-        storage = new ArrayList<Strategy>();
-        Iterator<Strategy> iterator = other_storage.iterator();
-        while(iterator.hasNext()){
-            add(iterator.next());
-        }
+    public int getNumberOfStrategies() {
+        return strategyStorage.size();
     }
 
     /**
-     * Returns an iterator over the strategies stored in the StrategyCollection.
-     * @return An iterator over the strategies.
+     * Returns a List of Strategy instances representing the strategies
+     * employed by the agent to make choices.
+     * @return The agent's strategies.
      */
-    public Iterator<Strategy> iterator() {
-        return storage.iterator();
-    }
-
-    /**
-     * Returns an integer representing the number of strategies in the
-     * collection.
-     * @return The number of strategies in the collection.
-     */
-    public int size() {
-        return storage.size();
-    }
-
-    /**
-     * Adds a strategy to the collection.
-     * @param strategy The strategy to add.
-     * @return {@code true} if the collection was modified.
-     */
-    @Override
-    public boolean add(Strategy strategy) {
-        return storage.add(strategy);
+    public List<Strategy> getStrategies() {
+        return strategyStorage;
     }
 
     /**
@@ -105,7 +79,7 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
      * @return A random strategy from the stored collection.
      */
     public Strategy getRandomStrategy() {
-        return storage.get(getRandomIndex(storage.size()));
+        return strategyStorage.get(getRandomIndex(strategyStorage.size()));
     }
 
     /**
@@ -118,15 +92,15 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
      */
     public Strategy getHighestScoringStrategy() {
         // declare required variables
-        Strategy currentStrategy = storage.get(0),
-                 highestStrategy = storage.get(0);
+        Strategy currentStrategy = strategyStorage.get(0),
+                 highestStrategy = strategyStorage.get(0);
 
         // iterate through the strategies replacing the highest strategy if the
         // current strategy has a higher score or randomly replicing if the
         // score is the same
-        int max = storage.size();
+        int max = strategyStorage.size();
         for(int i = 1; i < max; i++) {
-            currentStrategy = storage.get(i);
+            currentStrategy = strategyStorage.get(i);
 
             if(currentStrategy.getScore() > highestStrategy.getScore()) {
                 highestStrategy = currentStrategy;
@@ -143,12 +117,19 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
         return highestStrategy;
     }
 
-    public void incrementScoresForChoice(
+    /**
+     * Calls {@link Strategy#incrementScore} on any strategy for which the
+     * prediction for the supplied choice history is equal to the supplied
+     * minority choice.
+     * @param choiceHistory The choice history of which to check the prediction.
+     * @param minorityChoice The minority choice that occurred at the last step.
+     */
+    public void incrementScores(
         List<Choice> choiceHistory, Choice minorityChoice
     ) {
         // declare required variables
         Strategy currentStrategy = null;
-        Iterator<Strategy> strategyIterator = storage.iterator();
+        Iterator<Strategy> strategyIterator = strategyStorage.iterator();
         Choice prediction;
 
         // increment the score of each strategy that gives the correct
@@ -162,6 +143,13 @@ public class StrategyCollection extends AbstractCollection<Strategy> {
         }
     }
 
+    /**
+     * Returns a random integer in the range [0,arraySize[ representing a
+     * random array index.
+     * @param arraySize The number of elements in the array for which the index
+     * is required.
+     * @return An integer in the range [0,arraySize[
+     */
     private int getRandomIndex(int arraySize) {
         return (int) (randomNumberGenerator.nextDouble() * arraySize);
     }

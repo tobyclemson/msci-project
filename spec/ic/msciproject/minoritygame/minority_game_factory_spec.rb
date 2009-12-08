@@ -172,7 +172,10 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         "number of strategies" do
         properties.set_property("number-of-strategies-per-agent", "2")
         instance = package::MinorityGameFactory.construct(properties)
-        instance.agents.first.should have(2).strategies
+        instance.agents.
+          first.
+          strategy_manager.
+          number_of_strategies.should == 2
       end
       
       it "initialises the agents attribute with BasicAgent instances when " +
