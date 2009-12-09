@@ -165,7 +165,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         "number of agents" do
         properties.set_property("number-of-agents", "101")
         instance = package::MinorityGameFactory.construct(properties)      
-        instance.should have(101).agents
+        instance.agents.should have(101).agents
       end
       
       it "initialises the agents attribute with agents with the required " + 
@@ -174,8 +174,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         instance = package::MinorityGameFactory.construct(properties)
         instance.agents.
           first.
-          strategy_manager.
-          number_of_strategies.should == 2
+          should have(2).strategies
       end
       
       it "initialises the agents attribute with BasicAgent instances when " +

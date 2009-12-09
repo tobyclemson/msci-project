@@ -4,7 +4,6 @@ import ic.msciproject.minoritygame.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Map;
 //import javax.swing.JFrame;
 //import javax.swing.JLabel;
 //import javax.swing.JMenuBar;
@@ -82,7 +81,7 @@ public class Main {
 
                     // get the attendance for choice A
                     attendanceOfA = minorityGame.
-                        getAgents().
+                        getAgentManager().
                         getLastChoiceTotals().
                         get(Choice.A);
 

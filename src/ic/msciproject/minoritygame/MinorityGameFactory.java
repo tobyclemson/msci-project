@@ -1,9 +1,9 @@
 package ic.msciproject.minoritygame;
 
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * The MinorityGameFactory class constructs a minority game with the required
@@ -52,7 +52,8 @@ public class MinorityGameFactory {
         String  agentType,
                 type;
         ChoiceHistory choiceHistory;
-        AgentCollection agents;
+        List<AbstractAgent> agents;
+        AgentManager agentManager;
         StrategySpace strategySpace;
         List<Strategy> strategies;
         StrategyManager strategyManager;
@@ -68,7 +69,7 @@ public class MinorityGameFactory {
 
         // build a collection of agents of the specified type with the required
         // number of strategies.
-        agents = new AgentCollection();
+        agents = new ArrayList<AbstractAgent>();
         numberOfAgents = Integer.parseInt(
             properties.getProperty("number-of-agents")
         );
@@ -100,17 +101,20 @@ public class MinorityGameFactory {
             agents.add(agent);
         }
 
+        // create an agent manager using the generated list of agents.
+        agentManager = new AgentManager(agents);
+
         // build an minority game instance passing the agents and history
         // string.
         type = properties.getProperty("type");
 
         if(type.equals("standard")) {
             minorityGame = new StandardMinorityGame(
-                agents, choiceHistory, agentMemorySize
+                agentManager, choiceHistory, agentMemorySize
             );
         } else if(type.equals("evolutionary")) {
             minorityGame = new EvolutionaryMinorityGame(
-                agents, choiceHistory, agentMemorySize
+                agentManager, choiceHistory, agentMemorySize
             );
         }
 

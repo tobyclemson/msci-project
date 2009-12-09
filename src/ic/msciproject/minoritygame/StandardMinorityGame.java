@@ -10,9 +10,9 @@ public class StandardMinorityGame extends AbstractMinorityGame{
 
     /**
      * Constructs a StandardMinorityGame instance setting the agents, choice
-     * history and agent memory size attributes to the supplied AgentCollection,
+     * history and agent memory size attributes to the supplied AgentManager,
      * ChoiceHistory and integer instances.
-     * @param agents An AgentCollection instance containing the agents associated
+     * @param agents An AgentManager instance containing the agents associated
      * with this minority game instance.
      * @param choiceHistory A ChoiceHistory instance to use as the history of
      * outcomes for this minority game instance.
@@ -20,7 +20,7 @@ public class StandardMinorityGame extends AbstractMinorityGame{
      * can remember.
      */
     public StandardMinorityGame(
-        AgentCollection agents,
+        AgentManager agents,
         ChoiceHistory choiceHistory,
         int agentMemorySize
     ){

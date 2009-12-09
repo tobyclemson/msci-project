@@ -1,73 +1,47 @@
 package ic.msciproject.minoritygame;
 
-import java.util.AbstractCollection;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 
 /**
- * The AgentCollection class holds a collection of Agent objects extending the
+ * The AgentManager class holds a collection of Agent objects extending the
  * collection with agent related functionality.
  * @author tobyclemson
  */
-public class AgentCollection extends AbstractCollection<AbstractAgent> {
+public class AgentManager {
 
     /**
      * An ArrayList of Agent instances representing the agents held by the
-     * AgentCollection.
+     * AgentManager.
      */
-    private ArrayList<AbstractAgent> storage;
+    private List<AbstractAgent> agentStorage;
 
     /**
-     * Constructs an empty AgentCollection. Agent objects can be later
-     * added to the collection using the {@link #add(AbstractAgent)} method.
+     * Constructs an AgentManager instance containing the supplied AbstractAgent
+     * instances.
+     * @param agents The agents that this agent manager should manage.
      */
-    public AgentCollection() {
-        storage = new ArrayList<AbstractAgent>();
+    public AgentManager(List<AbstractAgent> agents) {
+        this.agentStorage = agents;
     }
 
     /**
-     * Constructs an AgentCollection instance copying across the agents
-     * from the supplied AgentCollection instance.
-     * @param otherAgentCollection The AgentCollection instance to be
-     * copied.
+     * Returns the List of AbstractAgent instances managed by the AgentManager.
+     * @return the agents managed by the agent manager.
      */
-    public AgentCollection(AgentCollection otherAgentCollection) {
-        ArrayList<AbstractAgent> other_storage = otherAgentCollection.storage;
-        storage = new ArrayList<AbstractAgent>();
-        Iterator<AbstractAgent> iterator = other_storage.iterator();
-        while(iterator.hasNext()){
-            add(iterator.next());
-        }
+    public List<AbstractAgent> getAgents() {
+        return agentStorage;
     }
 
     /**
-     * Returns an iterator over the agents stored in the AgentCollection.
-     * @return An iterator over the agents.
+     * Returns an integer representing the number of agents stored by the
+     * agent manager.
+     * @return The number of agents stored by the agent manager.
      */
-    public Iterator<AbstractAgent> iterator() {
-        return storage.iterator();
-    }
-
-    /**
-     * Returns an integer representing the number of agents in the
-     * collection.
-     * @return The number of agents in the collection.
-     */
-    public int size() {
-        return storage.size();
-    }
-
-    /**
-     * Adds an agent to the collection.
-     * @param agent The agent to add.
-     * @return {@code true} if the collection was modified.
-     */
-    @Override
-    public boolean add(AbstractAgent agent) {
-        return storage.add(agent);
+    public int getNumberOfAgents() {
+        return agentStorage.size();
     }
 
     /**
@@ -78,7 +52,7 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
     public Map<Choice, Integer> getLastChoiceTotals() {
         // initialise required variables.
         HashMap<Choice, Integer> totals = new HashMap<Choice, Integer>();
-        Iterator<AbstractAgent> agentIterator = storage.iterator();
+        Iterator<AbstractAgent> agentIterator = agentStorage.iterator();
         Choice choice = null;
         int choiceATotal = 0;
         int choiceBTotal = 0;
@@ -106,8 +80,8 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
     }
 
     /**
-     * Asks each agent in the collection to make a choice between "0" and "1"
-     * using the supplied history string.
+     * Asks each agent managed by the AgentManager to make a choice between
+     * "0" and "1" using the supplied history string.
      * @param choiceHistory A List of Choice instances representing the
      * past minority choices.
      */
@@ -117,7 +91,7 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
         AbstractAgent agent;
 
         // get an iterator over all agents
-        agentIterator = storage.iterator();
+        agentIterator = agentStorage.iterator();
 
         // tell each agent to make a choice
         while(agentIterator.hasNext()) {
@@ -137,7 +111,7 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
         AbstractAgent agent;
 
         // get an iterator over all agents
-        agentIterator = storage.iterator();
+        agentIterator = agentStorage.iterator();
 
         // call incrementScore on each agent that made the correct choice
         while(agentIterator.hasNext()) {
@@ -162,7 +136,7 @@ public class AgentCollection extends AbstractCollection<AbstractAgent> {
         Iterator<AbstractAgent> agentIterator;
 
         // get an iterator over all agents
-        agentIterator = storage.iterator();
+        agentIterator = agentStorage.iterator();
 
         // call incrementScore on each agent that made the correct choice
         while(agentIterator.hasNext()) {

@@ -3,16 +3,22 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::AbstractMinorityGame do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::AbstractMinorityGame }
-  let(:agents) { package::AgentCollection.new }
+  let(:agent_manager) { 
+    package::AgentManager.new(Java::JavaUtil::ArrayList.new) 
+  }
   let(:choice_history) { package::ChoiceHistory.new(2) }
   let(:agent_memory_size) { 2 }
   let(:minority_game_instance) { 
-    klass.new(agents, choice_history, agent_memory_size) 
+    klass.new(agent_manager, choice_history, agent_memory_size) 
   }
   
   describe "public interface" do
     it "has an agents instance method" do
       minority_game_instance.should respond_to(:agents)
+    end
+    
+    it "has an agent_manager instance method" do
+      minority_game_instance.should respond_to(:agent_manager)
     end
     
     it "has an choice_history instance method" do
@@ -42,34 +48,54 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
     }
     let(:agent) { package::AbstractAgent.new(strategy_manager) }
     
-    describe "with agents, choice history and agent memory size arguments" do
-      before(:each) do
-        3.times { agents.add(agent) }
+    describe "with agent_manager, choice history and agent memory size " + 
+      "arguments" do
+      before(:each) do        
+        agent_list = Java::JavaUtil::ArrayList.new
+        
+        3.times { agent_list.add(agent) }
+        
+        agent_manager = package::AgentManager.new(agent_list)
       end
 
-      it "sets the agents attribute to the supplied ArrayList of agents" do
-        minority_game = klass.new(agents, choice_history, agent_memory_size)
-        minority_game.agents.should == agents
+      it "sets the agent_manager attribute to the supplied AgentManager " + 
+        "instance" do
+        minority_game = klass.new(
+          agent_manager, choice_history, agent_memory_size
+        )
+        minority_game.agent_manager.should == agent_manager
       end
 
       it "sets the choice_history attribute to the supplied ChoiceHistory " + 
         "instance" do
-        minority_game = klass.new(agents, choice_history, agent_memory_size)
+        minority_game = klass.new(
+          agent_manager, choice_history, agent_memory_size
+        )
         minority_game.choice_history.should == choice_history
       end
       
       it "sets the agent_memory_size attribute to the supplied integer" do
-        minority_game = klass.new(agents, choice_history, agent_memory_size)
+        minority_game = klass.new(
+          agent_manager, choice_history, agent_memory_size
+        )
         minority_game.agent_memory_size.should == agent_memory_size
       end
+    end
+  end
+
+  describe "agents" do
+    it "returns the agents stored in the agent manager" do
+      minority_game_instance.agents.should equal(
+        minority_game_instance.agent_manager.agents
+      )
     end
   end
 
   describe "#last_minority_size" do
     it "returns the number of agents in the minority group at the end of " + 
       "the last step" do
-      mock_agent_collection = Mockito.mock(
-        package::AgentCollection.java_class
+      mock_agent_manager = Mockito.mock(
+        package::AgentManager.java_class
       )
       last_choice_totals = Java::JavaUtil::HashMap.new
       last_choice_totals.put(
@@ -79,11 +105,11 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
         package::Choice::B, Java::JavaLang::Integer.new(12)
       )
       
-      Mockito.when(mock_agent_collection.last_choice_totals).
+      Mockito.when(mock_agent_manager.last_choice_totals).
         then_return(last_choice_totals)
       
       minority_game = klass.new(
-        mock_agent_collection, choice_history, agent_memory_size
+        mock_agent_manager, choice_history, agent_memory_size
       )
       
       minority_game.last_minority_size.should == 12
@@ -93,8 +119,8 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
   describe "#last_minority_choice" do
     it "returns a string representing the choice that the minority of " + 
       "agents made in the last step" do
-      mock_agent_collection = Mockito.mock(
-        package::AgentCollection.java_class
+      mock_agent_manager = Mockito.mock(
+        package::AgentManager.java_class
       )
       last_choice_totals = Java::JavaUtil::HashMap.new
       last_choice_totals.put(
@@ -104,11 +130,11 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
         package::Choice::B, Java::JavaLang::Integer.new(12)
       )
 
-      Mockito.when(mock_agent_collection.last_choice_totals).
+      Mockito.when(mock_agent_manager.last_choice_totals).
         then_return(last_choice_totals)
 
       minority_game = klass.new(
-        mock_agent_collection, choice_history, agent_memory_size
+        mock_agent_manager, choice_history, agent_memory_size
       )
 
       minority_game.last_minority_choice.should == package::Choice::B
@@ -116,8 +142,8 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
   end
 
   describe "#step_forward" do
-    let(:mock_agent_collection) { 
-      Mockito.mock(package::AgentCollection.java_class) 
+    let(:mock_agent_manager) { 
+      Mockito.mock(package::AgentManager.java_class) 
     }
     let(:last_choice_totals) {
       hash = Java::JavaUtil::HashMap.new
@@ -137,7 +163,7 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
     }
     
     before(:each) do
-      Mockito.when(mock_agent_collection.last_choice_totals).
+      Mockito.when(mock_agent_manager.last_choice_totals).
         then_return(last_choice_totals)
       
       choice_history_list.add(package::Choice::A)
@@ -148,24 +174,24 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
       Mockito.when(choice_history.as_list(agent_memory_size)).
         then_return(choice_history_list)
       minority_game = klass.new(
-        mock_agent_collection, choice_history, agent_memory_size
+        mock_agent_manager, choice_history, agent_memory_size
       )
       
       minority_game.step_forward
       
-      Mockito.verify(mock_agent_collection).
+      Mockito.verify(mock_agent_manager).
         make_choices(choice_history_list)
     end
     
-    it "tells the agent collection to increment scores for the minority " +
+    it "tells the agent manager to increment scores for the minority " +
       "choice" do
         minority_game = klass.new(
-          mock_agent_collection, choice_history, agent_memory_size
+          mock_agent_manager, choice_history, agent_memory_size
         )
 
         minority_game.step_forward
 
-        Mockito.verify(mock_agent_collection).
+        Mockito.verify(mock_agent_manager).
           increment_scores_for_choice(package::Choice::B)
     end
     
@@ -174,12 +200,12 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
       Mockito.when(choice_history.as_list(2)).
         then_return(choice_history_list)
       minority_game = klass.new(
-        mock_agent_collection, choice_history, agent_memory_size
+        mock_agent_manager, choice_history, agent_memory_size
       )  
         
       minority_game.step_forward
       
-      Mockito.verify(mock_agent_collection).update_for_choice(
+      Mockito.verify(mock_agent_manager).update_for_choice(
         package::Choice::B, 
         choice_history_list
       )
@@ -187,7 +213,7 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
     
     it "adds the minority choice to the choice history" do
       minority_game = klass.new(
-        mock_agent_collection, choice_history, agent_memory_size
+        mock_agent_manager, choice_history, agent_memory_size
       )
       
       minority_game.step_forward

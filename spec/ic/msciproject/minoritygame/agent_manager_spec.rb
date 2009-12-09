@@ -1,93 +1,68 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSciProject::MinorityGame::AgentCollection do
+describe MSciProject::MinorityGame::AgentManager do
   let(:package) { MSciProject::MinorityGame }
-  let(:klass) { package::AgentCollection }
+  let(:klass) { package::AgentManager }
   let(:agent) { 
     package::AbstractAgent.new(
       package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
     ) 
   }
-  let(:agent_collection_instance) { klass.new }
-  
-  it "extends the AbstractCollection class" do
-    agent_collection_instance.should be_a_kind_of(
-      Java::JavaUtil::AbstractCollection
-    )
-  end
+  let(:agent_manager_instance) { klass.new(Java::JavaUtil::ArrayList.new) }
   
   describe "public interface" do
+    it "has an agents instance method" do
+      agent_manager_instance.should respond_to(:agents)
+    end
+    
     it "has a last_choice_totals instance method" do
-      agent_collection_instance.should respond_to(:last_choice_totals)
+      agent_manager_instance.should respond_to(:last_choice_totals)
     end
     
     it "has a make_choices instance method" do
-      agent_collection_instance.should respond_to(:make_choices)
+      agent_manager_instance.should respond_to(:make_choices)
     end
     
     it "has an increment_scores_for_choice instance method" do
-      agent_collection_instance.should respond_to(
+      agent_manager_instance.should respond_to(
         :increment_scores_for_choice
       )
     end
     
     it "has a update_for_choice instance method" do
-      agent_collection_instance.should respond_to(
+      agent_manager_instance.should respond_to(
         :update_for_choice
+      )
+    end
+    
+    it "has a number_of_agents instance method" do
+      agent_manager_instance.should respond_to(
+        :number_of_agents
       )
     end
   end
   
   describe "constructor" do
-    describe "with no arguments" do
-      it "initialises an empty collection" do
-        strategy_manager = klass.new
-        strategy_manager.size.should == 0
-      end
-    end
-    
-    describe "with another AgentCollection instance as an argument" do
-      let(:agent_collection_to_copy) { klass.new }
-      
-      before(:each) do
-        agent_collection_to_copy.add(agent)
-      end
-      
-      it "adds all AbstractAgent objects in the supplied AgentCollection " + 
-        "to the collection" do
-        agent_collection = klass.new(agent_collection_to_copy)
-        agent_collection.contains(agent).should be_true
-      end
-      
-      it "has independent references to the Agent objects" do
-        agent_collection = klass.new(agent_collection_to_copy)
-        agent_collection_to_copy.remove(agent)
-        agent_collection.contains(agent).should be_true
+    describe "with a List of AbstractAgent instance as an argument" do      
+      it "sets the agents attribute to the supplied collection of agents" do
+        list = Java::JavaUtil::ArrayList.new
+        list.add(agent)
+        
+        agent_manager = klass.new(list)
+        
+        agent_manager.agents.should == list
       end
     end
   end
 
-  describe "#add" do
-    it "adds the supplied Agent to the collection" do
-      agent_collection_instance.add(agent) 
-      agent_collection_instance.contains(agent).should be true
-    end
-  end
-  
-  describe "#size" do
-    it "returns the number of agents in the collection" do
-      3.times do 
-        agent_collection_instance.add(agent)
-      end
-      agent_collection_instance.size.should == 3
-    end
-  end
-  
-  describe "#iterator" do
-    it "returns an Iterator" do
-      agent_collection_instance.iterator.should be_a_kind_of(
-        Java::JavaUtil::Iterator
-      )
+  describe "#number_of_agents" do
+    it "returns the number of agents stored by the agent manager" do
+      agent_list = Java::JavaUtil::ArrayList.new
+      3.times { agent_list.add(agent) }
+      
+      agent_manager = klass.new(agent_list)
+      
+      agent_manager.number_of_agents.should == 3
     end
   end
 
@@ -100,10 +75,14 @@ describe MSciProject::MinorityGame::AgentCollection do
       Mockito.when(choice_a_agent.last_choice).thenReturn(package::Choice::A)
       Mockito.when(choice_b_agent.last_choice).thenReturn(package::Choice::B)
       
-      3.times { agent_collection_instance.add(choice_a_agent) }
-      5.times { agent_collection_instance.add(choice_b_agent) }
+      agent_list = Java::JavaUtil::ArrayList.new
       
-      totals = agent_collection_instance.last_choice_totals
+      3.times { agent_list.add(choice_a_agent) }
+      5.times { agent_list.add(choice_b_agent) }
+      
+      agent_manager_instance = klass.new(agent_list)
+      
+      totals = agent_manager_instance.last_choice_totals
       
       {
         package::Choice::A => 3, 
@@ -121,13 +100,17 @@ describe MSciProject::MinorityGame::AgentCollection do
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
       
-      agent_collection_instance.add(mock_agent_1)
-      agent_collection_instance.add(mock_agent_2)
-      agent_collection_instance.add(mock_agent_3)
+      agent_list = Java::JavaUtil::ArrayList.new
+      
+      agent_list.add(mock_agent_1)
+      agent_list.add(mock_agent_2)
+      agent_list.add(mock_agent_3)
+      
+      agent_manager_instance = klass.new(agent_list)
       
       choice_history = package::ChoiceHistory.new(5)
       
-      agent_collection_instance.make_choices(choice_history.as_list(5))
+      agent_manager_instance.make_choices(choice_history.as_list(5))
       
       Mockito.verify(mock_agent_1).choose(choice_history.as_list(5))
       Mockito.verify(mock_agent_2).choose(choice_history.as_list(5))
@@ -146,11 +129,15 @@ describe MSciProject::MinorityGame::AgentCollection do
       Mockito.when(mock_agent_2.last_choice).then_return(package::Choice::A)
       Mockito.when(mock_agent_3.last_choice).then_return(package::Choice::B)
 
+      agent_list = Java::JavaUtil::ArrayList.new
+
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
-        agent_collection_instance.add(agent)
+        agent_list.add(agent)
       end
       
-      agent_collection_instance.increment_scores_for_choice(
+      agent_manager_instance = klass.new(agent_list)
+      
+      agent_manager_instance.increment_scores_for_choice(
         package::Choice::A
       )
       
@@ -165,16 +152,20 @@ describe MSciProject::MinorityGame::AgentCollection do
       mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
+      
+      agent_list = Java::JavaUtil::ArrayList.new
 
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
-        agent_collection_instance.add(agent)
+        agent_list.add(agent)
       end
+      
+      agent_manager_instance = klass.new(agent_list)
       
       choice_history = Java::JavaUtil::ArrayList.new
       choice_history.add(package::Choice::A)
       choice_history.add(package::Choice::B)
       
-      agent_collection_instance.update_for_choice(
+      agent_manager_instance.update_for_choice(
         package::Choice::A, choice_history)
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
