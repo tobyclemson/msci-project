@@ -14,6 +14,11 @@ import java.util.HashMap;
  */
 public class ChoiceListPermutator {
 
+    /**
+     * A Map of integers to sets of all possible Choice permutations for that
+     * integer. This is used to memoize permutations to avoid repeated
+     * generation of equivalent data.
+     */
     private static Map<Integer, Set<List<Choice>>> storedPermutationSets =
         new HashMap<Integer, Set<List<Choice>>>();
 

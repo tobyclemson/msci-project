@@ -83,12 +83,10 @@ public class AbstractAgent {
      * a Choice.A or Choice.B representing the outcome of the choice.
      * @param choiceHistory A List of Choice instances representing a fixed
      * number of past minority choices in the game.
-     * @return The choice made my the agent.
      */
-    public Choice choose(List<Choice> choiceHistory) {
+    public void choose(List<Choice> choiceHistory) {
         // declare required variables
         Strategy chosenStrategy;
-        Choice choice;
 
         // if no lastChoice exists, get a strategy at random, otherwise fetch
         // the highest scoring strategy
@@ -99,13 +97,11 @@ public class AbstractAgent {
             chosenStrategy = strategyManager.getHighestScoringStrategy();
         }
         
-        // use the chosen strategy to calculate the choice
-        lastChoice = choice = chosenStrategy.predictMinorityChoice(
+        // use the chosen strategy to calculate the choice and set the last
+        // choice attribute.
+        lastChoice = chosenStrategy.predictMinorityChoice(
             choiceHistory
         );
-
-        // return the selected choice
-        return choice;
     }
 
     /**

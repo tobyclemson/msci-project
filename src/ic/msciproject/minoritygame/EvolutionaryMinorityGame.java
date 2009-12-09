@@ -14,7 +14,7 @@ public class EvolutionaryMinorityGame extends AbstractMinorityGame {
      * Constructs an EvolutionaryMinorityGame instance setting the agents, 
      * choice history and agent memory size parameters to the supplied
      * AgentManager, ChoiceHistory and integer instances.
-     * @param agents An AgentManager instance containing the agents
+     * @param agentManager An AgentManager instance containing the agents
      * associated with this minority game instance.
      * @param choiceHistory A ChoiceHistory instance to use as the choice
      * history for this minority game instance.
@@ -22,11 +22,11 @@ public class EvolutionaryMinorityGame extends AbstractMinorityGame {
      * can remember
      */
     public EvolutionaryMinorityGame(
-        AgentManager agents,
+        AgentManager agentManager,
         ChoiceHistory choiceHistory,
         int agentMemorySize
     ) {
-        super(agents, choiceHistory, agentMemorySize);
+        super(agentManager, choiceHistory, agentMemorySize);
     }
 
 }

@@ -25,7 +25,7 @@ public class MinorityGameFactory {
      *  <li>"number-of-agents": the number of agents required in the game as a
      *      string, e.g., "10000".
      *  <li>"agent-type": the type of agents required in the game, currently
-     *      can be one of "basic" or "learning".
+     *      can be one of "basic", "learning" or "random".
      *  <li>"number-of-strategies-per-agent": the number of strategies required
      *      for each agent in the game as a string, e.g., "2".
      * </ul>
@@ -104,7 +104,7 @@ public class MinorityGameFactory {
         // create an agent manager using the generated list of agents.
         agentManager = new AgentManager(agents);
 
-        // build an minority game instance passing the agents and history
+        // build a minority game instance passing the agents and history
         // string.
         type = properties.getProperty("type");
 
@@ -118,6 +118,7 @@ public class MinorityGameFactory {
             );
         }
 
+        // return the minority game
         return minorityGame;
     }
 
