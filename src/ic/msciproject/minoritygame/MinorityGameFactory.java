@@ -12,14 +12,15 @@ import java.util.ArrayList;
  * @author tobyclemson
  */
 public class MinorityGameFactory {
+
     /**
      * Constructs a minority game with the specified parameters.
      * <p>
      * The supplied Properties object must contain the following properties:
      *
      * <ul>
-     *  <li>"type": the type of minority game to construct, currently can be
-     *      one of "standard" or "evolutionary".
+     *  <li>"type": the type of minority game to construct, currently can only
+     *      be "standard".
      *  <li>"agent-memory-size": the number of past minority choices each agent
      *      can remember as a string, e.g., "5".
      *  <li>"number-of-agents": the number of agents required in the game as a
@@ -112,10 +113,6 @@ public class MinorityGameFactory {
             minorityGame = new StandardMinorityGame(
                 agentManager, choiceHistory, agentMemorySize
             );
-        } else if(type.equals("evolutionary")) {
-            minorityGame = new EvolutionaryMinorityGame(
-                agentManager, choiceHistory, agentMemorySize
-            );
         }
 
         // return the minority game
@@ -142,7 +139,6 @@ public class MinorityGameFactory {
 
         HashSet<String> acceptedTypes = new HashSet<String>();
         acceptedTypes.add("standard");
-        acceptedTypes.add("evolutionary");
 
         assertPropertyInSet(properties, "type", acceptedTypes);
 
@@ -174,7 +170,7 @@ public class MinorityGameFactory {
 
     /**
      * Checks that the supplied Properties object has a value for the specified
-     * propety that is in the specified set.
+     * property that is in the specified set.
      * @param properties The Properties object to check.
      * @param property The name of the property of which to check the value.
      * @param set The set of allowed values for the specified property.
@@ -210,6 +206,12 @@ public class MinorityGameFactory {
         }
     }
 
+    /**
+     * Checks that the supplied Properties object has an value containing a
+     * string representing an odd number for the specified property.
+     * @param properties
+     * @param property
+     */
     private static void assertPropertyIsOdd(
         Properties properties,
         String property

@@ -45,12 +45,12 @@ public class Strategy {
     protected Set<List<Choice>> validChoiceHistories;
 
     /**
-     * Constructs a Strategy instance using the supplied history string to
-     * outcome mappings.
+     * Constructs a Strategy instance using the supplied choice history to
+     * predicted minority choice mappings.
      * <p>
      * The supplied mappings must all have the same key length and must
-     * represent every possible mapping for that key lengthIf this is not true,
-     * an IllegalArgumentException is thrown.
+     * represent every possible mapping for that key length. If this is not
+     * true, an IllegalArgumentException is thrown.
      * 
      * @param strategyMap A map of all possible input keys of the required
      * length to predictions for the minority choice given that input key.

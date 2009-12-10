@@ -142,15 +142,6 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
       )
     end
     
-    it "returns an instance of EvolutionaryMinorityGame when the type " +
-      "'evolutionary' is supplied" do
-      properties.set_property("type", "evolutionary")
-      instance = package::MinorityGameFactory.construct(properties)
-      instance.should be_a_kind_of(
-        package::EvolutionaryMinorityGame
-      )
-    end
-    
     describe "minority game dependency generation" do
       it "initialises the choice_history attribute with a ChoiceHistory " + 
         "instance of the required initial length" do

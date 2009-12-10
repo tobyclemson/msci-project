@@ -55,7 +55,17 @@ public class RandomAgent extends AbstractAgent {
      * @param choiceHistory A List of Choice instances that are not actually
      * used by the agent.
      */
-    @Override
+    public void incrementScore() {
+        score += 1;
+    }
+
+    /**
+     * Calculates this agent's choice based on its strategyManager and sets the
+     * lastChoice attribute to the resulting choice, either Choice.A or
+     * Choice.B.
+     * @param choiceHistory A List of Choice instances representing a fixed
+     * number of past minority choices in the game.
+     */
     public void choose(List<Choice> choiceHistory) {
         Choice choice = null;
 
@@ -66,5 +76,19 @@ public class RandomAgent extends AbstractAgent {
         }
 
         lastChoice = choice;
+    }
+
+    /**
+     * Updates the agent's local information with respect to the minority
+     * choice and choice history for the last time step.
+     * @param minorityChoice The minority choice for the last time step.
+     * @param choiceHistory The choice history at the start of the last time
+     * step.
+     */
+    public void update(
+        Choice minorityChoice,
+        List<Choice> choiceHistory
+    ) {
+        
     }
 }
