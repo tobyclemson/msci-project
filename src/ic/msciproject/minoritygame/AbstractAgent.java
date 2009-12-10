@@ -7,19 +7,19 @@ import java.util.List;
  * minority game and all specific agents should extend it.
  * @author tobyclemson
  */
-public class AbstractAgent {
+public abstract class AbstractAgent {
     
     /**
-     * A StrategyManager instance holding the agent's strategyManager. This is
-     * returned by the {@link #getStrategies} method.
+     * A StrategyManager instance holding the agent's strategies. This is
+     * returned by the {@link #getStrategyManager} method.
      */
-    private StrategyManager strategyManager;
+    protected StrategyManager strategyManager;
 
     /**
      * An integer representing the agent's score. This is returned by the
      * {@link #getScore} method.
      */
-    private int score = 0;
+    protected int score = 0;
 
     /**
      * A Choice instance representing the last choice made by this agent. This
@@ -30,17 +30,17 @@ public class AbstractAgent {
     /**
      * Constructs an AbstractAgent instance setting the strategyManager 
      * attribute to the supplied StrategyManager instance.
-     * @param strategyManager A StrategyManager instance representing
-     * the agent's strategyManager.
+     * @param strategyManager A StrategyManager instance containing the agent's
+     * strategies.
      */
     public AbstractAgent(StrategyManager strategyManager){
         this.strategyManager = strategyManager;
     }
 
     /**
-     * Returns a StrategyManager containing the strategyManager associated with
-     * this agent.
-     * @return A StrategyManager containing the agent's strategyManager.
+     * Returns a List of Strategy instances representing the strategies
+     * associated with the agent.
+     * @return The agent's strategies.
      */
     public List<Strategy> getStrategies() {
         return strategyManager.getStrategies();
@@ -79,54 +79,27 @@ public class AbstractAgent {
     }
 
     /**
-     * Calculates this agent's choices based on its strategyManager and returns
-     * a Choice.A or Choice.B representing the outcome of the choice.
-     * @param choiceHistory A List of Choice instances representing a fixed
-     * number of past minority choices in the game.
-     * @return The choice made my the agent.
+     * Tells the agent to choose between Choice.A and Choice.B dependent on the
+     * choice history supplied.
+     * @param choiceHistory A List of past Choice outcomes.
      */
-    public Choice choose(List<Choice> choiceHistory) {
-        // declare required variables
-        Strategy chosenStrategy;
-        Choice choice;
-
-        // if no lastChoice exists, get a strategy at random, otherwise fetch
-        // the highest scoring strategy
-        if(lastChoice == null) {
-            chosenStrategy = strategyManager.getRandomStrategy();
-        }
-        else {
-            chosenStrategy = strategyManager.getHighestScoringStrategy();
-        }
-        
-        // use the chosen strategy to calculate the choice
-        lastChoice = choice = chosenStrategy.predictMinorityChoice(
-            choiceHistory
-        );
-
-        // return the selected choice
-        return choice;
-    }
+    public abstract void choose(List<Choice> choiceHistory);
 
     /**
-     * Increments this agents score by 1.
+     * Increments the agent's score.
      */
-    public void incrementScore() {
-        score += 1;
-    }
+    public abstract void incrementScore();
 
     /**
-     * Updates the agent's local information with respect to the minority
-     * choice and choice history for the last time step.
-     * @param minorityChoice The minority choice for the last time step.
-     * @param choiceHistory The choice history at the start of the last time
-     * step.
+     * Tells the agent to update its internal state given that the minority
+     * choice was as specified for the specified choice history.
+     * @param minorityChoice The minority choice in the last step.
+     * @param choiceHistory The choice history that was used as input to each
+     * agent at the start of the step.
      */
-    public void update(
+    public abstract void update(
         Choice minorityChoice,
         List<Choice> choiceHistory
-    ) {
-        strategyManager.incrementScores(choiceHistory, minorityChoice);
-    }
+    );
 
 }

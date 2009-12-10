@@ -4,7 +4,7 @@ describe MSciProject::MinorityGame::AgentManager do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::AgentManager }
   let(:agent) { 
-    package::AbstractAgent.new(
+    package::BasicAgent.new(
       package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
     ) 
   }

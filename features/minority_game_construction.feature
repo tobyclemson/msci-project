@@ -14,7 +14,6 @@ Feature: Versatile minority game construction
     Examples:
       | type         | class_name                                            |
       | standard     | MSciProject::MinorityGame::StandardMinorityGame       |
-      | evolutionary | MSciProject::MinorityGame::EvolutionaryMinorityGame   |
   
   Scenario Outline: construct a minority game of an invalid type
     Given I have a properties hash

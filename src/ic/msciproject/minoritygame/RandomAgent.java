@@ -26,8 +26,12 @@ public class RandomAgent extends AbstractAgent {
         super(strategyManager);
     }
 
+    public void incrementScore() {
+        score += 1;
+    }
+
     @Override
-    public Choice choose(List<Choice> choiceHistory) {
+    public void choose(List<Choice> choiceHistory) {
         Choice choice = null;
 
         if(randomGenerator.nextInt() == 0) {
@@ -37,7 +41,12 @@ public class RandomAgent extends AbstractAgent {
         }
 
         lastChoice = choice;
+    }
 
-        return choice;
+    public void update(
+        Choice minorityChoice,
+        List<Choice> choiceHistory
+    ) {
+        
     }
 }

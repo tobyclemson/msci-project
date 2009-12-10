@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.HashMap;
 
 /**
- * The AgentManager class holds a collection of Agent objects extending the
- * collection with agent related functionality.
+ * The AgentManager class holds a collection of AbstractAgent objects extending
+ * the collection with agent related functionality.
  * @author tobyclemson
  */
 public class AgentManager {
 
     /**
-     * An ArrayList of Agent instances representing the agents held by the
+     * A List of Agent instances representing the agents held by the
      * AgentManager.
      */
     private List<AbstractAgent> agentStorage;
@@ -81,7 +81,7 @@ public class AgentManager {
 
     /**
      * Asks each agent managed by the AgentManager to make a choice between
-     * "0" and "1" using the supplied history string.
+     * Choice.A and Choice.B using the supplied choice history.
      * @param choiceHistory A List of Choice instances representing the
      * past minority choices.
      */

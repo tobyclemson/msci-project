@@ -9,11 +9,15 @@ import java.util.HashMap;
 
 /**
  * The ChoiceListPermutator class allows permutations of choices to be generated
- * as List instances of Choice enumerations.
+ * as a Set of Lists of Choice enumerations.
  * @author tobyclemson
  */
 public class ChoiceListPermutator {
 
+    /**
+     * All permutation sets are stored and returned if a set with the same
+     * key length as one already generated is requested.
+     */
     private static Map<Integer, Set<List<Choice>>> storedPermutationSets =
         new HashMap<Integer, Set<List<Choice>>>();
 

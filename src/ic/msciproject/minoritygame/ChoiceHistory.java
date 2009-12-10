@@ -22,7 +22,7 @@ public class ChoiceHistory {
      * according to a particular distribution. This is used to populate
      * strategies with random predictions. By default it is initialised with a
      * Uniform distribution backed by a MersenneTwister random number engine
-     * initialised with a Date object.
+     * initialised with a random integer seed.
      */
     private static AbstractDistribution randomNumberGenerator;
 

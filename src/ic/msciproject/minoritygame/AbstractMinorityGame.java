@@ -9,32 +9,32 @@ import java.util.List;
  * it.
  * @author tobyclemson
  */
-public class AbstractMinorityGame {
+public abstract class AbstractMinorityGame {
 
     /**
-     * An AgentManager instance holding AbstractAgent instances used to
-     * represent the agentManager associated with the minority game. This is returned
-     * by the {@link #getAgents} method.
+     * An AgentManager instance containing AbstractAgent instances representing
+     * the agents associated with the minority game. This is returned by the
+     * {@link #getAgentManager} method.
      */
-    private AgentManager agentManager;
+    protected AgentManager agentManager;
 
     /**
      * A ChoiceHistory instance holding a list of choices representing the
      * entire history of recent outcomes in the minority game. This is returned
      * by the {@link #getChoiceHistory} method.
      */
-    private ChoiceHistory choiceHistory;
+    protected ChoiceHistory choiceHistory;
 
     /**
      * An integer representing the size of the memory of each agent in the game.
      */
-    private int agentMemorySize;
+    protected int agentMemorySize;
 
     /**
-     * Constructs an AbstractMinorityGame instance setting the agentManager, choice
-     * history and agent memory size attributes to the supplied AgentManager,
-     * ChoiceHistory and integer instances.
-     * @param agentManager An AgentManager instance containing the agentManager
+     * Constructs an AbstractMinorityGame instance setting the agent manager,
+     * choice history and agent memory size attributes to the supplied
+     * AgentManager, ChoiceHistory and integer instances.
+     * @param agentManager An AgentManager instance containing the agents
      * associated with this minority game instance.
      * @param choiceHistory A ChoiceHistory instance to use as the history
      * of outcomes for this minority game instance.
@@ -137,32 +137,7 @@ public class AbstractMinorityGame {
 
     /**
      * Takes a step forward in the game.
-     *
-     * The step is taken as follows:
-     * <ul>
-     *  <li>Tell all agentManager to make a choice for this time step
-     *  <li>Increment the scores of all agentManager that made the minority choice
-     *  <li>Tell all agentManager to update their local information given the
-     *      last minority choice and choice history
-     *  <li>Add the most recent minority choice outcome to the choice history
-     * </ul>
      */
-    public void stepForward() {
-        // tell all agentManager to make a choice for this time step
-        agentManager.makeChoices(
-            choiceHistory.asList(agentMemorySize)
-        );
+    public abstract void stepForward();
 
-        // retrieve the minority choice
-        Choice minorityChoice = getLastMinorityChoice();
-
-        // update based on the minority choice by incrementing agent scores,
-        // telling agentManager to update and updating the choice history
-        agentManager.incrementScoresForChoice(minorityChoice);
-        agentManager.updateForChoice(
-            minorityChoice,
-            choiceHistory.asList(agentMemorySize)
-        );
-        choiceHistory.add(minorityChoice);
-    }
 }

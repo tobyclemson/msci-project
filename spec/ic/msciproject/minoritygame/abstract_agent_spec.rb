@@ -2,8 +2,15 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
 describe MSciProject::MinorityGame::AbstractAgent do
   let(:package) { MSciProject::MinorityGame }
-  let(:klass) { package::AbstractAgent }
-  
+  let(:klass) { 
+    Class.new(package::AbstractAgent) do
+      field_accessor :lastChoice
+      
+      def choose(*args)
+        self.lastChoice = MSciProject::MinorityGame::Choice::A
+      end
+    end
+  }
   let(:choice_history) { package::ChoiceHistory.new(2) }
   let(:empty_strategy_manager) { 
     package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
@@ -112,79 +119,6 @@ describe MSciProject::MinorityGame::AbstractAgent do
       expect {
         abstract_agent.last_choice
       }.to_not raise_error(Java::JavaLang::IllegalStateException)
-    end
-  end
-
-  describe "#choose" do
-    let(:strategy_manager) { 
-      Mockito.mock(package::StrategyManager.java_class)
-    }
-    let(:random_strategy) {
-      map_to_build_strategy.put(a_b, package::Choice::B)
-      package::Strategy.new(map_to_build_strategy)
-    }
-    let(:highest_scoring_strategy) {
-      map_to_build_strategy.put(a_b, package::Choice::A)
-      package::Strategy.new(map_to_build_strategy)
-    }
-    let(:abstract_agent) { klass.new(strategy_manager) }
-    
-    before(:each) do
-      Mockito.when(strategy_manager.random_strategy).
-        then_return(random_strategy)
-      Mockito.when(strategy_manager.highest_scoring_strategy).
-        then_return(highest_scoring_strategy)
-    end
-    
-    describe "when making the first choice of the game" do
-      it "retrieves a random strategy" do
-        abstract_agent.choose(choice_history.as_list(2))
-        Mockito.verify(strategy_manager).random_strategy
-      end
-      
-      it "makes a choice based on the random strategy" do
-        abstract_agent.choose(a_b)
-        abstract_agent.last_choice.should == 
-          random_strategy.predict_minority_choice(a_b)
-      end
-    end
-    
-    describe "when making a subsequent choice in the game" do
-      before(:each) do
-        abstract_agent.choose(choice_history.as_list(2))
-      end
-      
-      it "retrieves the highest scoring strategy" do
-        abstract_agent.choose(choice_history.as_list(2))
-        Mockito.verify(strategy_manager).highest_scoring_strategy
-      end
-      
-      it "makes a choice based on the highest scoring strategy" do
-        abstract_agent.choose(a_b)
-        abstract_agent.last_choice.should == 
-          highest_scoring_strategy.predict_minority_choice(a_b)
-      end
-    end
-  end
-
-  describe "#increment_score" do
-    it "increases the agents score by 1" do
-      expect {
-        abstract_agent_instance.increment_score
-      }.to change(abstract_agent_instance, :score).from(0).to(1)
-    end
-  end
-
-  describe "#update" do
-    let(:strategy_manager) { 
-      Mockito.mock(package::StrategyManager.java_class)
-    }
-    
-    it "calls increment_scores on the strategy manager" do
-      abstract_agent = klass.new(strategy_manager)
-      abstract_agent.update(package::Choice::B, a_b)
-      Mockito.verify(strategy_manager).
-        increment_scores(a_b, package::Choice::B)
     end
   end
 end
