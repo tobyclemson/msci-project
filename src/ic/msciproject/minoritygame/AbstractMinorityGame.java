@@ -31,24 +31,20 @@ public abstract class AbstractMinorityGame {
     protected int agentMemorySize;
 
     /**
-     * Constructs an AbstractMinorityGame instance setting the agent manager,
-     * choice history and agent memory size attributes to the supplied
-     * AgentManager, ChoiceHistory and integer instances.
+     * Constructs an AbstractMinorityGame instance setting the agent manager 
+     * and choice history attributes to the supplied AgentManager and
+     * ChoiceHistory instances.
      * @param agentManager An AgentManager instance containing the agents
      * associated with this minority game instance.
      * @param choiceHistory A ChoiceHistory instance to use as the history
      * of outcomes for this minority game instance.
-     * @param agentMemorySize An integer representing the number of past
-     * minority choices each agent can remember.
      */
     public AbstractMinorityGame(
         AgentManager agentManager,
-        ChoiceHistory choiceHistory,
-        int agentMemorySize
+        ChoiceHistory choiceHistory
     ){
         this.agentManager = agentManager;
         this.choiceHistory = choiceHistory;
-        this.agentMemorySize = agentMemorySize;
     }
 
     /**

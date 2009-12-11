@@ -3,13 +3,20 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::StandardMinorityGame do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::StandardMinorityGame }
+  
   let(:agent_manager) { 
     package::AgentManager.new(Java::JavaUtil::ArrayList.new) 
   }
-  let(:choice_history) { package::ChoiceHistory.new(2) }
+  
   let(:agent_memory_size) { 2 }
+  
+  let(:choice_history) { package::ChoiceHistory.new(agent_memory_size) }
+  let(:choice_memory) { 
+    package::ChoiceMemory.new(choice_history, agent_memory_size)
+  }
+  
   let(:standard_minority_game) { 
-    klass.new(agent_manager, choice_history, agent_memory_size)
+    klass.new(agent_manager, choice_history)
   }
   
   it "extends the AbstractMinorityGame class" do
@@ -20,10 +27,11 @@ describe MSciProject::MinorityGame::StandardMinorityGame do
     let(:strategy_manager) { 
       package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
     }
-    let(:agent) { package::BasicAgent.new(strategy_manager) }
+    let(:agent) { 
+      package::BasicAgent.new(strategy_manager, choice_memory) 
+    }
     
-    describe "with agent_manager, choice history and agent memory size " + 
-      "arguments" do
+    describe "with agent_manager and choice history arguments" do
       before(:each) do        
         agent_list = Java::JavaUtil::ArrayList.new
         
@@ -34,25 +42,14 @@ describe MSciProject::MinorityGame::StandardMinorityGame do
 
       it "sets the agent_manager attribute to the supplied AgentManager " + 
         "instance" do
-        minority_game = klass.new(
-          agent_manager, choice_history, agent_memory_size
-        )
+        minority_game = klass.new(agent_manager, choice_history)
         minority_game.agent_manager.should == agent_manager
       end
 
       it "sets the choice_history attribute to the supplied ChoiceHistory " + 
         "instance" do
-        minority_game = klass.new(
-          agent_manager, choice_history, agent_memory_size
-        )
+        minority_game = klass.new(agent_manager, choice_history)
         minority_game.choice_history.should == choice_history
-      end
-      
-      it "sets the agent_memory_size attribute to the supplied integer" do
-        minority_game = klass.new(
-          agent_manager, choice_history, agent_memory_size
-        )
-        minority_game.agent_memory_size.should == agent_memory_size
       end
     end
   end
@@ -90,19 +87,19 @@ describe MSciProject::MinorityGame::StandardMinorityGame do
       Mockito.when(choice_history.as_list(agent_memory_size)).
         then_return(choice_history_list)
       minority_game = klass.new(
-        mock_agent_manager, choice_history, agent_memory_size
+        mock_agent_manager, choice_history
       )
       
       minority_game.step_forward
       
       Mockito.verify(mock_agent_manager).
-        make_choices(choice_history_list)
+        make_choices
     end
     
     it "tells the agent manager to increment scores for the minority " +
       "choice" do
         minority_game = klass.new(
-          mock_agent_manager, choice_history, agent_memory_size
+          mock_agent_manager, choice_history
         )
 
         minority_game.step_forward
@@ -116,20 +113,19 @@ describe MSciProject::MinorityGame::StandardMinorityGame do
       Mockito.when(choice_history.as_list(2)).
         then_return(choice_history_list)
       minority_game = klass.new(
-        mock_agent_manager, choice_history, agent_memory_size
+        mock_agent_manager, choice_history
       )  
         
       minority_game.step_forward
       
       Mockito.verify(mock_agent_manager).update_for_choice(
-        package::Choice::B, 
-        choice_history_list
+        package::Choice::B
       )
     end
     
     it "adds the minority choice to the choice history" do
       minority_game = klass.new(
-        mock_agent_manager, choice_history, agent_memory_size
+        mock_agent_manager, choice_history
       )
       
       minority_game.step_forward

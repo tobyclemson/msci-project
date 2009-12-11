@@ -1,7 +1,5 @@
 package ic.msciproject.minoritygame;
 
-import java.util.List;
-
 /**
  * The BasicAgent class represents the simplest type of agent to be used in the
  * minority game simulation. It cannot evolve its strategies and chooses a
@@ -13,23 +11,27 @@ import java.util.List;
 public class BasicAgent extends AbstractAgent {
 
     /**
-     * Constructs an instance of BasicAgent setting the strategies attribute
-     * to the supplied StrategyManager instance.
+     * Constructs an instance of BasicAgent setting the strategy manager and
+     * memory attributes to the supplied StrategyManager and ChoiceMemroy
+     * instances.
      * @param strategyManager A StrategyManager instance representing the
      * agent's strategies.
+     * @param choiceMemory A ChoiceMemory instance representing the agent's
+     * memory of past minority choices.
      */
-    public BasicAgent(StrategyManager strategyManager) {
-        super(strategyManager);
+    public BasicAgent(
+        StrategyManager strategyManager,
+        ChoiceMemory choiceMemory
+    ) {
+        super(strategyManager, choiceMemory);
     }
 
     /**
-     * Calculates this agent's choice based on its strategyManager and sets the
+     * Calculates this agent's choice based on its strategies and sets the
      * lastChoice attribute to the resulting choice, either Choice.A or
      * Choice.B.
-     * @param choiceHistory A List of Choice instances representing a fixed
-     * number of past minority choices in the game.
      */
-    public void choose(List<Choice> choiceHistory) {
+    public void choose() {
         // declare required variables
         Strategy chosenStrategy;
 
@@ -43,9 +45,7 @@ public class BasicAgent extends AbstractAgent {
         }
 
         // use the chosen strategy to calculate the choice
-        lastChoice = chosenStrategy.predictMinorityChoice(
-            choiceHistory
-        );
+        lastChoice = chosenStrategy.predictMinorityChoice(memory.fetch());
     }
 
     /**
@@ -57,16 +57,13 @@ public class BasicAgent extends AbstractAgent {
 
     /**
      * Updates the agent's local information with respect to the minority
-     * choice and choice history for the last time step.
+     * choice for the last time step.
      * @param minorityChoice The minority choice for the last time step.
-     * @param choiceHistory The choice history at the start of the last time
-     * step.
      */
     public void update(
-        Choice minorityChoice,
-        List<Choice> choiceHistory
+        Choice minorityChoice
     ) {
-        strategyManager.incrementScores(choiceHistory, minorityChoice);
+        strategyManager.incrementScores(memory.fetch(), minorityChoice);
     }
 
 }

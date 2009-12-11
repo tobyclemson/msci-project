@@ -57,7 +57,13 @@ describe MSciProject::MinorityGame::AbstractAgent do
     package::StrategyManager.new(list)
   }
   
-  let(:abstract_agent_instance) { klass.new(empty_strategy_manager) }
+  let(:choice_memory) {
+    package::ChoiceMemory.new(choice_history, 2)
+  }
+  
+  let(:abstract_agent_instance) { 
+    klass.new(empty_strategy_manager, choice_memory) 
+  }
   
   describe "public interface" do
     it "has a strategies instance method" do
@@ -70,6 +76,10 @@ describe MSciProject::MinorityGame::AbstractAgent do
     
     it "has a score instance method" do
       abstract_agent_instance.should respond_to(:score)
+    end
+    
+    it "has a memory instance method" do
+      abstract_agent_instance.should respond_to(:memory)
     end
     
     it "has a last_choice instance method" do
@@ -90,31 +100,36 @@ describe MSciProject::MinorityGame::AbstractAgent do
   end
   
   describe "constructor" do
-    describe "with strategy manager argument" do
+    describe "with strategy manager and memory arguments" do
       it "sets the strategy_manager attribute to the supplied strategy manager" do
-        abstract_agent = klass.new(strategy_manager)
+        abstract_agent = klass.new(strategy_manager, choice_memory)
         abstract_agent.strategy_manager.should == strategy_manager
+      end
+      
+      it "set the memory attribute to the supplied choice memory" do
+        abstract_agent = klass.new(strategy_manager, choice_memory)
+        abstract_agent.memory.should == choice_memory
       end
     end
   end
   
   describe "#strategies" do
     it "returns the list of strategies stored in the strategy manager" do
-      abstract_agent = klass.new(strategy_manager)
+      abstract_agent = klass.new(strategy_manager, choice_memory)
       abstract_agent.strategies.should == strategy_manager.strategies
     end
   end
   
   describe "#last_choice" do
     it "throws an IllegalStateException if no choice has been made yet" do
-      abstract_agent = klass.new(strategy_manager)
+      abstract_agent = klass.new(strategy_manager, choice_memory)
       expect {
         abstract_agent.last_choice
       }.to raise_error(Java::JavaLang::IllegalStateException)
     end
     
     it "doesn't throw an IllegalStateException if a choice has been made" do
-      abstract_agent = klass.new(strategy_manager)
+      abstract_agent = klass.new(strategy_manager, choice_memory)
       abstract_agent.choose(choice_history.as_list(2))
       expect {
         abstract_agent.last_choice

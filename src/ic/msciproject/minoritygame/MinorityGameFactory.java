@@ -53,6 +53,7 @@ public class MinorityGameFactory {
         String  agentType,
                 type;
         ChoiceHistory choiceHistory;
+        ChoiceMemory choiceMemory;
         List<AbstractAgent> agents;
         AgentManager agentManager;
         StrategySpace strategySpace;
@@ -69,7 +70,7 @@ public class MinorityGameFactory {
         choiceHistory = new ChoiceHistory(agentMemorySize);
 
         // build a collection of agents of the specified type with the required
-        // number of strategies.
+        // number of strategies and memories of the specified size.
         agents = new ArrayList<AbstractAgent>();
         numberOfAgents = Integer.parseInt(
             properties.getProperty("number-of-agents")
@@ -90,12 +91,14 @@ public class MinorityGameFactory {
 
             strategyManager = new StrategyManager(strategies);
 
+            choiceMemory = new ChoiceMemory(choiceHistory, agentMemorySize);
+
             if(agentType.equals("basic")) {
-                agent = new BasicAgent(strategyManager);
+                agent = new BasicAgent(strategyManager, choiceMemory);
             } else if(agentType.equals("learning")) {
-                agent = new LearningAgent(strategyManager);
+                agent = new LearningAgent(strategyManager, choiceMemory);
             } else if(agentType.equals("random")) {
-                agent = new RandomAgent(strategyManager);
+                agent = new RandomAgent(strategyManager, choiceMemory);
             }
 
             // add the agents to the collection
@@ -111,7 +114,7 @@ public class MinorityGameFactory {
 
         if(type.equals("standard")) {
             minorityGame = new StandardMinorityGame(
-                agentManager, choiceHistory, agentMemorySize
+                agentManager, choiceHistory
             );
         }
 

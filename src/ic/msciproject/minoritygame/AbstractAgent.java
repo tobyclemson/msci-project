@@ -22,19 +22,32 @@ public abstract class AbstractAgent {
     protected int score = 0;
 
     /**
+     * An instance of ChoiceMemory representing the agent's memory. This is
+     * returned by the {@link #getMemory} method.
+     */
+    protected ChoiceMemory memory;
+
+    /**
      * A Choice instance representing the last choice made by this agent. This
      * is returned by the {@link #getLastChoice} method.
      */
     protected Choice lastChoice = null;
 
     /**
-     * Constructs an AbstractAgent instance setting the strategyManager 
-     * attribute to the supplied StrategyManager instance.
+     * Constructs an instance of AbstractAgent setting the strategy manager and
+     * memory attributes to the supplied StrategyManager and ChoiceMemroy
+     * instances.
      * @param strategyManager A StrategyManager instance containing the agent's
      * strategies.
+     * @param choiceMemory A ChoiceMemory instance representing the agent's
+     * memory of past minority choices.
      */
-    public AbstractAgent(StrategyManager strategyManager){
+    public AbstractAgent(
+        StrategyManager strategyManager,
+        ChoiceMemory choiceMemory
+    ){
         this.strategyManager = strategyManager;
+        this.memory = choiceMemory;
     }
 
     /**
@@ -79,11 +92,17 @@ public abstract class AbstractAgent {
     }
 
     /**
-     * Tells the agent to choose between Choice.A and Choice.B dependent on the
-     * choice history supplied.
-     * @param choiceHistory A List of past Choice outcomes.
+     * Returns the ChoiceMemory instance associated with the agent.
+     * @return The agent's memory.
      */
-    public abstract void choose(List<Choice> choiceHistory);
+    public ChoiceMemory getMemory() {
+        return memory;
+    }
+
+    /**
+     * Tells the agent to choose between Choice.A and Choice.B.
+     */
+    public abstract void choose();
 
     /**
      * Increments the agent's score.
@@ -92,14 +111,9 @@ public abstract class AbstractAgent {
 
     /**
      * Tells the agent to update its internal state given that the minority
-     * choice was as specified for the specified choice history.
+     * choice was as specified in the last time step.
      * @param minorityChoice The minority choice in the last step.
-     * @param choiceHistory The choice history that was used as input to each
-     * agent at the start of the step.
      */
-    public abstract void update(
-        Choice minorityChoice,
-        List<Choice> choiceHistory
-    );
+    public abstract void update(Choice minorityChoice);
 
 }

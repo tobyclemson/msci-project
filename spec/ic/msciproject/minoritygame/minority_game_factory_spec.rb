@@ -18,6 +18,15 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
   describe ".construct" do
     let(:properties) { properties_hash }
     
+    it "returns an instance of StandardMinorityGame when the type " + 
+      "'standard' is supplied" do
+      properties.set_property("type", "standard")
+      instance = package::MinorityGameFactory.construct(properties)
+      instance.should be_a_kind_of(
+        package::StandardMinorityGame
+      )
+    end
+    
     describe "properties hash validation" do
       describe "for a valid set of properties" do
         it "successfully creates a minority game" do
@@ -150,6 +159,13 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         instance = package::MinorityGameFactory.construct(properties)
         instance.choice_history.should be_a_kind_of(package::ChoiceHistory)
         instance.choice_history.size.should == 2
+      end
+      
+      it "creates agents with memories of the specified agent memory size" do
+        properties.set_property("agent-memory-size", "2")
+        
+        instance = package::MinorityGameFactory.construct(properties)
+        instance.agents.first.memory.capacity.should == 2
       end
 
       it "initialises the agents attribute with the required " +

@@ -15,13 +15,19 @@ import java.util.List;
 public class LearningAgent extends AbstractAgent {
 
     /**
-     * Constructs an instance of LearningAgent setting the strategies attribute
-     * to the supplied StrategyManager instance.
+     * Constructs an instance of LearningAgent setting the strategy manager and
+     * memory attributes to the supplied StrategyManager and ChoiceMemroy
+     * instances.
      * @param strategyManager A StrategyManager instance representing this
      * agent's strategies.
+     * @param choiceMemory A ChoiceMemory instance representing the agent's
+     * memory of past minority choices.
      */
-    public LearningAgent(StrategyManager strategyManager) {
-        super(strategyManager);
+    public LearningAgent(
+        StrategyManager strategyManager,
+        ChoiceMemory choiceMemory
+    ) {
+        super(strategyManager, choiceMemory);
     }
 
     /**
@@ -32,27 +38,20 @@ public class LearningAgent extends AbstractAgent {
     }
 
     /**
-     * Calculates this agent's choice based on its strategyManager and sets the
+     * Calculates this agent's choice based on its strategies and sets the
      * lastChoice attribute to the resulting choice, either Choice.A or
      * Choice.B.
-     * @param choiceHistory A List of Choice instances representing a fixed
-     * number of past minority choices in the game.
      */
-    public void choose(List<Choice> choiceHistory) {
+    public void choose() {
         
     }
 
     /**
      * Updates the agent's local information with respect to the minority
-     * choice and choice history for the last time step.
+     * choice for the last time step.
      * @param minorityChoice The minority choice for the last time step.
-     * @param choiceHistory The choice history at the start of the last time
-     * step.
      */
-    public void update(
-        Choice minorityChoice,
-        List<Choice> choiceHistory
-    ) {
+    public void update(Choice minorityChoice) {
 
     }
 

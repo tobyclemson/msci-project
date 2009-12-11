@@ -9,22 +9,19 @@ package ic.msciproject.minoritygame;
 public class StandardMinorityGame extends AbstractMinorityGame{
 
     /**
-     * Constructs a StandardMinorityGame instance setting the agent manager,
-     * choice history and agent memory size attributes to the supplied
-     * AgentManager, ChoiceHistory and integer instances.
+     * Constructs a StandardMinorityGame instance setting the agent manager and
+     * choice history attributes to the supplied AgentManager and ChoiceHistory
+     * instances.
      * @param agentManager An AgentManager instance containing the agents
      * associated with this minority game instance.
      * @param choiceHistory A ChoiceHistory instance to use as the history of
      * outcomes for this minority game instance.
-     * @param agentMemorySize The number of past minority choices each agent
-     * can remember.
      */
     public StandardMinorityGame(
         AgentManager agentManager,
-        ChoiceHistory choiceHistory,
-        int agentMemorySize
+        ChoiceHistory choiceHistory
     ){
-        super(agentManager, choiceHistory, agentMemorySize);
+        super(agentManager, choiceHistory);
     }
 
     /**
@@ -35,15 +32,13 @@ public class StandardMinorityGame extends AbstractMinorityGame{
      *  <li>Ask all agents to make a choice for this time step
      *  <li>Increment the scores of all agents that made the minority choice
      *  <li>Ask all agents to update their local information given the
-     *      last minority choice and choice history
+     *      last minority choice
      *  <li>Add the most recent minority choice outcome to the choice history
      * </ul>
      */
     public void stepForward() {
         // tell all agentManager to make a choice for this time step
-        agentManager.makeChoices(
-            choiceHistory.asList(agentMemorySize)
-        );
+        agentManager.makeChoices();
 
         // retrieve the minority choice
         Choice minorityChoice = getLastMinorityChoice();
@@ -51,10 +46,7 @@ public class StandardMinorityGame extends AbstractMinorityGame{
         // update based on the minority choice by incrementing agent scores,
         // telling agentManager to update and updating the choice history
         agentManager.incrementScoresForChoice(minorityChoice);
-        agentManager.updateForChoice(
-            minorityChoice,
-            choiceHistory.asList(agentMemorySize)
-        );
+        agentManager.updateForChoice(minorityChoice);
         choiceHistory.add(minorityChoice);
     }
 

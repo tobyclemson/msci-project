@@ -39,12 +39,26 @@ public class RandomAgent extends AbstractAgent {
     }
 
     /**
-     * Constructs an instance of RandomAgent.
+     * Constructs an instance of RandomAgent setting the strategy manager and
+     * memory attributes to the supplied StrategyManager and ChoiceMemroy
+     * instances.
      * @param strategyManager A StrategyManager instance that is not actually
      * used by the agent.
+     * @param choiceMemory A ChoiceMemory instance that is not actually used by
+     * the agent.
      */
-    public RandomAgent(StrategyManager strategyManager) {
-        super(strategyManager);
+    public RandomAgent(
+        StrategyManager strategyManager,
+        ChoiceMemory choiceMemory
+    ) {
+        super(strategyManager, choiceMemory);
+    }
+
+    /**
+     * Increments the agent's score by 1.
+     */
+    public void incrementScore() {
+        score += 1;
     }
 
     /**
@@ -52,21 +66,8 @@ public class RandomAgent extends AbstractAgent {
      * based on a random number returned by the random number generator
      * associated with the agent. If the random number evaluates to 0, Choice.A
      * is made, otherwise Choice.B is made.
-     * @param choiceHistory A List of Choice instances that are not actually
-     * used by the agent.
      */
-    public void incrementScore() {
-        score += 1;
-    }
-
-    /**
-     * Calculates this agent's choice based on its strategyManager and sets the
-     * lastChoice attribute to the resulting choice, either Choice.A or
-     * Choice.B.
-     * @param choiceHistory A List of Choice instances representing a fixed
-     * number of past minority choices in the game.
-     */
-    public void choose(List<Choice> choiceHistory) {
+    public void choose() {
         Choice choice = null;
 
         if(randomNumberGenerator.nextInt() == 0) {
@@ -80,15 +81,11 @@ public class RandomAgent extends AbstractAgent {
 
     /**
      * Updates the agent's local information with respect to the minority
-     * choice and choice history for the last time step.
+     * choice for the last time step. For a RandomAgent, no local information
+     * is maintained so this method does nothing.
      * @param minorityChoice The minority choice for the last time step.
-     * @param choiceHistory The choice history at the start of the last time
-     * step.
      */
-    public void update(
-        Choice minorityChoice,
-        List<Choice> choiceHistory
-    ) {
+    public void update(Choice minorityChoice) {
         
     }
 }

@@ -6,7 +6,14 @@ describe MSciProject::MinorityGame::RandomAgent do
   let(:empty_strategy_manager) { 
     package::StrategyManager.new(Java::JavaUtil::ArrayList.new) 
   }
-  let(:random_agent_instance) { klass.new(empty_strategy_manager) }
+  
+  let(:choice_memory) { 
+    package::ChoiceMemory.new(package::ChoiceHistory.new(2), 2)
+  }
+  
+  let(:random_agent_instance) { 
+    klass.new(empty_strategy_manager, choice_memory) 
+  }
   
   it "extends AbstractAgent" do
     random_agent_instance.should be_a_kind_of(package::AbstractAgent)
@@ -16,7 +23,7 @@ describe MSciProject::MinorityGame::RandomAgent do
     choices = []
     
     100.times do
-      random_agent_instance.choose(Java::JavaUtil::ArrayList.new)
+      random_agent_instance.choose()
       choices << random_agent_instance.last_choice
     end
     

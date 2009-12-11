@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::BasicAgent do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::BasicAgent }
-  let(:choice_history) { package::ChoiceHistory.new(2) }
+  
   let(:empty_strategy_manager) { 
     package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
   }
@@ -33,6 +33,10 @@ describe MSciProject::MinorityGame::BasicAgent do
     key
   }
  
+  let(:choice_history) { 
+    Mockito.mock(package::ChoiceHistory.java_class)
+  }
+ 
   let(:map_to_build_strategy) {
     map = Java::JavaUtil::HashMap.new
     map.put(a_a, package::Choice::A); 
@@ -49,7 +53,11 @@ describe MSciProject::MinorityGame::BasicAgent do
     package::StrategyManager.new(list)
   }
   
-  let(:basic_agent_instance) { klass.new(empty_strategy_manager) }
+  let(:choice_memory) { package::ChoiceMemory.new(choice_history, 2)}
+  
+  let(:basic_agent_instance) { 
+    klass.new(empty_strategy_manager, choice_memory) 
+  }
   
   it "extends the AbstractAgent class" do
     basic_agent_instance.should be_a_kind_of(package::AbstractAgent)
@@ -67,23 +75,25 @@ describe MSciProject::MinorityGame::BasicAgent do
       map_to_build_strategy.put(a_b, package::Choice::A)
       package::Strategy.new(map_to_build_strategy)
     }
-    let(:basic_agent) { klass.new(strategy_manager) }
+    let(:basic_agent) { klass.new(strategy_manager, choice_memory) }
     
     before(:each) do
       Mockito.when(strategy_manager.random_strategy).
         then_return(random_strategy)
       Mockito.when(strategy_manager.highest_scoring_strategy).
         then_return(highest_scoring_strategy)
+      Mockito.when(choice_history.as_list(2)).
+        then_return(a_b)
     end
     
     describe "when making the first choice of the game" do
       it "retrieves a random strategy" do
-        basic_agent.choose(choice_history.as_list(2))
+        basic_agent.choose
         Mockito.verify(strategy_manager).random_strategy
       end
       
       it "makes a choice based on the random strategy" do
-        basic_agent.choose(a_b)
+        basic_agent.choose
         basic_agent.last_choice.should == 
           random_strategy.predict_minority_choice(a_b)
       end
@@ -91,16 +101,16 @@ describe MSciProject::MinorityGame::BasicAgent do
     
     describe "when making a subsequent choice in the game" do
       before(:each) do
-        basic_agent.choose(choice_history.as_list(2))
+        basic_agent.choose
       end
       
       it "retrieves the highest scoring strategy" do
-        basic_agent.choose(choice_history.as_list(2))
+        basic_agent.choose
         Mockito.verify(strategy_manager).highest_scoring_strategy
       end
       
       it "makes a choice based on the highest scoring strategy" do
-        basic_agent.choose(a_b)
+        basic_agent.choose
         basic_agent.last_choice.should == 
           highest_scoring_strategy.predict_minority_choice(a_b)
       end
@@ -121,8 +131,12 @@ describe MSciProject::MinorityGame::BasicAgent do
     }
     
     it "calls increment_scores on the strategy manager" do
-      basic_agent = klass.new(strategy_manager)
-      basic_agent.update(package::Choice::B, a_b)
+      Mockito.when(choice_history.as_list(2)).
+        then_return(a_b)
+        
+      basic_agent = klass.new(strategy_manager, choice_memory)
+      basic_agent.update(package::Choice::B)
+      
       Mockito.verify(strategy_manager).
         increment_scores(a_b, package::Choice::B)
     end

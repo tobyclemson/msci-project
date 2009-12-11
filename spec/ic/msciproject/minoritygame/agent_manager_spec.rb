@@ -5,7 +5,8 @@ describe MSciProject::MinorityGame::AgentManager do
   let(:klass) { package::AgentManager }
   let(:agent) { 
     package::BasicAgent.new(
-      package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
+      package::StrategyManager.new(Java::JavaUtil::ArrayList.new),
+      package::ChoiceMemory.new(package::ChoiceHistory.new(2), 2)
     ) 
   }
   let(:agent_manager_instance) { klass.new(Java::JavaUtil::ArrayList.new) }
@@ -108,13 +109,11 @@ describe MSciProject::MinorityGame::AgentManager do
       
       agent_manager_instance = klass.new(agent_list)
       
-      choice_history = package::ChoiceHistory.new(5)
+      agent_manager_instance.make_choices()
       
-      agent_manager_instance.make_choices(choice_history.as_list(5))
-      
-      Mockito.verify(mock_agent_1).choose(choice_history.as_list(5))
-      Mockito.verify(mock_agent_2).choose(choice_history.as_list(5))
-      Mockito.verify(mock_agent_3).choose(choice_history.as_list(5))
+      Mockito.verify(mock_agent_1).choose()
+      Mockito.verify(mock_agent_2).choose()
+      Mockito.verify(mock_agent_3).choose()
     end
   end
 
@@ -161,15 +160,10 @@ describe MSciProject::MinorityGame::AgentManager do
       
       agent_manager_instance = klass.new(agent_list)
       
-      choice_history = Java::JavaUtil::ArrayList.new
-      choice_history.add(package::Choice::A)
-      choice_history.add(package::Choice::B)
-      
-      agent_manager_instance.update_for_choice(
-        package::Choice::A, choice_history)
+      agent_manager_instance.update_for_choice(package::Choice::A)
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
-        Mockito.verify(agent).update(package::Choice::A, choice_history)
+        Mockito.verify(agent).update(package::Choice::A)
       end
     end
   end

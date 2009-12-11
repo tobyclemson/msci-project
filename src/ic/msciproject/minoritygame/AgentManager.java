@@ -81,11 +81,9 @@ public class AgentManager {
 
     /**
      * Asks each agent managed by the AgentManager to make a choice between
-     * Choice.A and Choice.B using the supplied choice history.
-     * @param choiceHistory A List of Choice instances representing the
-     * past minority choices.
+     * Choice.A and Choice.B.
      */
-    public void makeChoices(List<Choice> choiceHistory) {
+    public void makeChoices() {
         // declare required variables
         Iterator<AbstractAgent> agentIterator;
         AbstractAgent agent;
@@ -96,7 +94,7 @@ public class AgentManager {
         // tell each agent to make a choice
         while(agentIterator.hasNext()) {
             agent = agentIterator.next();
-            agent.choose(choiceHistory);
+            agent.choose();
         }
     }
 
@@ -125,13 +123,8 @@ public class AgentManager {
     /**
      * Calls update on each stored agent.
      * @param minorityChoice The minority choice in the last step.
-     * @param choiceHistory The past minority choices as at the start of the
-     * last time step.
      */
-    public void updateForChoice(
-        Choice minorityChoice,
-        List<Choice> choiceHistory
-    ) {
+    public void updateForChoice(Choice minorityChoice) {
         // declare required variables
         Iterator<AbstractAgent> agentIterator;
 
@@ -140,7 +133,7 @@ public class AgentManager {
 
         // call incrementScore on each agent that made the correct choice
         while(agentIterator.hasNext()) {
-            agentIterator.next().update(minorityChoice, choiceHistory);
+            agentIterator.next().update(minorityChoice);
         }
     }
 }

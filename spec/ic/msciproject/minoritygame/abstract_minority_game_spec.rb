@@ -3,13 +3,20 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::AbstractMinorityGame do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { Class.new(package::AbstractMinorityGame) }
+  
   let(:agent_manager) { 
     package::AgentManager.new(Java::JavaUtil::ArrayList.new) 
   }
-  let(:choice_history) { package::ChoiceHistory.new(2) }
+  
   let(:agent_memory_size) { 2 }
+  
+  let(:choice_history) { package::ChoiceHistory.new(agent_memory_size) }
+  let(:choice_memory) { 
+    package::ChoiceMemory.new(choice_history, agent_memory_size)
+  }
+  
   let(:minority_game_instance) { 
-    klass.new(agent_manager, choice_history, agent_memory_size) 
+    klass.new(agent_manager, choice_history) 
   }
   
   describe "public interface" do
@@ -23,10 +30,6 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
     
     it "has an choice_history instance method" do
       minority_game_instance.should respond_to(:choice_history)
-    end
-    
-    it "has an agent_memory_size instance method" do
-      minority_game_instance.should respond_to(:agent_memory_size)
     end
     
     it "has a last_minority_size instance method" do
@@ -46,10 +49,11 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
     let(:strategy_manager) { 
       package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
     }
-    let(:agent) { package::BasicAgent.new(strategy_manager) }
+    let(:agent) { 
+      package::BasicAgent.new(strategy_manager, choice_memory) 
+    }
     
-    describe "with agent_manager, choice history and agent memory size " + 
-      "arguments" do
+    describe "with agent_manager and choice history arguments" do
       before(:each) do        
         agent_list = Java::JavaUtil::ArrayList.new
         
@@ -60,25 +64,14 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
 
       it "sets the agent_manager attribute to the supplied AgentManager " + 
         "instance" do
-        minority_game = klass.new(
-          agent_manager, choice_history, agent_memory_size
-        )
+        minority_game = klass.new(agent_manager, choice_history)
         minority_game.agent_manager.should == agent_manager
       end
 
       it "sets the choice_history attribute to the supplied ChoiceHistory " + 
         "instance" do
-        minority_game = klass.new(
-          agent_manager, choice_history, agent_memory_size
-        )
+        minority_game = klass.new(agent_manager, choice_history)
         minority_game.choice_history.should == choice_history
-      end
-      
-      it "sets the agent_memory_size attribute to the supplied integer" do
-        minority_game = klass.new(
-          agent_manager, choice_history, agent_memory_size
-        )
-        minority_game.agent_memory_size.should == agent_memory_size
       end
     end
   end
@@ -109,7 +102,7 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
         then_return(last_choice_totals)
       
       minority_game = klass.new(
-        mock_agent_manager, choice_history, agent_memory_size
+        mock_agent_manager, choice_history
       )
       
       minority_game.last_minority_size.should == 12
@@ -134,7 +127,7 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
         then_return(last_choice_totals)
 
       minority_game = klass.new(
-        mock_agent_manager, choice_history, agent_memory_size
+        mock_agent_manager, choice_history
       )
 
       minority_game.last_minority_choice.should == package::Choice::B
