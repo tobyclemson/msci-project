@@ -49,15 +49,18 @@ public class ChoiceHistory {
     private List<Choice> contents;
 
     /**
+     * An array of the possible choices in the game.
+     */
+    private static final Choice choiceSet[] = {Choice.A, Choice.B};
+
+    /**
      * Constructs a ChoiceHistory instance initially containing the specified
      * number of randomly chosen choices.
      * @param initialLength The number of choices with which to initially
      * populate the history (at random).
      */
     public ChoiceHistory(int initialLength){
-        Choice choiceSet[] = {Choice.A, Choice.B};
-
-        this.contents = new ArrayList<Choice>();
+        this.contents = new ArrayList<Choice>(initialLength);
 
         for(int i = 0; i < initialLength; i++) {
             contents.add(choiceSet[randomNumberGenerator.nextInt()]);
