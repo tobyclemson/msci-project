@@ -3,7 +3,6 @@ package ic.msciproject.minoritygame;
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
-import java.util.Iterator;
 
 /**
  * The Strategy class represents a strategy employed by an agent in predicting
@@ -64,27 +63,17 @@ public class Strategy {
             );
         }
 
-        // declare required variables
-        Set<List<Choice>> keySet;
-        Iterator<List<Choice>> keyIterator;
-        List<Choice> currentKey;
-
-        int previousKeyLength, currentKeyLength;
-
-        // predictMinorityChoice an iterator for the set of keys contained in the supplied
-        // mapping
-        keySet = strategyMap.keySet();
-        keyIterator = keySet.iterator();
-
-        // initialise variables
-        currentKey = null;
-        currentKeyLength = 0;
-        previousKeyLength = 0;
+        // fetch the set of keys from the supplied strategy map
+        Set<List<Choice>> keySet = strategyMap.keySet();
 
         // check that all keys in the mapping are the same length, throwing
         // an IllegalArgumentException if any differ.
-        do {
-            currentKey = keyIterator.next();
+        int previousKeyLength, currentKeyLength;
+
+        currentKeyLength = 0;
+        previousKeyLength = 0;
+
+        for(List<Choice> currentKey : keySet) {
             currentKeyLength = currentKey.size();
 
             if(previousKeyLength == 0) {
@@ -95,7 +84,7 @@ public class Strategy {
                     "length"
                 );
             }
-        } while(keyIterator.hasNext());
+        }
 
         // set the key length to that found in the supplied mappings
         keyLength = currentKeyLength;

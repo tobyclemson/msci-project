@@ -1,7 +1,6 @@
 package ic.msciproject.minoritygame;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
 import cern.jet.random.AbstractDistribution;
@@ -54,6 +53,11 @@ public class StrategySpace {
     private Set<List<Choice>> requiredKeys;
 
     /**
+     * An array of the possible choices in the game.
+     */
+    private static final Choice choiceSet[] = {Choice.A, Choice.B};
+
+    /**
      * Constructs a StrategySpace for keys of the specified length.
      * @param keyLength The length of keys for strategies in this space.
      */
@@ -88,25 +92,14 @@ public class StrategySpace {
      */
     public Strategy generateStrategy() {
         // declare required variables
-        HashMap<List<Choice>, Choice> mappings;
-        Iterator<List<Choice>> keyIterator;
-
-        // create an empty map to hold the history string to outcome
-        // predictions.
-        mappings = new HashMap<List<Choice>, Choice>();
-        
-        // obtain an iterator over all possible keys for a strategy with the
-        // specified key length.
-        keyIterator = requiredKeys.iterator();
-
-        // create an array of the possible choices
-        Choice choiceSet[] = {Choice.A, Choice.B};
+        HashMap<List<Choice>, Choice> mappings =
+            new HashMap<List<Choice>, Choice>();
 
         // for each key of the specified length, add an entry to the map with
         // a random outcome.
-        while(keyIterator.hasNext()) {
+        for(List<Choice> key : requiredKeys) {
             mappings.put(
-                keyIterator.next(),
+                key,
                 choiceSet[randomNumberGenerator.nextInt()]
             );
         }

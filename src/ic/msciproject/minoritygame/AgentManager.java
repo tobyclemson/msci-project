@@ -1,6 +1,5 @@
 package ic.msciproject.minoritygame;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
@@ -52,16 +51,13 @@ public class AgentManager {
     public Map<Choice, Integer> getLastChoiceTotals() {
         // initialise required variables.
         HashMap<Choice, Integer> totals = new HashMap<Choice, Integer>();
-        Iterator<AbstractAgent> agentIterator = agentStorage.iterator();
-        Choice choice = null;
         int choiceATotal = 0;
         int choiceBTotal = 0;
 
         // count the number of agents making the choices "0" and "1" in the
         // last step.
-        while(agentIterator.hasNext()) {
-            choice = agentIterator.next().getLastChoice();
-            switch(choice) {
+        for(AbstractAgent agent : agentStorage) {
+            switch(agent.getLastChoice()) {
                 case A:
                     choiceATotal++;
                     break;
@@ -84,16 +80,7 @@ public class AgentManager {
      * Choice.A and Choice.B.
      */
     public void makeChoices() {
-        // declare required variables
-        Iterator<AbstractAgent> agentIterator;
-        AbstractAgent agent;
-
-        // get an iterator over all agents
-        agentIterator = agentStorage.iterator();
-
-        // tell each agent to make a choice
-        while(agentIterator.hasNext()) {
-            agent = agentIterator.next();
+        for(AbstractAgent agent : agentStorage) {
             agent.choose();
         }
     }
@@ -104,16 +91,8 @@ public class AgentManager {
      * @param minorityChoice The minority choice in the last step.
      */
     public void incrementScoresForChoice(Choice minorityChoice) {
-        // declare required variables
-        Iterator<AbstractAgent> agentIterator;
-        AbstractAgent agent;
-
-        // get an iterator over all agents
-        agentIterator = agentStorage.iterator();
-
-        // call incrementScore on each agent that made the correct choice
-        while(agentIterator.hasNext()) {
-            agent = agentIterator.next();
+        for(AbstractAgent agent : agentStorage) {
+            // increment the agent's score if they made the minority choice
             if(agent.getLastChoice().equals(minorityChoice)) {
                 agent.incrementScore();
             }
@@ -125,15 +104,8 @@ public class AgentManager {
      * @param minorityChoice The minority choice in the last step.
      */
     public void updateForChoice(Choice minorityChoice) {
-        // declare required variables
-        Iterator<AbstractAgent> agentIterator;
-
-        // get an iterator over all agents
-        agentIterator = agentStorage.iterator();
-
-        // call incrementScore on each agent that made the correct choice
-        while(agentIterator.hasNext()) {
-            agentIterator.next().update(minorityChoice);
+        for(AbstractAgent agent : agentStorage) {
+            agent.update(minorityChoice);
         }
     }
 }

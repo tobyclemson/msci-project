@@ -1,6 +1,5 @@
 package ic.msciproject.minoritygame;
 
-import java.util.Iterator;
 import java.util.List;
 import cern.jet.random.AbstractDistribution;
 import cern.jet.random.Uniform;
@@ -92,16 +91,12 @@ public class StrategyManager {
      */
     public Strategy getHighestScoringStrategy() {
         // declare required variables
-        Strategy currentStrategy = strategyStorage.get(0),
-                 highestStrategy = strategyStorage.get(0);
+        Strategy highestStrategy = strategyStorage.get(0);
 
         // iterate through the strategies replacing the highest strategy if the
-        // current strategy has a higher score or randomly replicing if the
-        // score is the same
-        int max = strategyStorage.size();
-        for(int i = 1; i < max; i++) {
-            currentStrategy = strategyStorage.get(i);
-
+        // current strategy has a higher score or randomly replacing if the
+        // score is the same.
+        for(Strategy currentStrategy : strategyStorage) {
             if(currentStrategy.getScore() > highestStrategy.getScore()) {
                 highestStrategy = currentStrategy;
             } else if(
@@ -128,14 +123,11 @@ public class StrategyManager {
         List<Choice> choiceHistory, Choice minorityChoice
     ) {
         // declare required variables
-        Strategy currentStrategy = null;
-        Iterator<Strategy> strategyIterator = strategyStorage.iterator();
         Choice prediction;
 
         // increment the score of each strategy that gives the correct
         // prediction for the supplied choice history
-        while(strategyIterator.hasNext()) {
-            currentStrategy = strategyIterator.next();
+        for(Strategy currentStrategy : strategyStorage) {
             prediction = currentStrategy.predictMinorityChoice(choiceHistory);
             if(prediction.equals(minorityChoice)) {
                 currentStrategy.incrementScore();
