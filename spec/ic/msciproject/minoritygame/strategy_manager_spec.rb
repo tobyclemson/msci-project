@@ -49,6 +49,12 @@ describe MSciProject::MinorityGame::StrategyManager do
       )
     end
     
+    it "has a strategy_key_length instance method" do
+      strategy_manager_instance.should respond_to(
+        :strategy_key_length
+      )
+    end
+    
     it "has a strategies instance method" do
       strategy_manager_instance.should respond_to(
         :strategies
@@ -73,6 +79,18 @@ describe MSciProject::MinorityGame::StrategyManager do
       strategy_manager = klass.new(strategies)
       
       strategy_manager.number_of_strategies.should == 3
+    end
+  end
+  
+  describe "#strategy_key_length" do
+    it "returns the length of the keys of the strategies passed in to the " +
+      "constructor" do
+        strategies = Java::JavaUtil::ArrayList.new
+        strategies.add(strategy)
+
+        strategy_manager = klass.new(strategies)
+        
+        strategy_manager.strategy_key_length.should == strategy.key_length
     end
   end
 

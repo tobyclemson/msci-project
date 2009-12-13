@@ -46,6 +46,15 @@ public abstract class AbstractAgent {
         StrategyManager strategyManager,
         ChoiceMemory choiceMemory
     ){
+        if(!(strategyManager.getStrategyKeyLength() ==
+            choiceMemory.getCapacity())
+        ) {
+            throw new IllegalArgumentException(
+                "The Strategy key length for the supplied StrategyManager " +
+                "does not match the capacity of the supplied ChoiceMemory."
+            );
+        }
+        
         this.strategyManager = strategyManager;
         this.memory = choiceMemory;
     }
