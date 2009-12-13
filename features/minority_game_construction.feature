@@ -23,6 +23,7 @@ Feature: Versatile minority game construction
     
     Examples:
       | invalid_type |
+      |              |
       | not-a-type   |
       | 1            |
       | 0.6          |
@@ -48,6 +49,7 @@ Feature: Versatile minority game construction
     
     Examples:
       | invalid_number_of_agents |
+      |                          |
       | -1                       |
       | jeremy                   |
       | 0.486                    |
@@ -74,7 +76,6 @@ Feature: Versatile minority game construction
     
     Examples:
       | number_of_strategies_per_agent |
-      | 0                              |
       | 1                              |
       | 10                             |
       | 1000                           |
@@ -87,6 +88,7 @@ Feature: Versatile minority game construction
 
     Examples:
       | invalid_number_of_strategies |
+      |                              |
       | -1                           |
       | jeremy                       |
       | 0.486                        |
@@ -112,9 +114,34 @@ Feature: Versatile minority game construction
 
     Examples:
       | invalid_length |
+      |                |
+      | ..             |
       | -1             |
       | jeremy         |
       | 0.486          |
+      
+  Scenario Outline: construct a minority game with agents with a valid range of agent memory sizes
+    Given I have a properties hash
+    When I set the 'agent-memory-size' property to '<range>'
+    And I construct a minority game with the properties hash
+    Then I should have a minority game
+    And it should have equal proportions of agents with memories of length between <lower_bound> and <upper_bound>
+    
+    Examples:
+      | range | lower_bound | upper_bound |
+      | 3..6  | 3           | 6           |
+      | 2..2  | 2           | 2           |
+      
+  Scenario Outline: construct a minority game with agents with an invalid range of agent memory sizes
+    Given I have a properties hash
+    When I set the 'agent-memory-size' property to '<invalid_range>'
+    And I construct a minority game with the properties hash
+    Then a Java::Lang::IllegalArgumentException should be thrown
+
+    Examples:  
+      | invalid_range |
+      | 6..3          |
+      | -1..10        |
   
   Scenario Outline: construct a minority game with agents of a particular type
     Given I have a properties hash
@@ -128,6 +155,18 @@ Feature: Versatile minority game construction
       | basic        | MSciProject::MinorityGame::BasicAgent                 |
       | learning     | MSciProject::MinorityGame::LearningAgent              |
       | random       | MSciProject::MinorityGame::RandomAgent                |
+  
+  Scenario Outline: construct a minority game with agents of an invalid type
+    Given I have a properties hash
+    When I set the 'agent-type' property to '<invalid_type>'
+    And I construct a minority game with the properties hash
+    Then a Java::Lang::IllegalArgumentException should be thrown
+
+    Examples:  
+      | invalid_type |
+      |              |
+      | invalid      |
+      | 321423       |
   
   Scenario Outline: agent strategies have 2^m mappings for an agent memory size of m
     Given I have a properties hash

@@ -4,17 +4,26 @@ describe MSciProject::MinorityGame::LearningAgent do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::LearningAgent }
   
-  let(:empty_strategy_manager) { 
-    package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
+  let(:agent_memory_size) { 2 }
+  
+  let(:strategy_manager) { 
+    Mockito.mock(package::StrategyManager.java_class)
   }
   
   let(:choice_memory) { 
-    package::ChoiceMemory.new(package::ChoiceHistory.new(2), 2)
+    package::ChoiceMemory.new(
+      package::ChoiceHistory.new(agent_memory_size), agent_memory_size
+    )
   }
   
   let(:learning_agent_instance) { 
-    klass.new(empty_strategy_manager, choice_memory) 
+    klass.new(strategy_manager, choice_memory) 
   }
+  
+  before(:each) do
+    Mockito.when(strategy_manager.strategy_key_length).
+      then_return(Java::JavaLang::Integer.new(agent_memory_size))
+  end
   
   it "extends the AbstractAgent class" do
     learning_agent_instance.should be_a_kind_of(package::AbstractAgent)

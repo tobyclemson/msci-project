@@ -34,6 +34,15 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             package::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
+        
+        it "allows a range to be specified for the 'agent-memory-size' " + 
+          "property" do
+          properties.set_property("agent-memory-size", "2..3")
+            
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
       end
       
       describe "for an invalid set of properties" do
@@ -94,14 +103,39 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         end
 
         it "throws an IllegalArgumentException if the options object " + 
-          "contains anything other than digits for the " + 
+          "contains anything other than digits or a range for the " + 
           "'agent-memory-size' property" do
           properties.set_property("agent-memory-size", "non-numeric")
           expect {
             package::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
+        
+        it "throws an IllegalArgumentException if the range supplied " +
+          "for the 'agent-memory-size' property has a negative lower bound" do
+          properties.set_property("agent-memory-size", "-1..2")
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        end
 
+        it "throws an IllegalArgumentException if the range supplied " +
+          "for the 'agent-memory-size' property has a negative lower bound" do
+          properties.set_property("agent-memory-size", "1..-5")
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        end
+
+        it "throws an IllegalArgumentException if the range supplied " +
+          "for the 'agent-memory-size' property has an upper bound smaller " + 
+          "than the lower bound" do
+          properties.set_property("agent-memory-size", "5..2")
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        end
+        
         it "throws an IllegalArgumentException if the options object " + 
           "contains anything other than digits for the " + 
           "'number-of-agents' property" do
@@ -142,15 +176,6 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
       end
     end    
     
-    it "returns an instance of StandardMinorityGame when the type " + 
-      "'standard' is supplied" do
-      properties.set_property("type", "standard")
-      instance = package::MinorityGameFactory.construct(properties)
-      instance.should be_a_kind_of(
-        package::StandardMinorityGame
-      )
-    end
-    
     describe "minority game dependency generation" do
       it "initialises the choice_history attribute with a ChoiceHistory " + 
         "instance of the required initial length" do
@@ -161,11 +186,29 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         instance.choice_history.size.should == 2
       end
       
-      it "creates agents with memories of the specified agent memory size" do
+      it "creates agents with memories of the specified capacity" do
         properties.set_property("agent-memory-size", "2")
         
         instance = package::MinorityGameFactory.construct(properties)
         instance.agents.first.memory.capacity.should == 2
+      end
+      
+      it "creates an equal number of agents with each memory capacity when " +
+        "a range is specified for the 'agent-memory-size' parameter" do
+        properties.set_property("agent-memory-size", "2..5")
+        properties.set_property("number-of-agents", "10001")
+        
+        instance = package::MinorityGameFactory.construct(properties)
+        
+        scores = {2 => 0, 3 => 0, 4 => 0, 5 => 0}
+        
+        instance.agents.each do |agent|
+          scores[agent.memory.capacity] += 1
+        end
+        
+        scores.each_value do |score|
+          score.should be_between(2400, 2600)
+        end
       end
 
       it "initialises the agents attribute with the required " +

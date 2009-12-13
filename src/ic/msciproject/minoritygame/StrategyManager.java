@@ -45,12 +45,19 @@ public class StrategyManager {
     private List<Strategy> strategyStorage;
 
     /**
+     * An integer representing the key size of the Strategy objects held by the
+     * StrategyManager.
+     */
+    private int strategyKeySize;
+
+    /**
      * Constructs a StrategyManager instance to act on the supplied strategies.
      * @param strategies The Strategy objects to be managed by the
      * StrategyManager.
      */
     public StrategyManager(List<Strategy> strategies) {
         this.strategyStorage = strategies;
+        this.strategyKeySize = strategies.get(0).getKeyLength();
     }
 
     /**
@@ -60,6 +67,15 @@ public class StrategyManager {
      */
     public int getNumberOfStrategies() {
         return strategyStorage.size();
+    }
+
+    /**
+     * Returns an integer representing the key length of the Strategy instances
+     * managed by the StrategyManager.
+     * @return The key length of strategies managed by the strategy manager.
+     */
+    public int getStrategyKeyLength() {
+        return strategyKeySize;
     }
 
     /**
@@ -96,7 +112,11 @@ public class StrategyManager {
         // iterate through the strategies replacing the highest strategy if the
         // current strategy has a higher score or randomly replacing if the
         // score is the same.
-        for(Strategy currentStrategy : strategyStorage) {
+        for(
+            Strategy currentStrategy : strategyStorage.subList(
+                1, strategyStorage.size()
+            )
+        ) {
             if(currentStrategy.getScore() > highestStrategy.getScore()) {
                 highestStrategy = currentStrategy;
             } else if(

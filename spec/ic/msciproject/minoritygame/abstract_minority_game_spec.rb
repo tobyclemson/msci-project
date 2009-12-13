@@ -47,11 +47,16 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
   
   describe "constructor" do
     let(:strategy_manager) { 
-      package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
+      Mockito.mock(package::StrategyManager.java_class)
     }
     let(:agent) { 
       package::BasicAgent.new(strategy_manager, choice_memory) 
     }
+    
+    before(:each) do
+      Mockito.when(strategy_manager.strategy_key_length).
+        then_return(Java::JavaLang::Integer.new(agent_memory_size))
+    end
     
     describe "with agent_manager and choice history arguments" do
       before(:each) do        

@@ -274,8 +274,8 @@ Then /^each choice should have been made approximately an equal number of times$
     end
   end
   
-  choice_a_count.should be_between(42, 58)
-  choice_b_count.should be_between(42, 58)
+  choice_a_count.should be_between(40, 60)
+  choice_b_count.should be_between(40, 60)
 end
 
 Then /^the choice history at each time step should be correct with respect to the minority choice$/ do
@@ -412,6 +412,31 @@ end
 
 Then /^it should have agents with (.*) strategies$/ do |num|
   @minority_game.agents.first.strategies.size.should == num.to_i
+end
+
+Then /^it should have equal proportions of agents with memories of length between (\d*) and (\d*)$/ do |lower_bound, upper_bound|
+  lower_bound = lower_bound.to_i
+  upper_bound = upper_bound.to_i
+  
+  number_of_different_memory_sizes = upper_bound - lower_bound + 1
+  number_of_agents = @minority_game.agents.size
+  average_number_of_agents = number_of_agents / number_of_different_memory_sizes
+  
+  scores = {}
+  (lower_bound..upper_bound).each do |size|
+    scores[size] = 0
+  end
+  
+  @minority_game.agents.each do |agent|
+    scores[agent.memory.capacity] += 1
+  end
+  
+  scores.each_value do |score|
+    score.should be_between(
+      average_number_of_agents * 0.6, 
+      average_number_of_agents * 1.4
+    )
+  end  
 end
 
 Then /^it should have agents that are instances of (.*)$/ do |agent_class_name|

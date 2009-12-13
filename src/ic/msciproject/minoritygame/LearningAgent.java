@@ -1,7 +1,5 @@
 package ic.msciproject.minoritygame;
 
-import java.util.List;
-
 /**
  * The LearningAgent class represents the simplest type of evolutionary agent
  * to be used in the minority game simulation. It can evolve its strategies by

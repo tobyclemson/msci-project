@@ -11,9 +11,12 @@ describe MSciProject::MinorityGame::AbstractAgent do
       end
     end
   }
-  let(:choice_history) { package::ChoiceHistory.new(2) }
-  let(:empty_strategy_manager) { 
-    package::StrategyManager.new(Java::JavaUtil::ArrayList.new)
+
+  let(:agent_memory_size) { 2 }
+
+  let(:choice_history) { package::ChoiceHistory.new(agent_memory_size) }
+  let(:mock_strategy_manager) { 
+    Mockito.mock(package::StrategyManager.java_class)
   }
   
   let(:a_a) {
@@ -58,12 +61,17 @@ describe MSciProject::MinorityGame::AbstractAgent do
   }
   
   let(:choice_memory) {
-    package::ChoiceMemory.new(choice_history, 2)
+    package::ChoiceMemory.new(choice_history, agent_memory_size)
   }
   
   let(:abstract_agent_instance) { 
-    klass.new(empty_strategy_manager, choice_memory) 
+    klass.new(mock_strategy_manager, choice_memory) 
   }
+  
+  before(:each) do
+    Mockito.when(mock_strategy_manager.strategy_key_length).
+      then_return(Java::JavaLang::Integer.new(agent_memory_size))
+  end
   
   describe "public interface" do
     it "has a strategies instance method" do
@@ -109,6 +117,21 @@ describe MSciProject::MinorityGame::AbstractAgent do
       it "set the memory attribute to the supplied choice memory" do
         abstract_agent = klass.new(strategy_manager, choice_memory)
         abstract_agent.memory.should == choice_memory
+      end
+      
+      it "throws an IllegalArgumentError if the strategy key lengths are " + 
+        "not equal to the memory length" do
+        choice_history = package::ChoiceHistory.new(8)
+        choice_memory = package::ChoiceMemory.new(choice_history, 8)
+        
+        strategies = Java::JavaUtil::ArrayList.new
+        3.times { strategies.add(strategy) }
+        
+        strategy_manager = package::StrategyManager.new(strategies)
+        
+        expect {
+          klass.new(strategy_manager, choice_memory)
+        }.to raise_error
       end
     end
   end
