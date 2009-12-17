@@ -48,7 +48,7 @@ public class StrategyManager {
      * An integer representing the key size of the Strategy objects held by the
      * StrategyManager.
      */
-    private int strategyKeySize;
+    private int strategyKeyLength;
 
     /**
      * Constructs a StrategyManager instance to act on the supplied strategies.
@@ -57,7 +57,7 @@ public class StrategyManager {
      */
     public StrategyManager(List<Strategy> strategies) {
         this.strategyStorage = strategies;
-        this.strategyKeySize = strategies.get(0).getKeyLength();
+        this.strategyKeyLength = strategies.get(0).getKeyLength();
     }
 
     /**
@@ -75,7 +75,7 @@ public class StrategyManager {
      * @return The key length of strategies managed by the strategy manager.
      */
     public int getStrategyKeyLength() {
-        return strategyKeySize;
+        return strategyKeyLength;
     }
 
     /**

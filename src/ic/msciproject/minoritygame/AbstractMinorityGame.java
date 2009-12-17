@@ -26,11 +26,6 @@ public abstract class AbstractMinorityGame {
     protected ChoiceHistory choiceHistory;
 
     /**
-     * An integer representing the size of the memory of each agent in the game.
-     */
-    protected int agentMemorySize;
-
-    /**
      * Constructs an AbstractMinorityGame instance setting the agent manager 
      * and choice history attributes to the supplied AgentManager and
      * ChoiceHistory instances.
@@ -72,16 +67,6 @@ public abstract class AbstractMinorityGame {
      */
     public ChoiceHistory getChoiceHistory() {
         return choiceHistory;
-    }
-
-    /**
-     * Returns an integer representing the number of past minority choices each
-     * agent in the game can remember.
-     * @return The number of past minority choices each agent in the game can
-     * remember.
-     */
-    public int getAgentMemorySize() {
-        return agentMemorySize;
     }
 
     /**
