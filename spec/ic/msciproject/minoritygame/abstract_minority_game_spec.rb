@@ -32,12 +32,12 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
       minority_game_instance.should respond_to(:choice_history)
     end
     
-    it "has a last_minority_size instance method" do
-      minority_game_instance.should respond_to(:last_minority_size)
+    it "has a minority_size instance method" do
+      minority_game_instance.should respond_to(:minority_size)
     end
     
-    it "has a last_minority_choice instance method" do
-      minority_game_instance.should respond_to(:last_minority_choice)
+    it "has a minority_choice instance method" do
+      minority_game_instance.should respond_to(:minority_choice)
     end
     
     it "has a step_forward instance method" do
@@ -89,53 +89,53 @@ describe MSciProject::MinorityGame::AbstractMinorityGame do
     end
   end
 
-  describe "#last_minority_size" do
+  describe "#minority_size" do
     it "returns the number of agents in the minority group at the end of " + 
-      "the last step" do
+      "the step" do
       mock_agent_manager = Mockito.mock(
         package::AgentManager.java_class
       )
-      last_choice_totals = Java::JavaUtil::HashMap.new
-      last_choice_totals.put(
+      choice_totals = Java::JavaUtil::HashMap.new
+      choice_totals.put(
         package::Choice::A, Java::JavaLang::Integer.new(15)
       )
-      last_choice_totals.put(
+      choice_totals.put(
         package::Choice::B, Java::JavaLang::Integer.new(12)
       )
       
-      Mockito.when(mock_agent_manager.last_choice_totals).
-        then_return(last_choice_totals)
+      Mockito.when(mock_agent_manager.choice_totals).
+        then_return(choice_totals)
       
       minority_game = klass.new(
         mock_agent_manager, choice_history
       )
       
-      minority_game.last_minority_size.should == 12
+      minority_game.minority_size.should == 12
     end
   end
 
-  describe "#last_minority_choice" do
-    it "returns a string representing the choice that the minority of " + 
-      "agents made in the last step" do
+  describe "#minority_choice" do
+    it "returns one of Choice.A or Choice.B representing the choice that the " +
+      "minority of agents have made in this step" do
       mock_agent_manager = Mockito.mock(
         package::AgentManager.java_class
       )
-      last_choice_totals = Java::JavaUtil::HashMap.new
-      last_choice_totals.put(
+      choice_totals = Java::JavaUtil::HashMap.new
+      choice_totals.put(
         package::Choice::A, Java::JavaLang::Integer.new(15)
       )
-      last_choice_totals.put(
+      choice_totals.put(
         package::Choice::B, Java::JavaLang::Integer.new(12)
       )
 
-      Mockito.when(mock_agent_manager.last_choice_totals).
-        then_return(last_choice_totals)
+      Mockito.when(mock_agent_manager.choice_totals).
+        then_return(choice_totals)
 
       minority_game = klass.new(
         mock_agent_manager, choice_history
       )
 
-      minority_game.last_minority_choice.should == package::Choice::B
+      minority_game.minority_choice.should == package::Choice::B
     end
   end
 end

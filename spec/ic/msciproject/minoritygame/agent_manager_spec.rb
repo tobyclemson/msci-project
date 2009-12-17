@@ -29,8 +29,8 @@ describe MSciProject::MinorityGame::AgentManager do
       agent_manager_instance.should respond_to(:agents)
     end
     
-    it "has a last_choice_totals instance method" do
-      agent_manager_instance.should respond_to(:last_choice_totals)
+    it "has a choice_totals instance method" do
+      agent_manager_instance.should respond_to(:choice_totals)
     end
     
     it "has a make_choices instance method" do
@@ -80,14 +80,13 @@ describe MSciProject::MinorityGame::AgentManager do
     end
   end
 
-  describe "#last_choice_totals" do
-    it "counts the number of agents making each choice during the last " + 
-      "timestep" do
+  describe "#choice_totals" do
+    it "counts the number of agents that have made each choice" do
       choice_a_agent = Mockito.mock(package::AbstractAgent.java_class)
       choice_b_agent = Mockito.mock(package::AbstractAgent.java_class)
       
-      Mockito.when(choice_a_agent.last_choice).thenReturn(package::Choice::A)
-      Mockito.when(choice_b_agent.last_choice).thenReturn(package::Choice::B)
+      Mockito.when(choice_a_agent.choice).thenReturn(package::Choice::A)
+      Mockito.when(choice_b_agent.choice).thenReturn(package::Choice::B)
       
       agent_list = Java::JavaUtil::ArrayList.new
       
@@ -96,7 +95,7 @@ describe MSciProject::MinorityGame::AgentManager do
       
       agent_manager_instance = klass.new(agent_list)
       
-      totals = agent_manager_instance.last_choice_totals
+      totals = agent_manager_instance.choice_totals
       
       {
         package::Choice::A => 3, 
@@ -131,15 +130,14 @@ describe MSciProject::MinorityGame::AgentManager do
   end
 
   describe "#increment_scores_for_choice" do
-    it "calls increment_score on all agents that made the supplied choice " +
-      "as their last choice" do
+    it "calls increment_score on all agents that made the supplied choice." do
       mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
       
-      Mockito.when(mock_agent_1.last_choice).then_return(package::Choice::A)
-      Mockito.when(mock_agent_2.last_choice).then_return(package::Choice::A)
-      Mockito.when(mock_agent_3.last_choice).then_return(package::Choice::B)
+      Mockito.when(mock_agent_1.choice).then_return(package::Choice::A)
+      Mockito.when(mock_agent_2.choice).then_return(package::Choice::A)
+      Mockito.when(mock_agent_3.choice).then_return(package::Choice::B)
 
       agent_list = Java::JavaUtil::ArrayList.new
 

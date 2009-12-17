@@ -63,7 +63,7 @@ describe MSciProject::MinorityGame::StandardMinorityGame do
     let(:mock_agent_manager) { 
       Mockito.mock(package::AgentManager.java_class) 
     }
-    let(:last_choice_totals) {
+    let(:choice_totals) {
       hash = Java::JavaUtil::HashMap.new
       hash.put(
         package::Choice::A, Java::JavaLang::Integer.new(15)
@@ -81,8 +81,8 @@ describe MSciProject::MinorityGame::StandardMinorityGame do
     }
     
     before(:each) do
-      Mockito.when(mock_agent_manager.last_choice_totals).
-        then_return(last_choice_totals)
+      Mockito.when(mock_agent_manager.choice_totals).
+        then_return(choice_totals)
       
       choice_history_list.add(package::Choice::A)
       choice_history_list.add(package::Choice::B)

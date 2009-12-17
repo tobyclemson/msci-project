@@ -34,7 +34,7 @@ describe MSciProject::MinorityGame::RandomAgent do
     
     100.times do
       random_agent_instance.choose()
-      choices << random_agent_instance.last_choice
+      choices << random_agent_instance.choice
     end
     
     choice_a_count = choice_b_count = 0

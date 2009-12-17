@@ -28,16 +28,16 @@ public class BasicAgent extends AbstractAgent {
 
     /**
      * Calculates this agent's choice based on its strategies and sets the
-     * lastChoice attribute to the resulting choice, either Choice.A or
+     * choice attribute to the resulting choice, either Choice.A or
      * Choice.B.
      */
     public void choose() {
         // declare required variables
         Strategy chosenStrategy;
 
-        // if no lastChoice exists, get a strategy at random, otherwise fetch
+        // if no choice exists, get a strategy at random, otherwise fetch
         // the highest scoring strategy
-        if(lastChoice == null) {
+        if(choice == null) {
             chosenStrategy = strategyManager.getRandomStrategy();
         }
         else {
@@ -45,7 +45,7 @@ public class BasicAgent extends AbstractAgent {
         }
 
         // use the chosen strategy to calculate the choice
-        lastChoice = chosenStrategy.predictMinorityChoice(memory.fetch());
+        choice = chosenStrategy.predictMinorityChoice(memory.fetch());
     }
 
     /**
@@ -56,9 +56,9 @@ public class BasicAgent extends AbstractAgent {
     }
 
     /**
-     * Updates the agent's local information with respect to the minority
-     * choice for the last time step.
-     * @param minorityChoice The minority choice for the last time step.
+     * Updates the agent's local information with respect to the current 
+     * minority choice.
+     * @param minorityChoice The current minority choice.
      */
     public void update(
         Choice minorityChoice

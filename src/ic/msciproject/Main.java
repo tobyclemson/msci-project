@@ -82,7 +82,7 @@ public class Main {
                     // get the attendance for choice A
                     attendanceOfA = minorityGame.
                         getAgentManager().
-                        getLastChoiceTotals().
+                        getChoiceTotals().
                         get(Choice.A);
 
                     // set the relevant data point to the attendance

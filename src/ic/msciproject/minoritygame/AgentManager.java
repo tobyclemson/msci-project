@@ -45,19 +45,19 @@ public class AgentManager {
 
     /**
      * Returns a map of the possible choices Choice.A and Choice.B to the
-     * number of agents that made that choice in the last step.
+     * number of agents that have made that choice.
      * @return A map of choice totals.
      */
-    public Map<Choice, Integer> getLastChoiceTotals() {
+    public Map<Choice, Integer> getChoiceTotals() {
         // initialise required variables.
         HashMap<Choice, Integer> totals = new HashMap<Choice, Integer>();
         int choiceATotal = 0;
         int choiceBTotal = 0;
 
-        // count the number of agents making the choices "0" and "1" in the
-        // last step.
+        // count the number of agents that have made the choices Choice.A and
+        // Choice.B.
         for(AbstractAgent agent : agentStorage) {
-            switch(agent.getLastChoice()) {
+            switch(agent.getChoice()) {
                 case A:
                     choiceATotal++;
                     break;
@@ -67,7 +67,7 @@ public class AgentManager {
             }
         }
 
-        // set the totals for the choice '0' and '1'.
+        // set the totals for the choices Choice.A and Choice.B.
         totals.put(Choice.A, choiceATotal);
         totals.put(Choice.B, choiceBTotal);
 
@@ -86,14 +86,13 @@ public class AgentManager {
     }
 
     /**
-     * Increments the score of each agent that made the minority choice in the
-     * last step.
-     * @param minorityChoice The minority choice in the last step.
+     * Increments the score of each agent that has made the minority choice.
+     * @param minorityChoice The current minority choice.
      */
     public void incrementScoresForChoice(Choice minorityChoice) {
         for(AbstractAgent agent : agentStorage) {
             // increment the agent's score if they made the minority choice
-            if(agent.getLastChoice().equals(minorityChoice)) {
+            if(agent.getChoice().equals(minorityChoice)) {
                 agent.incrementScore();
             }
         }
@@ -101,7 +100,7 @@ public class AgentManager {
 
     /**
      * Calls update on each stored agent.
-     * @param minorityChoice The minority choice in the last step.
+     * @param minorityChoice The current minority choice.
      */
     public void updateForChoice(Choice minorityChoice) {
         for(AbstractAgent agent : agentStorage) {

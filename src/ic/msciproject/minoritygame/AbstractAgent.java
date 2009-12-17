@@ -28,10 +28,10 @@ public abstract class AbstractAgent {
     protected ChoiceMemory memory;
 
     /**
-     * A Choice instance representing the last choice made by this agent. This
-     * is returned by the {@link #getLastChoice} method.
+     * A Choice instance representing the agent's current choice. This is
+     * returned by the {@link #getChoice} method.
      */
-    protected Choice lastChoice = null;
+    protected Choice choice = null;
 
     /**
      * Constructs an instance of AbstractAgent setting the strategy manager and
@@ -86,18 +86,18 @@ public abstract class AbstractAgent {
     }
 
     /**
-     * Returns the last choice made by the agent, either Choice.A or Choice.B.
+     * Returns the choice made by the agent, either Choice.A or Choice.B.
      * If the {@link #choose} method has not yet been called, an
      * IllegalStateException is thrown.
-     * @return The last choice made by the agent.
+     * @return The choice made by the agent.
      */
-    public Choice getLastChoice() {
-        if(lastChoice == null) {
+    public Choice getChoice() {
+        if(choice == null) {
             throw new IllegalStateException(
-                "No choice has been made yet so no last choice exists."
+                "No choice has been made yet."
             );
         }
-        return lastChoice;
+        return choice;
     }
 
     /**
@@ -119,9 +119,9 @@ public abstract class AbstractAgent {
     public abstract void incrementScore();
 
     /**
-     * Tells the agent to update its internal state given that the minority
-     * choice was as specified in the last time step.
-     * @param minorityChoice The minority choice in the last step.
+     * Tells the agent to update its internal state given that the current 
+     * minority choice is as specified.
+     * @param minorityChoice The current minority choice.
      */
     public abstract void update(Choice minorityChoice);
 

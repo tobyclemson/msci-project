@@ -58,19 +58,19 @@ Given /^I set the experimentalist to record the attendance of choice '(.)'$/ do 
   end
   
   @experimentalist.add_measurement(:choice_attendance) { |minority_game|
-    minority_game.agents.last_choice_totals.get(@choice)
+    minority_game.agents.choice_totals.get(@choice)
   }
 end
 
 Given /^I set the experimentalist to record the minority choice$/ do
   @experimentalist.add_measurement(:minority_choice) { |minority_game| 
-    minority_game.last_minority_choice
+    minority_game.minority_choice
   }
 end
 
 Given /^I set the experimentalist to record the minority size$/ do
   @experimentalist.add_measurement(:minority_size) { |minority_game| 
-    minority_game.last_minority_size
+    minority_game.minority_size
   }
 end
 
@@ -93,15 +93,15 @@ end
 Given /^I set the experimentalist to record the choices? of (all|one) agents?$/ do |how_many|
   if how_many == "all"
     @experimentalist.add_measurement(:agent_choice) { |minority_game| 
-      last_choices = []
+      choices = []
       minority_game.agents.each do |agent|
-        last_choices << agent.last_choice
+        choices << agent.choice
       end
-      last_choices
+      choices
     }
   elsif how_many == "one"
     @experimentalist.add_measurement(:agent_choice) { |minority_game| 
-      minority_game.agents.first.last_choice
+      minority_game.agents.first.choice
     }
   end
 end

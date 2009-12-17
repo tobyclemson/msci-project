@@ -137,7 +137,7 @@ public class StrategyManager {
      * prediction for the supplied choice history is equal to the supplied
      * minority choice.
      * @param choiceHistory The choice history of which to check the prediction.
-     * @param minorityChoice The minority choice that occurred at the last step.
+     * @param minorityChoice The current minority choice.
      */
     public void incrementScores(
         List<Choice> choiceHistory, Choice minorityChoice

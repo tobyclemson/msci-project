@@ -37,7 +37,7 @@ public class LearningAgent extends AbstractAgent {
 
     /**
      * Calculates this agent's choice based on its strategies and sets the
-     * lastChoice attribute to the resulting choice, either Choice.A or
+     * choice attribute to the resulting choice, either Choice.A or
      * Choice.B.
      */
     public void choose() {
@@ -45,9 +45,9 @@ public class LearningAgent extends AbstractAgent {
     }
 
     /**
-     * Updates the agent's local information with respect to the minority
-     * choice for the last time step.
-     * @param minorityChoice The minority choice for the last time step.
+     * Updates the agent's local information with respect to the current 
+     * minority choice.
+     * @param minorityChoice The current minority choice.
      */
     public void update(Choice minorityChoice) {
 

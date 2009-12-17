@@ -4,10 +4,10 @@ describe MSciProject::MinorityGame::AbstractAgent do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { 
     Class.new(package::AbstractAgent) do
-      field_accessor :lastChoice
+      field_accessor :choice
       
       def choose(*args)
-        self.lastChoice = MSciProject::MinorityGame::Choice::A
+        self.choice = MSciProject::MinorityGame::Choice::A
       end
     end
   }
@@ -90,8 +90,8 @@ describe MSciProject::MinorityGame::AbstractAgent do
       abstract_agent_instance.should respond_to(:memory)
     end
     
-    it "has a last_choice instance method" do
-      abstract_agent_instance.should respond_to(:last_choice)
+    it "has a choice instance method" do
+      abstract_agent_instance.should respond_to(:choice)
     end
     
     it "has a choose instance method" do
@@ -143,11 +143,11 @@ describe MSciProject::MinorityGame::AbstractAgent do
     end
   end
   
-  describe "#last_choice" do
+  describe "#choice" do
     it "throws an IllegalStateException if no choice has been made yet" do
       abstract_agent = klass.new(strategy_manager, choice_memory)
       expect {
-        abstract_agent.last_choice
+        abstract_agent.get_choice
       }.to raise_error(Java::JavaLang::IllegalStateException)
     end
     
@@ -155,7 +155,7 @@ describe MSciProject::MinorityGame::AbstractAgent do
       abstract_agent = klass.new(strategy_manager, choice_memory)
       abstract_agent.choose(choice_history.as_list(2))
       expect {
-        abstract_agent.last_choice
+        abstract_agent.get_choice
       }.to_not raise_error(Java::JavaLang::IllegalStateException)
     end
   end

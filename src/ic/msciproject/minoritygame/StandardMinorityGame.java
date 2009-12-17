@@ -32,7 +32,7 @@ public class StandardMinorityGame extends AbstractMinorityGame{
      *  <li>Ask all agents to make a choice for this time step
      *  <li>Increment the scores of all agents that made the minority choice
      *  <li>Ask all agents to update their local information given the
-     *      last minority choice
+     *      current minority choice
      *  <li>Add the most recent minority choice outcome to the choice history
      * </ul>
      */
@@ -41,7 +41,7 @@ public class StandardMinorityGame extends AbstractMinorityGame{
         agentManager.makeChoices();
 
         // retrieve the minority choice
-        Choice minorityChoice = getLastMinorityChoice();
+        Choice minorityChoice = getMinorityChoice();
 
         // update based on the minority choice by incrementing agent scores,
         // telling agentManager to update and updating the choice history

@@ -70,44 +70,44 @@ public abstract class AbstractMinorityGame {
     }
 
     /**
-     * Returns the size of the minority group in the last step.
+     * Returns the size of the current minority group.
      * @return The size of the minority group.
      */
-    public int getLastMinoritySize() {
+    public int getMinoritySize() {
         // declare variables
-        Map<Choice, Integer> lastChoiceTotals;
+        Map<Choice, Integer> choiceTotals;
         Integer numberChoosingA, numberChoosingB;
         
-        // get a mapping of the choices '0' and '1' to the number of agentManager
-        // making that choice in the last step.
-        lastChoiceTotals = agentManager.getLastChoiceTotals();
+        // get a mapping of the choices Choice.A and Choice.B to the number of
+        // agents that have make that choice.
+        choiceTotals = agentManager.getChoiceTotals();
         
-        // retrieve the numbers of agentManager making each choice.
-        numberChoosingA = lastChoiceTotals.get(Choice.A);
-        numberChoosingB = lastChoiceTotals.get(Choice.B);
+        // retrieve the numbers of agents making each choice.
+        numberChoosingA = choiceTotals.get(Choice.A);
+        numberChoosingB = choiceTotals.get(Choice.B);
 
         // return the smallest of those numbers.
         return Math.min(numberChoosingA, numberChoosingB);
     }
 
     /**
-     * Returns the minority choice in the last step.
-     * @return The minority choice in the last step.
+     * Returns the current minority choice.
+     * @return The minority choice.
      */
-    public Choice getLastMinorityChoice() {
+    public Choice getMinorityChoice() {
         // declare variables
-        Map<Choice, Integer> lastChoiceTotals;
+        Map<Choice, Integer> choiceTotals;
         Integer numberChoosingA, numberChoosingB;
 
-        // get a mapping of the choices '0' and '1' to the number of agentManager
-        // making that choice in the last step.
-        lastChoiceTotals = agentManager.getLastChoiceTotals();
+        // get a mapping of the choices Choice.A and Choice.B to the number of
+        // agents that have made that choice.
+        choiceTotals = agentManager.getChoiceTotals();
 
-        // retrieve the numbers of agentManager making each choice.
-        numberChoosingA = lastChoiceTotals.get(Choice.A);
-        numberChoosingB = lastChoiceTotals.get(Choice.B);
+        // retrieve the numbers of agents making each choice.
+        numberChoosingA = choiceTotals.get(Choice.A);
+        numberChoosingB = choiceTotals.get(Choice.B);
 
-        // return the smallest of those numbers.
+        // return the choice corresponding to the smallest of thise numbers.
         if(numberChoosingA < numberChoosingB) {
             return Choice.A;
         }

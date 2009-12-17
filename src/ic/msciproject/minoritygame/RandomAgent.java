@@ -62,28 +62,28 @@ public class RandomAgent extends AbstractAgent {
     }
 
     /**
-     * Calculates this agent's choices by choosing between Choice.A and Choice.B
+     * Calculates the agent's choice by choosing between Choice.A and Choice.B
      * based on a random number returned by the random number generator
      * associated with the agent. If the random number evaluates to 0, Choice.A
      * is made, otherwise Choice.B is made.
      */
     public void choose() {
-        Choice choice = null;
+        Choice currentChoice = null;
 
         if(randomNumberGenerator.nextInt() == 0) {
-            choice = Choice.A;
+            currentChoice = Choice.A;
         } else {
-            choice = Choice.B;
+            currentChoice = Choice.B;
         }
 
-        lastChoice = choice;
+        this.choice = currentChoice;
     }
 
     /**
-     * Updates the agent's local information with respect to the minority
-     * choice for the last time step. For a RandomAgent, no local information
-     * is maintained so this method does nothing.
-     * @param minorityChoice The minority choice for the last time step.
+     * Updates the agent's local information with respect to the current 
+     * minority choice. For a RandomAgent, no local information is maintained
+     * so this method does nothing.
+     * @param minorityChoice The current minority choice.
      */
     public void update(Choice minorityChoice) {
         

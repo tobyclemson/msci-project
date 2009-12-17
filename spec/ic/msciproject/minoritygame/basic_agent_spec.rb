@@ -100,7 +100,7 @@ describe MSciProject::MinorityGame::BasicAgent do
       
       it "makes a choice based on the random strategy" do
         basic_agent.choose
-        basic_agent.last_choice.should == 
+        basic_agent.choice.should == 
           random_strategy.predict_minority_choice(a_b)
       end
     end
@@ -117,7 +117,7 @@ describe MSciProject::MinorityGame::BasicAgent do
       
       it "makes a choice based on the highest scoring strategy" do
         basic_agent.choose
-        basic_agent.last_choice.should == 
+        basic_agent.choice.should == 
           highest_scoring_strategy.predict_minority_choice(a_b)
       end
     end
