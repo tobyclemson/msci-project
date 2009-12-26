@@ -5,7 +5,7 @@ Feature: general structure of the minority game
   So that I can create minority games of different types
   
   Scenario Outline: the minority choice is correct at each time step
-    Given I have a standard minority game with <agent_type> agents
+    Given I have a minority game with <agent_type> agents
     And I have an experimentalist
     And I set the experimentalist to record the choices of all agents
     And I set the experimentalist to record the minority choice
@@ -18,7 +18,7 @@ Feature: general structure of the minority game
       | random     |
   
   Scenario Outline: the minority size is correct at each time step
-    Given I have a standard minority game with <agent_type> agents
+    Given I have a minority game with <agent_type> agents
     And I have an experimentalist
     And I set the experimentalist to record the choices of all agents
     And I set the experimentalist to record the minority size
@@ -31,7 +31,7 @@ Feature: general structure of the minority game
       | random     |
   
   Scenario Outline: the agent scores are correct at each time step
-    Given I have a standard minority game with <agent_type> agents
+    Given I have a minority game with <agent_type> agents
     And I have an experimentalist
     And I set the experimentalist to record the scores of all agents
     And I set the experimentalist to record the choices of all agents
@@ -45,7 +45,7 @@ Feature: general structure of the minority game
       | random     |
   
   Scenario Outline: the choice history is updated correctly at each time step
-    Given I have a standard minority game with <agent_type> agents
+    Given I have a minority game with <agent_type> agents
     And I have an experimentalist
     And I set the experimentalist to record the minority choice
     And I set the experimentalist to record the initial choice history

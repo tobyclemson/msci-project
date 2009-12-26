@@ -17,27 +17,24 @@ When /^I construct a minority game with the properties hash$/ do
   end
 end
 
-Given /^I have a (.*) minority game$/ do |type|
+Given /^I have a minority game$/ do
   Given "I have a properties hash"
-  Given "I set the 'type' property to '#{type}'"
   Given "I construct a minority game with the properties hash"
 end
 
-Given /^I have a (.*) minority game with (\d*) agents?$/ do |type, agents|
+Given /^I have a minority game with (\d*) agents?$/ do |agents|
   Given "I have a properties hash"
-  Given "I set the 'type' property to '#{type}'"
   Given "I set the 'number-of-agents' property to '#{agents}'"
   Given "I construct a minority game with the properties hash"
 end
 
-Given /^I have a (.*) minority game with ([a-zA-Z\-]*) agents?$/ do |type, agent_type|
+Given /^I have a minority game with ([a-zA-Z\-]*) agents?$/ do |agent_type|
   Given "I have a properties hash"
-  Given "I set the 'type' property to '#{type}'"
   Given "I set the 'agent-type' property to '#{agent_type}'"
   Given "I construct a minority game with the properties hash"
 end
 
-Given /^I have a (.*) minority game with ([a-zA-Z\-]*) agents? with a memory size of (\d*)$/ do |type, agent_type, agent_memory_size|
+Given /^I have a minority game with ([a-zA-Z\-]*) agents? with a memory size of (\d*)$/ do |agent_type, agent_memory_size|
   Given "I have a properties hash"
   Given "I set the 'type' property to '#{type}'"
   Given "I set the 'agent-type' property to '#{agent_type}'"
@@ -398,7 +395,7 @@ end
 # Minority game verification steps
 Then /^I should have a minority game$/ do
   @minority_game.should be_a_kind_of(
-    MSciProject::MinorityGame::AbstractMinorityGame
+    MSciProject::MinorityGame::MinorityGame
   )
 end
 

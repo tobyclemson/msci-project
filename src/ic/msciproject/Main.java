@@ -34,7 +34,7 @@ public class Main {
         StringBuilder output;
         Properties properties;
         FileWriter outputFile;
-        AbstractMinorityGame minorityGame;
+        MinorityGame minorityGame;
 
         // initialise game properties
         properties = new Properties();

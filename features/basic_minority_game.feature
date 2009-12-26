@@ -5,7 +5,7 @@ Feature: Basic version of the minority game with strategic agents
   So that I can investigate its dynamics
   
   Scenario: the strategy scores are correct at each time step
-    Given I have a standard minority game with basic agents with a memory size of 2
+    Given I have a minority game with basic agents with a memory size of 2
     And I have an experimentalist
     And I set the experimentalist to record the choice history of the last 2 steps at the start of the step
     And I set the experimentalist to record the minority choice
@@ -14,7 +14,7 @@ Feature: Basic version of the minority game with strategic agents
     Then the strategy scores at each time step should be correct with respect to the minority choice
   
   Scenario: the agents use the highest scoring strategy at each time step
-    Given I have a standard minority game with basic agents with a memory size of 2
+    Given I have a minority game with basic agents with a memory size of 2
     And I have an experimentalist
     And I set the experimentalist to record the choice history of the last 2 steps at the start of the step
     And I set the experimentalist to record the choices of all agents

@@ -50,8 +50,6 @@ public class MinorityGameFactory {
      * The supplied Properties object must contain the following properties:
      *
      * <ul>
-     *  <li>"type": the type of minority game to construct, currently can only
-     *      be "standard".
      *  <li>"agent-memory-size": the number of past minority choices each agent
      *      can remember as a string, e.g., "5".
      *  <li>"number-of-agents": the number of agents required in the game as a
@@ -68,11 +66,11 @@ public class MinorityGameFactory {
      *
      * @param properties A Properties object containing the parameters of the
      * minority game to construct.
-     * @return An instance of a subclass of AbstractMinorityGame initialised
+     * @return An instance of a subclass of MinorityGame initialised
      * as requested.
      * @throws IllegalArgumentException
      */
-    public static AbstractMinorityGame construct(Properties properties) {
+    public static MinorityGame construct(Properties properties) {
         // check the supplied properties are satisfactory, if not, throw an
         // IllegalArgumentException.
         assertPropertiesAreValid(properties);
@@ -93,7 +91,7 @@ public class MinorityGameFactory {
         StrategySpace strategySpace;
         List<Strategy> strategies;
         StrategyManager strategyManager;
-        AbstractMinorityGame minorityGame = null;
+        MinorityGame minorityGame = null;
         AbstractAgent agent = null;
 
         // deduce the agent memory sizes required
@@ -196,13 +194,9 @@ public class MinorityGameFactory {
 
         // build a minority game instance passing the agents and history
         // string.
-        type = properties.getProperty("type");
-
-        if(type.equals("standard")) {
-            minorityGame = new StandardMinorityGame(
-                agentManager, choiceHistory
-            );
-        }
+        minorityGame = new MinorityGame(
+            agentManager, choiceHistory
+        );
 
         // return the minority game
         return minorityGame;
@@ -226,7 +220,6 @@ public class MinorityGameFactory {
      * @throws IllegalArgumentException
      */
     private static void assertPropertiesAreValid(Properties properties){
-        assertPropertyExists(properties, "type");
         assertPropertyExists(properties, "agent-memory-size");
         assertPropertyExists(properties, "number-of-agents");
         assertPropertyExists(properties, "agent-type");
@@ -239,8 +232,6 @@ public class MinorityGameFactory {
 
         HashSet<String> acceptedTypes = new HashSet<String>();
         acceptedTypes.add("standard");
-
-        assertPropertyInSet(properties, "type", acceptedTypes);
 
         HashSet<String> acceptedAgentTypes = new HashSet<String>();
         acceptedAgentTypes.add("basic");

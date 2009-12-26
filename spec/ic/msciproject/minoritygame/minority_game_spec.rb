@@ -1,8 +1,8 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSciProject::MinorityGame::AbstractMinorityGame do
+describe MSciProject::MinorityGame::MinorityGame do
   let(:package) { MSciProject::MinorityGame }
-  let(:klass) { Class.new(package::AbstractMinorityGame) }
+  let(:klass) { Class.new(package::MinorityGame) }
   
   let(:agent_manager) { 
     package::AgentManager.new(Java::JavaUtil::ArrayList.new) 

@@ -4,12 +4,11 @@ import java.util.Map;
 import java.util.List;
 
 /**
- * The AbstractMinorityGame class implements the basic functionality of a
- * minority game and all specific versions of the minority game should extend
- * it.
+ * The MinorityGame class represents a minority game which can step forward in
+ * time by performing actions on the associated agents and choice history.
  * @author tobyclemson
  */
-public abstract class AbstractMinorityGame {
+public class MinorityGame {
 
     /**
      * An AgentManager instance containing AbstractAgent instances representing
@@ -26,7 +25,7 @@ public abstract class AbstractMinorityGame {
     protected ChoiceHistory choiceHistory;
 
     /**
-     * Constructs an AbstractMinorityGame instance setting the agent manager 
+     * Constructs an MinorityGame instance setting the agent manager
      * and choice history attributes to the supplied AgentManager and
      * ChoiceHistory instances.
      * @param agentManager An AgentManager instance containing the agents
@@ -34,7 +33,7 @@ public abstract class AbstractMinorityGame {
      * @param choiceHistory A ChoiceHistory instance to use as the history
      * of outcomes for this minority game instance.
      */
-    public AbstractMinorityGame(
+    public MinorityGame(
         AgentManager agentManager,
         ChoiceHistory choiceHistory
     ){
@@ -118,7 +117,28 @@ public abstract class AbstractMinorityGame {
 
     /**
      * Takes a step forward in the game.
+     *
+     * The step is taken as follows:
+     * <ul>
+     *  <li>Ask all agents to make a choice for this time step
+     *  <li>Increment the scores of all agents that made the minority choice
+     *  <li>Ask all agents to update their local information given the
+     *      current minority choice
+     *  <li>Add the most recent minority choice outcome to the choice history
+     * </ul>
      */
-    public abstract void stepForward();
+    public void stepForward() {
+        // tell all agentManager to make a choice for this time step
+        agentManager.makeChoices();
+
+        // retrieve the minority choice
+        Choice minorityChoice = getMinorityChoice();
+
+        // update based on the minority choice by incrementing agent scores,
+        // telling agentManager to update and updating the choice history
+        agentManager.incrementScoresForChoice(minorityChoice);
+        agentManager.updateForChoice(minorityChoice);
+        choiceHistory.add(minorityChoice);
+    }
 
 }

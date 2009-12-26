@@ -4,30 +4,6 @@ Feature: Versatile minority game construction
   I want to be able to construct minority games with different properties
   So that I can conduct different experiments
   
-  Scenario Outline: construct a minority game instance of a particular type
-    Given I have a properties hash
-    When I set the 'type' property to '<type>'
-    And I construct a minority game with the properties hash
-    Then I should have a minority game
-    And its class should be <class_name>
-    
-    Examples:
-      | type         | class_name                                            |
-      | standard     | MSciProject::MinorityGame::StandardMinorityGame       |
-  
-  Scenario Outline: construct a minority game of an invalid type
-    Given I have a properties hash
-    When I set the 'type' property to '<invalid_type>'
-    And I construct a minority game with the properties hash
-    Then a Java::Lang::IllegalArgumentException should be thrown
-    
-    Examples:
-      | invalid_type |
-      |              |
-      | not-a-type   |
-      | 1            |
-      | 0.6          |
-  
   Scenario Outline: construct a minority game with a particular number of agents
     Given I have a properties hash
     When I set the 'number-of-agents' property to '<number_of_agents>'

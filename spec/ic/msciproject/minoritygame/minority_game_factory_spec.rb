@@ -18,15 +18,6 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
   describe ".construct" do
     let(:properties) { properties_hash }
     
-    it "returns an instance of StandardMinorityGame when the type " + 
-      "'standard' is supplied" do
-      properties.set_property("type", "standard")
-      instance = package::MinorityGameFactory.construct(properties)
-      instance.should be_a_kind_of(
-        package::StandardMinorityGame
-      )
-    end
-    
     describe "properties hash validation" do
       describe "for a valid set of properties" do
         it "successfully creates a minority game" do
@@ -46,14 +37,6 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
       end
       
       describe "for an invalid set of properties" do
-        it "throws an IllegalArgumentException if the options object doesn't " +
-          "contain a value for the 'type' property" do
-          properties.remove("type")  
-          expect { package::MinorityGameFactory.construct(properties) }.to raise_error(
-            Java::JavaLang::IllegalArgumentException
-          )
-        end
-
         it "throws an IllegalArgumentException if the options object doesn't " +
           "contain a value for the 'agent-memory-size' property" do
           properties.remove("agent-memory-size")
@@ -92,14 +75,6 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
           }.to raise_error(
             Java::JavaLang::IllegalArgumentException
           )
-        end
-
-        it "throws an IllegalArgumentException if the options object " + 
-          "contains an unrecognised value for the 'type' property" do
-          properties.set_property("type", "unsupported!")
-          expect { 
-            package::MinorityGameFactory.construct(properties) 
-          }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
 
         it "throws an IllegalArgumentException if the options object " + 
