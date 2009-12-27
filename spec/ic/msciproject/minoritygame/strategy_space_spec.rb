@@ -3,13 +3,13 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::StrategySpace do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::StrategySpace }
-  let(:strategy_space_instance) { klass.new(2) }
+  
+  let(:strategy_space) { klass.new(2) }
   
   describe "constructor" do
     describe "with a key length argument" do
       it "sets the key_length attribute to the supplied length" do
-        strategy_space = klass.new(4)
-        strategy_space.key_length.should == 4
+        strategy_space.key_length.should == 2
       end
     end
   end
@@ -17,22 +17,22 @@ describe MSciProject::MinorityGame::StrategySpace do
   describe "setters" do
     describe "#set_key_length" do
       it "sets the key_length to the supplied integer" do
-        strategy_space_instance.set_key_length(10)
-        strategy_space_instance.key_length.should == 10
+        strategy_space.set_key_length(10)
+        strategy_space.key_length.should == 10
       end
     end
   end
   
   describe "#generate_strategy" do
     it "returns an instance of Strategy" do
-      returned_object = strategy_space_instance.generate_strategy
+      returned_object = strategy_space.generate_strategy
       returned_object.should be_a_kind_of(package::Strategy)
     end
     
     it "generates a strategy with keys of the length specified in the " + 
       "strategy space" do
-      strategy = strategy_space_instance.generate_strategy  
-      strategy.key_length.should == strategy_space_instance.key_length
+      strategy = strategy_space.generate_strategy  
+      strategy.key_length.should == strategy_space.key_length
     end
       
     it "generates a strategy with a key set corresponding to all possible " +

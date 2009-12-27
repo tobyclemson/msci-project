@@ -3,81 +3,57 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::StrategyManager do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::StrategyManager }
-  let(:a) { 
-    choice_list = Java::JavaUtil::ArrayList.new
-    choice_list.add(package::Choice::A)
-    choice_list 
+  
+  let(:integer) { Java::JavaLang::Integer }
+  let(:array_list) { Java::JavaUtil::ArrayList }
+  
+  let(:strategies) { 
+    mock = Mockito.mock(Java::JavaUtil::ArrayList.java_class) 
+    strategy = Mockito.mock(package::Strategy.java_class)
+    Mockito.when(mock.get(Mockito.any)).
+      then_return(strategy)
+    mock
   }
-  let(:b) { 
-    choice_list = Java::JavaUtil::ArrayList.new
-    choice_list.add(package::Choice::B)
-    choice_list
-  }
-  let(:strategy) { 
-    hash_map = Java::JavaUtil::HashMap.new
-    hash_map.put(a, package::Choice::A)
-    hash_map.put(b, package::Choice::B)
-    package::Strategy.new(hash_map) 
-  }
-  let(:strategy_list) {
-    list = Java::JavaUtil::ArrayList.new
-    list.add(strategy)
-    list
-  }
-  let(:strategy_manager_instance) { klass.new(strategy_list) }
+  
+  let(:strategy_manager) { klass.new(strategies) }
   
   describe "public interface" do
     it "has a random_strategy instance method" do
-      strategy_manager_instance.should respond_to(:random_strategy)
+      strategy_manager.should respond_to(:random_strategy)
     end
     
     it "has a highest_scoring_strategy instance method" do
-      strategy_manager_instance.should respond_to(
-        :highest_scoring_strategy
-      )
+      strategy_manager.should respond_to(:highest_scoring_strategy)
     end
     
     it "has an increment_scores instance method" do
-      strategy_manager_instance.should respond_to(
-        :increment_scores
-      )
+      strategy_manager.should respond_to(:increment_scores)
     end
     
     it "has a number_of_strategies instance method" do
-      strategy_manager_instance.should respond_to(
-        :number_of_strategies
-      )
+      strategy_manager.should respond_to(:number_of_strategies)
     end
     
     it "has a strategy_key_length instance method" do
-      strategy_manager_instance.should respond_to(
-        :strategy_key_length
-      )
+      strategy_manager.should respond_to(:strategy_key_length)
     end
     
     it "has a strategies instance method" do
-      strategy_manager_instance.should respond_to(
-        :strategies
-      )
+      strategy_manager.should respond_to(:strategies)
     end
   end
   
   describe "constructor" do
     describe "with a List of Strategy objects" do
       it "sets the strategies attribute to the supplied strategies" do
-        strategy_manager = klass.new(strategy_list)
-        strategy_manager.strategies.should == strategy_list
+        strategy_manager.strategies.should == strategies
       end
     end
   end
 
   describe "#number_of_strategies" do
     it "returns the number of strategies managed by the strategy manager" do
-      strategies = Java::JavaUtil::ArrayList.new
-      3.times { strategies.add(strategy) }
-      
-      strategy_manager = klass.new(strategies)
-      
+      Mockito.when(strategies.size).then_return(integer.new(3))
       strategy_manager.number_of_strategies.should == 3
     end
   end
@@ -85,23 +61,12 @@ describe MSciProject::MinorityGame::StrategyManager do
   describe "#strategy_key_length" do
     it "returns the length of the keys of the strategies passed in to the " +
       "constructor" do
-        strategies = Java::JavaUtil::ArrayList.new
-        strategies.add(strategy)
-
-        strategy_manager = klass.new(strategies)
+        strategy = Mockito.mock(package::Strategy.java_class)
         
-        strategy_manager.strategy_key_length.should == strategy.key_length
-    end
-  end
-
-  describe "#strategies" do
-    it "returns the list of strategies passed in to the constructor" do
-      strategies = Java::JavaUtil::ArrayList.new
-      3.times { strategies.add(strategy) }
-      
-      strategy_manager = klass.new(strategies)
-      
-      strategy_manager.strategies.should equal strategies
+        Mockito.when(strategy.get_key_length).then_return(integer.new(3))
+        Mockito.when(strategies.get(Mockito.any())).then_return(strategy)
+        
+        strategy_manager.strategy_key_length.should == 3
     end
   end
 
@@ -211,21 +176,21 @@ describe MSciProject::MinorityGame::StrategyManager do
       
       klass.new(strategies)
     }
-    let(:a_b) { Mockito.mock(Java::JavaUtil::List.java_class) }
+    let(:past_choices) { Mockito.mock(Java::JavaUtil::List.java_class) }
         
     before(:each) do
-      Mockito.when(strategy_1.predict_minority_choice(a_b)).
+      Mockito.when(strategy_1.predict_minority_choice(past_choices)).
         then_return(package::Choice::A)
-      Mockito.when(strategy_2.predict_minority_choice(a_b)).
+      Mockito.when(strategy_2.predict_minority_choice(past_choices)).
         then_return(package::Choice::A)
-      Mockito.when(strategy_3.predict_minority_choice(a_b)).
+      Mockito.when(strategy_3.predict_minority_choice(past_choices)).
         then_return(package::Choice::B)
     end
     
     it "calls increment_score on strategies that give the supplied " +
       "choice for the supplied choice history" do
       strategy_manager.increment_scores(
-        a_b, package::Choice::A
+        past_choices, package::Choice::A
       )
       
       Mockito.verify(strategy_1).increment_score
@@ -235,7 +200,7 @@ describe MSciProject::MinorityGame::StrategyManager do
     it "doesn't call increment_score on strategies that don't give the " +
       "supplied choice for the supplied choice history" do
       strategy_manager.increment_scores(
-        a_b, package::Choice::A
+        past_choices, package::Choice::A
       )
 
       Mockito.verify(strategy_3, Mockito.never).increment_score

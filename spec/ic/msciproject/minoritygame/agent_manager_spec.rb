@@ -4,53 +4,40 @@ describe MSciProject::MinorityGame::AgentManager do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::AgentManager }
   
-  let(:agent_memory_size) { 2 }
+  let(:integer) { Java::JavaLang::Integer }
+  let(:array_list) { Java::JavaUtil::ArrayList }
   
-  let(:strategy_manager) { Mockito.mock(package::StrategyManager.java_class) }
+  let(:agents) { Mockito.mock(array_list.java_class) }
   
-  let(:agent) {
-    package::BasicAgent.new(
-      strategy_manager,
-      package::ChoiceMemory.new(
-        package::ChoiceHistory.new(agent_memory_size), agent_memory_size
-      )
-    ) 
-  }
-  
-  let(:agent_manager_instance) { klass.new(Java::JavaUtil::ArrayList.new) }
-  
-  before(:each) do
-    Mockito.when(strategy_manager.strategy_key_length).
-      then_return(Java::JavaLang::Integer.new(agent_memory_size))
-  end
+  let(:agent_manager) { klass.new(agents) }
   
   describe "public interface" do
     it "has an agents instance method" do
-      agent_manager_instance.should respond_to(:agents)
+      agent_manager.should respond_to(:agents)
     end
     
     it "has a choice_totals instance method" do
-      agent_manager_instance.should respond_to(:choice_totals)
+      agent_manager.should respond_to(:choice_totals)
     end
     
     it "has a make_choices instance method" do
-      agent_manager_instance.should respond_to(:make_choices)
+      agent_manager.should respond_to(:make_choices)
     end
     
     it "has an increment_scores_for_choice instance method" do
-      agent_manager_instance.should respond_to(
+      agent_manager.should respond_to(
         :increment_scores_for_choice
       )
     end
     
     it "has a update_for_choice instance method" do
-      agent_manager_instance.should respond_to(
+      agent_manager.should respond_to(
         :update_for_choice
       )
     end
     
     it "has a number_of_agents instance method" do
-      agent_manager_instance.should respond_to(
+      agent_manager.should respond_to(
         :number_of_agents
       )
     end
@@ -59,23 +46,14 @@ describe MSciProject::MinorityGame::AgentManager do
   describe "constructor" do
     describe "with a List of AbstractAgent instance as an argument" do      
       it "sets the agents attribute to the supplied collection of agents" do
-        list = Java::JavaUtil::ArrayList.new
-        list.add(agent)
-        
-        agent_manager = klass.new(list)
-        
-        agent_manager.agents.should == list
+        agent_manager.agents.should == agents
       end
     end
   end
 
   describe "#number_of_agents" do
     it "returns the number of agents stored by the agent manager" do
-      agent_list = Java::JavaUtil::ArrayList.new
-      3.times { agent_list.add(agent) }
-      
-      agent_manager = klass.new(agent_list)
-      
+      Mockito.when(agents.size).then_return(integer.new(3))
       agent_manager.number_of_agents.should == 3
     end
   end
@@ -93,9 +71,9 @@ describe MSciProject::MinorityGame::AgentManager do
       3.times { agent_list.add(choice_a_agent) }
       5.times { agent_list.add(choice_b_agent) }
       
-      agent_manager_instance = klass.new(agent_list)
+      agent_manager = klass.new(agent_list)
       
-      totals = agent_manager_instance.choice_totals
+      totals = agent_manager.choice_totals
       
       {
         package::Choice::A => 3, 
@@ -113,15 +91,15 @@ describe MSciProject::MinorityGame::AgentManager do
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
       
-      agent_list = Java::JavaUtil::ArrayList.new
+      agent_list = array_list.new
       
       agent_list.add(mock_agent_1)
       agent_list.add(mock_agent_2)
       agent_list.add(mock_agent_3)
       
-      agent_manager_instance = klass.new(agent_list)
+      agent_manager = klass.new(agent_list)
       
-      agent_manager_instance.make_choices()
+      agent_manager.make_choices()
       
       Mockito.verify(mock_agent_1).choose()
       Mockito.verify(mock_agent_2).choose()
@@ -139,15 +117,15 @@ describe MSciProject::MinorityGame::AgentManager do
       Mockito.when(mock_agent_2.choice).then_return(package::Choice::A)
       Mockito.when(mock_agent_3.choice).then_return(package::Choice::B)
 
-      agent_list = Java::JavaUtil::ArrayList.new
+      agent_list = array_list.new
 
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         agent_list.add(agent)
       end
       
-      agent_manager_instance = klass.new(agent_list)
+      agent_manager = klass.new(agent_list)
       
-      agent_manager_instance.increment_scores_for_choice(
+      agent_manager.increment_scores_for_choice(
         package::Choice::A
       )
       
@@ -163,15 +141,15 @@ describe MSciProject::MinorityGame::AgentManager do
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
       
-      agent_list = Java::JavaUtil::ArrayList.new
+      agent_list = array_list.new
 
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         agent_list.add(agent)
       end
       
-      agent_manager_instance = klass.new(agent_list)
+      agent_manager = klass.new(agent_list)
       
-      agent_manager_instance.update_for_choice(package::Choice::A)
+      agent_manager.update_for_choice(package::Choice::A)
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         Mockito.verify(agent).update(package::Choice::A)

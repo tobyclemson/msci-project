@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::Strategy do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::Strategy }
+  
   let(:a) { 
     choice_list = Java::JavaUtil::ArrayList.new
     choice_list.add(package::Choice::A)
@@ -13,39 +14,39 @@ describe MSciProject::MinorityGame::Strategy do
     choice_list.add(package::Choice::B)
     choice_list
   }
+  
   let(:strategy_map) {
     hash_map = Java::JavaUtil::HashMap.new
     hash_map.put(a, package::Choice::A)
     hash_map.put(b, package::Choice::B)
     hash_map
   }
-  let(:strategy_instance) { 
-    klass.new(strategy_map)
-  }
+  
+  let(:strategy) { klass.new(strategy_map) }
   
   describe "public interface" do
     it "has a score instance method" do
-      strategy_instance.should respond_to(:score)
+      strategy.should respond_to(:score)
     end
     
     it "has an increment_score instance method" do
-      strategy_instance.should respond_to(:increment_score)
+      strategy.should respond_to(:increment_score)
     end
     
     it "has a key_length instance method" do
-      strategy_instance.should respond_to(:key_length)
+      strategy.should respond_to(:key_length)
     end
     
     it "has a prediction instance method" do
-      strategy_instance.should respond_to(:predict_minority_choice)
+      strategy.should respond_to(:predict_minority_choice)
     end
     
     it "has a map instance method" do
-      strategy_instance.should respond_to(:map)
+      strategy.should respond_to(:map)
     end
     
     it "has a valid_choice_histories instance method" do
-      strategy_instance.should respond_to(:valid_choice_histories)
+      strategy.should respond_to(:valid_choice_histories)
     end
   end
   
@@ -152,7 +153,7 @@ describe MSciProject::MinorityGame::Strategy do
       a_a_a.add(package::Choice::A)
       
       expect {
-        strategy_instance.predict_minority_choice(a_a_a)
+        strategy.predict_minority_choice(a_a_a)
       }.to raise_error(Java::JavaLang::IllegalArgumentException)
     end
     
@@ -229,19 +230,19 @@ describe MSciProject::MinorityGame::Strategy do
 
   describe "#score" do
     it "is initially zero" do
-      strategy_instance.score.should == 0
+      strategy.score.should == 0
     end
     
     it "returns a score equal to the number of times #increment_score has " + 
       "been called" do
-      5.times { strategy_instance.increment_score }
-      strategy_instance.score.should == 5
+      5.times { strategy.increment_score }
+      strategy.score.should == 5
     end
   end
 
   describe "#map" do
     it "returns the map supplied at initialisation" do
-      strategy_instance.map.should equal(strategy_map)
+      strategy.map.should equal(strategy_map)
     end
   end
 
@@ -252,15 +253,15 @@ describe MSciProject::MinorityGame::Strategy do
       permutation_set.add(a)
       permutation_set.add(b)
       
-      strategy_instance.valid_choice_histories.should == permutation_set
+      strategy.valid_choice_histories.should == permutation_set
     end
   end
 
   describe "#increment_score" do
     it "adds 1 to the current score" do
       expect {
-        strategy_instance.increment_score
-      }.to change(strategy_instance, :score).from(0).to(1)
+        strategy.increment_score
+      }.to change(strategy, :score).from(0).to(1)
     end
   end
 end
