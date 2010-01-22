@@ -87,4 +87,47 @@ describe MSciProject::MinorityGame::MinorityGame do
       minority_game.minority_choice.should == package::Choice::B
     end
   end
+  
+  describe "#step_forward" do
+    let(:choice_totals) {
+      hash = Java::JavaUtil::HashMap.new
+      hash.put(
+        package::Choice::A, Java::JavaLang::Integer.new(15)
+      )
+      hash.put(
+        package::Choice::B, Java::JavaLang::Integer.new(12)
+      )
+      hash
+    }
+
+    before(:each) do
+      Mockito.when(agent_manager.choice_totals).
+        then_return(choice_totals)
+    end
+
+    it "tells all agents to make their choice for this step" do
+      minority_game.step_forward
+      Mockito.verify(agent_manager).make_choices
+    end
+
+    it "tells the agent manager to increment scores for the minority " +
+      "choice" do
+        minority_game.step_forward
+        Mockito.verify(agent_manager).
+          increment_scores_for_choice(package::Choice::B)
+    end
+
+    it "tells all agents to update given the minority choice and choice " + 
+      "history" do
+      minority_game.step_forward
+      Mockito.verify(agent_manager).update_for_choice(
+        package::Choice::B
+      )
+    end
+
+    it "adds the minority choice to the choice history" do
+      minority_game.step_forward
+      Mockito.verify(choice_history).add(package::Choice::B)
+    end
+  end
 end
