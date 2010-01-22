@@ -109,20 +109,35 @@ public abstract class AbstractAgent {
     }
 
     /**
+     * Increments the agent's score. The default implementation adds 1 to the
+     * current score.
+     */
+    public void incrementScore() {
+        score += 1;
+    }
+
+    /**
+     * Tells the agent to prepare itself for the next choice making cycle. The
+     * default implementation does nothing.
+     */
+    public void prepare() {}
+
+    /**
      * Tells the agent to choose between Choice.A and Choice.B.
      */
     public abstract void choose();
 
     /**
-     * Increments the agent's score.
-     */
-    public abstract void incrementScore();
-
-    /**
      * Tells the agent to update its internal state given that the current 
-     * minority choice is as specified.
+     * minority choice is as specified. The default implementation calls 
+     * {@link incrementScore} if the supplied minorityChoice is equal to the
+     * current choice.
      * @param minorityChoice The current minority choice.
      */
-    public abstract void update(Choice minorityChoice);
+    public void update(Choice minorityChoice) {
+        if(choice == minorityChoice) {
+            incrementScore();
+        }
+    }
 
 }

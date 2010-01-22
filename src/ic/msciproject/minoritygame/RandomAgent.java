@@ -55,13 +55,6 @@ public class RandomAgent extends AbstractAgent {
     }
 
     /**
-     * Increments the agent's score by 1.
-     */
-    public void incrementScore() {
-        score += 1;
-    }
-
-    /**
      * Calculates the agent's choice by choosing between Choice.A and Choice.B
      * based on a random number returned by the random number generator
      * associated with the agent. If the random number evaluates to 0, Choice.A
@@ -77,15 +70,5 @@ public class RandomAgent extends AbstractAgent {
         }
 
         this.choice = currentChoice;
-    }
-
-    /**
-     * Updates the agent's local information with respect to the current 
-     * minority choice. For a RandomAgent, no local information is maintained
-     * so this method does nothing.
-     * @param minorityChoice The current minority choice.
-     */
-    public void update(Choice minorityChoice) {
-        
     }
 }

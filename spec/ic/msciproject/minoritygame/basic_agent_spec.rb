@@ -78,6 +78,39 @@ describe MSciProject::MinorityGame::BasicAgent do
   end
 
   describe "#update" do
+    let(:strategy) { Mockito.mock(package::Strategy.java_class) }
+    
+    before(:each) do
+      Mockito.when(strategy.predict_minority_choice(Mockito.any())).
+        then_return(package::Choice::A)
+        
+      Mockito.when(strategy_manager.get_random_strategy).
+        then_return(strategy)
+      Mockito.when(strategy_manager.get_highest_scoring_strategy).
+        then_return(strategy)
+    end
+    
+    it "increments the score if the minority choice is equal to the " +
+      "current choice" do
+      expect {
+        basic_agent.choose
+        basic_agent.update(basic_agent.choice)
+      }.to change(basic_agent, :score)
+    end
+
+    it "doesn't increment the score if the minority choice is not equal " + 
+      "to the current choice" do
+      expect {
+        basic_agent.choose
+        minority_choice = if(basic_agent.choice == package::Choice::A)
+          package::Choice::B
+        else
+          package::Choice::A
+        end
+        basic_agent.update(minority_choice)
+      }.to_not change(basic_agent, :score)
+    end
+    
     it "calls increment_scores on the strategy manager" do
       past_choices = Mockito.mock(array_list.java_class)
       

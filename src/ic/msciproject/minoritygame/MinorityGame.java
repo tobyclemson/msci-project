@@ -120,25 +120,29 @@ public class MinorityGame {
      *
      * The step is taken as follows:
      * <ul>
+     *  <li>Ask all agents to prepare for this time step
      *  <li>Ask all agents to make a choice for this time step
-     *  <li>Increment the scores of all agents that made the minority choice
      *  <li>Ask all agents to update their local information given the
      *      current minority choice
      *  <li>Add the most recent minority choice outcome to the choice history
      * </ul>
      */
     public void stepForward() {
-        // tell all agentManager to make a choice for this time step
-        agentManager.makeChoices();
+      // tell the agent manager to prepare the agents to make a choice
+      agentManager.prepareAgents();
 
-        // retrieve the minority choice
-        Choice minorityChoice = getMinorityChoice();
+      // tell the agent manager to tell all agents to actually make a choice
+      agentManager.makeChoices();
 
-        // update based on the minority choice by incrementing agent scores,
-        // telling agentManager to update and updating the choice history
-        agentManager.incrementScoresForChoice(minorityChoice);
-        agentManager.updateForChoice(minorityChoice);
-        choiceHistory.add(minorityChoice);
+      // find out what the agent consensus is
+      Choice minorityChoice = getMinorityChoice();
+
+      // tell the agent manager to update each agent given the minority
+      // choice
+      agentManager.updateAgents(minorityChoice);
+
+      // add the minority choice to the global choice history
+      choiceHistory.add(minorityChoice);
     }
 
 }

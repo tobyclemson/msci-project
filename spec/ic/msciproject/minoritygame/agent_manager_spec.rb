@@ -20,26 +20,20 @@ describe MSciProject::MinorityGame::AgentManager do
       agent_manager.should respond_to(:choice_totals)
     end
     
+    it "has a prepare_agents instance method" do
+      agent_manager.should respond_to(:prepare_agents)
+    end
+    
     it "has a make_choices instance method" do
       agent_manager.should respond_to(:make_choices)
     end
     
-    it "has an increment_scores_for_choice instance method" do
-      agent_manager.should respond_to(
-        :increment_scores_for_choice
-      )
-    end
-    
-    it "has a update_for_choice instance method" do
-      agent_manager.should respond_to(
-        :update_for_choice
-      )
+    it "has a update_agents instance method" do
+      agent_manager.should respond_to(:update_agents)
     end
     
     it "has a number_of_agents instance method" do
-      agent_manager.should respond_to(
-        :number_of_agents
-      )
+      agent_manager.should respond_to(:number_of_agents)
     end
   end
   
@@ -83,10 +77,9 @@ describe MSciProject::MinorityGame::AgentManager do
       end
     end
   end
-
-  describe "#make_choices" do
-    it "calls make choice on each agent in the collection with the " +
-      "supplied choice history" do
+  
+  describe "#prepare_agents" do
+    it "calls prepare on each agent" do
       mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
@@ -99,44 +92,38 @@ describe MSciProject::MinorityGame::AgentManager do
       
       agent_manager = klass.new(agent_list)
       
-      agent_manager.make_choices()
+      agent_manager.prepare_agents
+      
+      Mockito.verify(mock_agent_1).prepare()
+      Mockito.verify(mock_agent_2).prepare()
+      Mockito.verify(mock_agent_3).prepare()
+    end
+  end
+
+  describe "#make_choices" do
+    it "calls choose on each agent" do
+      mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
+      mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
+      mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
+      
+      agent_list = array_list.new
+      
+      agent_list.add(mock_agent_1)
+      agent_list.add(mock_agent_2)
+      agent_list.add(mock_agent_3)
+      
+      agent_manager = klass.new(agent_list)
+      
+      agent_manager.make_choices
       
       Mockito.verify(mock_agent_1).choose()
       Mockito.verify(mock_agent_2).choose()
       Mockito.verify(mock_agent_3).choose()
     end
   end
-
-  describe "#increment_scores_for_choice" do
-    it "calls increment_score on all agents that made the supplied choice." do
-      mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
-      mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
-      mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
-      
-      Mockito.when(mock_agent_1.choice).then_return(package::Choice::A)
-      Mockito.when(mock_agent_2.choice).then_return(package::Choice::A)
-      Mockito.when(mock_agent_3.choice).then_return(package::Choice::B)
-
-      agent_list = array_list.new
-
-      [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
-        agent_list.add(agent)
-      end
-      
-      agent_manager = klass.new(agent_list)
-      
-      agent_manager.increment_scores_for_choice(
-        package::Choice::A
-      )
-      
-      Mockito.verify(mock_agent_1).increment_score
-      Mockito.verify(mock_agent_2).increment_score
-      Mockito.verify(mock_agent_3, Mockito.never()).increment_score
-    end
-  end
   
-  describe "#update_for_choice" do
-    it "calls update_for_choice on each agent" do
+  describe "#update_agents" do
+    it "calls update on each agent" do
       mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
       mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
@@ -149,7 +136,7 @@ describe MSciProject::MinorityGame::AgentManager do
       
       agent_manager = klass.new(agent_list)
       
-      agent_manager.update_for_choice(package::Choice::A)
+      agent_manager.update_agents(package::Choice::A)
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         Mockito.verify(agent).update(package::Choice::A)

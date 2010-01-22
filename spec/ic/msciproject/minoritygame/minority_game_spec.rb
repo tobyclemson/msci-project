@@ -104,23 +104,21 @@ describe MSciProject::MinorityGame::MinorityGame do
       Mockito.when(agent_manager.choice_totals).
         then_return(choice_totals)
     end
+    
+    it "tells all agents to prepare to make a choice for this step" do
+      minority_game.step_forward
+      Mockito.verify(agent_manager).prepare_agents
+    end
 
     it "tells all agents to make their choice for this step" do
       minority_game.step_forward
       Mockito.verify(agent_manager).make_choices
     end
 
-    it "tells the agent manager to increment scores for the minority " +
-      "choice" do
-        minority_game.step_forward
-        Mockito.verify(agent_manager).
-          increment_scores_for_choice(package::Choice::B)
-    end
-
     it "tells all agents to update given the minority choice and choice " + 
       "history" do
       minority_game.step_forward
-      Mockito.verify(agent_manager).update_for_choice(
+      Mockito.verify(agent_manager).update_agents(
         package::Choice::B
       )
     end

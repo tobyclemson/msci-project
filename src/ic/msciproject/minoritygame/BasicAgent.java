@@ -49,20 +49,15 @@ public class BasicAgent extends AbstractAgent {
     }
 
     /**
-     * Increments this agents score by 1.
-     */
-    public void incrementScore() {
-        score += 1;
-    }
-
-    /**
      * Updates the agent's local information with respect to the current 
      * minority choice.
      * @param minorityChoice The current minority choice.
      */
+    @Override
     public void update(
         Choice minorityChoice
     ) {
+        super.update(minorityChoice);
         strategyManager.incrementScores(memory.fetch(), minorityChoice);
     }
 

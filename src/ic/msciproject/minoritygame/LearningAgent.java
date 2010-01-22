@@ -29,13 +29,6 @@ public class LearningAgent extends AbstractAgent {
     }
 
     /**
-     * Increments this agents score by 1.
-     */
-    public void incrementScore() {
-        score += 1;
-    }
-
-    /**
      * Calculates this agent's choice based on its strategies and sets the
      * choice attribute to the resulting choice, either Choice.A or
      * Choice.B.
@@ -43,14 +36,4 @@ public class LearningAgent extends AbstractAgent {
     public void choose() {
         
     }
-
-    /**
-     * Updates the agent's local information with respect to the current 
-     * minority choice.
-     * @param minorityChoice The current minority choice.
-     */
-    public void update(Choice minorityChoice) {
-
-    }
-
 }

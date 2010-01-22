@@ -75,6 +75,12 @@ public class AgentManager {
         return totals;
     }
 
+    public void prepareAgents() {
+        for(AbstractAgent agent : agentStorage) {
+            agent.prepare();
+        }
+    }
+
     /**
      * Asks each agent managed by the AgentManager to make a choice between
      * Choice.A and Choice.B.
@@ -86,23 +92,10 @@ public class AgentManager {
     }
 
     /**
-     * Increments the score of each agent that has made the minority choice.
-     * @param minorityChoice The current minority choice.
-     */
-    public void incrementScoresForChoice(Choice minorityChoice) {
-        for(AbstractAgent agent : agentStorage) {
-            // increment the agent's score if they made the minority choice
-            if(agent.getChoice().equals(minorityChoice)) {
-                agent.incrementScore();
-            }
-        }
-    }
-
-    /**
      * Calls update on each stored agent.
      * @param minorityChoice The current minority choice.
      */
-    public void updateForChoice(Choice minorityChoice) {
+    public void updateAgents(Choice minorityChoice) {
         for(AbstractAgent agent : agentStorage) {
             agent.update(minorityChoice);
         }

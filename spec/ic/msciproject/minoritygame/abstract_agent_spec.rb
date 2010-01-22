@@ -41,6 +41,10 @@ describe MSciProject::MinorityGame::AbstractAgent do
       abstract_agent.should respond_to(:choice)
     end
     
+    it "has a prepare instance method" do
+      abstract_agent.should respond_to(:prepare)
+    end
+    
     it "has a choose instance method" do
       abstract_agent.should respond_to(:choose)
     end
@@ -102,6 +106,43 @@ describe MSciProject::MinorityGame::AbstractAgent do
       expect {
         abstract_agent.get_choice
       }.to_not raise_error(Java::JavaLang::IllegalStateException)
+    end
+  end
+  
+  describe "#increment_score" do
+    it "increases the agent's score by 1" do
+      expect {
+        abstract_agent.increment_score
+      }.to change(abstract_agent, :score).by(+1)
+    end
+  end
+  
+  describe "#prepare" do
+    it "does nothing" do
+      # at least not that I can think of yet...
+    end
+  end
+  
+  describe "#update" do
+    it "increments the score if the minority choice is equal to the " +
+      "current choice" do
+      expect {
+        abstract_agent.choose
+        abstract_agent.update(abstract_agent.choice)
+      }.to change(abstract_agent, :score)
+    end
+    
+    it "doesn't increment the score if the minority choice is not equal " + 
+      "to the current choice" do
+      expect {
+        abstract_agent.choose
+        minority_choice = if(abstract_agent.choice == package::Choice::A)
+          package::Choice::B
+        else
+          package::Choice::A
+        end
+        abstract_agent.update(minority_choice)
+      }.to_not change(abstract_agent, :score)
     end
   end
 end
