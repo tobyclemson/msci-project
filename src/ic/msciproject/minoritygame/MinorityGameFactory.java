@@ -3,12 +3,23 @@ package ic.msciproject.minoritygame;
 import cern.jet.random.AbstractDistribution;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.SparseGraph;
+import ic.msciproject.minoritygame.factories.AgentFactory;
+import ic.msciproject.minoritygame.factories.BasicAgentFactory;
+import ic.msciproject.minoritygame.factories.CompleteSocialNetworkFactory;
+import ic.msciproject.minoritygame.factories.EmptySocialNetworkFactory;
+import ic.msciproject.minoritygame.factories.FriendshipFactory;
+import ic.msciproject.minoritygame.factories.LearningAgentFactory;
+import ic.msciproject.minoritygame.factories.RandomAgentFactory;
+import ic.msciproject.minoritygame.factories.RandomValueFactory;
+import ic.msciproject.minoritygame.factories.SocialNetworkFactory;
 import java.util.Properties;
 import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.FactoryUtils;
 
 /**
  * The MinorityGameFactory class constructs a minority game with the required
@@ -76,43 +87,41 @@ public class MinorityGameFactory {
         assertPropertiesAreValid(properties);
 
         // declare required variables
-        int[] agentMemorySizes = null;
         int numberOfAgents,
             numberOfStrategiesPerAgent,
-            maximumAgentMemorySize = 0,
-            numberOfAgentMemorySizes = 0;
+            maximumAgentMemorySize = 0;
         String  agentType,
-                type,
+                networkType,
                 requiredAgentMemorySize;
+
         ChoiceHistory choiceHistory;
-        ChoiceMemory choiceMemory;
-        List<AbstractAgent> agents;
-        AgentManager agentManager;
-        StrategySpace strategySpace;
-        List<Strategy> strategies;
-        StrategyManager strategyManager;
+        Community community;
         MinorityGame minorityGame = null;
-        AbstractAgent agent = null;
+
+        AgentFactory agentFactory = null;
+        FriendshipFactory friendshipFactory = null;
+        SocialNetworkFactory socialNetworkFactory = null;
+        
+        Factory<Integer> memoryCapacityFactory = null;
+        Factory<Integer> numberOfStrategiesFactory = null;
 
         // deduce the agent memory sizes required
         requiredAgentMemorySize = properties.getProperty("agent-memory-size");
         if(requiredAgentMemorySize.matches("\\d*")) {
-            // if the agent-memory-size property is just a number, create a
-            // single element array containing that number and set the
-            // maximum agent memory size and number of agent memory sizes
-            // variables accordingly.
-            agentMemorySizes = new int[1];
-            agentMemorySizes[0] = Integer.parseInt(
+            // parse the required memory capacity
+            int memoryCapacity = Integer.parseInt(
                 properties.getProperty("agent-memory-size")
             );
-            maximumAgentMemorySize = agentMemorySizes[0];
-            numberOfAgentMemorySizes = 1;
+
+            // fetch a factory that returns the supplied value always
+            memoryCapacityFactory = FactoryUtils.constantFactory(
+                memoryCapacity
+            );
+
+            maximumAgentMemorySize = memoryCapacity;
         } else if(requiredAgentMemorySize.matches("\\d*\\.\\.\\d*")) {
-            // if the agent-memory-size property is a range, create an array
-            // of possible memory sizes, set the maximum agent memory size
-            // variable to the upper bound of the range and set the number
-            // of agent memory sizes variable to the number of elements in the
-            // array.
+            // create a RandomValueFactory to return memory capacities randomly
+            // in the specified range.
             Pattern rangeBoundPattern = Pattern.compile("(\\d+)\\.\\.(\\d+)");
             Matcher rangeBoundMatcher = rangeBoundPattern.matcher(
                 requiredAgentMemorySize
@@ -123,12 +132,9 @@ public class MinorityGameFactory {
             int lowerBound = Integer.parseInt(rangeBoundMatcher.group(1));
             int upperBound = Integer.parseInt(rangeBoundMatcher.group(2));
 
-            numberOfAgentMemorySizes = upperBound - lowerBound + 1;
-            
-            agentMemorySizes = new int[numberOfAgentMemorySizes];
-            for(int i = 0; i < numberOfAgentMemorySizes; i++) {
-                agentMemorySizes[i] = lowerBound + i;
-            }
+            memoryCapacityFactory = new RandomValueFactory(
+                lowerBound, upperBound
+            );
 
             maximumAgentMemorySize = upperBound;
         }
@@ -139,78 +145,95 @@ public class MinorityGameFactory {
 
         // build a collection of agents of the specified type with the required
         // number of strategies and memories of the specified size.
-        agents = new ArrayList<AbstractAgent>();
         numberOfAgents = Integer.parseInt(
             properties.getProperty("number-of-agents")
         );
+
         numberOfStrategiesPerAgent = Integer.parseInt(
             properties.getProperty("number-of-strategies-per-agent")
         );
+        numberOfStrategiesFactory = FactoryUtils.constantFactory(
+            numberOfStrategiesPerAgent
+        );
+
         agentType = properties.getProperty("agent-type");
 
-        for(int i = 0; i < numberOfAgents; i++){
-            int memorySize;
-
-            // if agents with different memory sizes are required, select one
-            // at random from the array of possible memory sizes, otherwise use
-            // the specified memory size, setting the memory size variable to
-            // the selected memory size.
-            if(numberOfAgentMemorySizes > 0) {
-                memorySize = agentMemorySizes[
-                    getRandomIndex(numberOfAgentMemorySizes)
-                ];
-            } else {
-                memorySize = agentMemorySizes[0];
-            }
-
-            // add the required number of strategies to each agent
-            strategySpace = new StrategySpace(memorySize);
-            strategies = new ArrayList<Strategy>();
-
-            for(int j = 0; j < numberOfStrategiesPerAgent; j++) {
-                strategies.add(strategySpace.generateStrategy());
-            }
-
-            strategyManager = new StrategyManager(strategies);
-
-            // create a memory of the specified size for the agent
-            choiceMemory = new ChoiceMemory(choiceHistory, memorySize);
-
-            // build the required agent type based on the agent type property
-            if(agentType.equals("basic")) {
-                agent = new BasicAgent(strategyManager, choiceMemory);
-            } else if(agentType.equals("learning")) {
-                agent = new LearningAgent(strategyManager, choiceMemory);
-            } else if(agentType.equals("random")) {
-                agent = new RandomAgent(strategyManager, choiceMemory);
-            }
-
-            // add the agents to the collection
-            agents.add(agent);
+        if(properties.containsKey("network-type")) {
+            networkType = properties.getProperty("network-type");
+        } else {
+            networkType = "empty";
         }
 
-        // create an agent manager using the generated list of agents.
-        agentManager = new AgentManager(agents);
+        // build the correct agent factory based on the agent type property
+        if(agentType.equals("basic")) {
+            agentFactory = new BasicAgentFactory(
+                memoryCapacityFactory, 
+                numberOfStrategiesFactory,
+                choiceHistory.asList()
+            );
+        } else if(agentType.equals("learning")) {
+            agentFactory = new LearningAgentFactory(
+                memoryCapacityFactory, 
+                numberOfStrategiesFactory,
+                choiceHistory.asList()
+            );
+        } else if(agentType.equals("random")) {
+            agentFactory = new RandomAgentFactory();
+        }
+
+        // build a friendship factory
+        friendshipFactory = new FriendshipFactory();
+
+        // build the correct social network factory based on the network type
+        // property
+        if(networkType.equals("complete")) {
+            socialNetworkFactory = new CompleteSocialNetworkFactory(
+                agentFactory, friendshipFactory, numberOfAgents
+            );
+        } else {
+            socialNetworkFactory = new EmptySocialNetworkFactory(
+                agentFactory, friendshipFactory, numberOfAgents
+            );
+        }
+
+        // construct the social network
+        Graph<AbstractAgent, Friendship> socialNetwork =
+            socialNetworkFactory.create();
+
+        // update each agent's social network to reflect the friendships in the
+        // complete social network
+        for(AbstractAgent agent : socialNetwork.getVertices()) {
+            // create an empty graph representing the agents network
+            Graph<AbstractAgent, Friendship> localSocialNetwork =
+                new SparseGraph<AbstractAgent, Friendship>();
+
+            // add the agent to the local social network
+            localSocialNetwork.addVertex(agent);
+
+            // add all agents and friendships connected to the agent to the
+            // graph
+            for(AbstractAgent friend : socialNetwork.getNeighbors(agent)) {
+                localSocialNetwork.addVertex(friend);
+                localSocialNetwork.addEdge(
+                    socialNetwork.findEdge(agent, friend), agent, friend
+                );
+            }
+
+            // set the graph as the agent's social network
+            agent.setSocialNetwork(localSocialNetwork);
+        }
+
+        // create a Community instance using the generated list of agents.
+        community = new Community(socialNetwork);
 
         // build a minority game instance passing the agents and history
         // string.
         minorityGame = new MinorityGame(
-            agentManager, choiceHistory
+            community, choiceHistory
         );
 
         // return the minority game
         return minorityGame;
-    }
-
-    /**
-     * Returns a random integer in the range [0,arraySize[ representing a
-     * random array index.
-     * @param arraySize The number of elements in the array for which the index
-     * is required.
-     * @return An integer in the range [0,arraySize[
-     */
-    private static int getRandomIndex(int arraySize) {
-        return (int) (randomNumberGenerator.nextDouble() * arraySize);
     }
 
     /**
@@ -230,15 +253,23 @@ public class MinorityGameFactory {
 
         assertPropertyIsOdd(properties, "number-of-agents");
 
-        HashSet<String> acceptedTypes = new HashSet<String>();
-        acceptedTypes.add("standard");
-
         HashSet<String> acceptedAgentTypes = new HashSet<String>();
         acceptedAgentTypes.add("basic");
         acceptedAgentTypes.add("learning");
         acceptedAgentTypes.add("random");
 
         assertPropertyInSet(properties, "agent-type", acceptedAgentTypes);
+
+        HashSet<String> acceptedNetworkTypes = new HashSet<String>();
+        acceptedNetworkTypes.add("empty");
+        acceptedNetworkTypes.add("complete");
+        acceptedNetworkTypes.add("random");
+
+        if(properties.containsKey("network-type")) {
+            assertPropertyInSet(
+                properties, "network-type", acceptedNetworkTypes
+            );
+        }
     }
 
     /**
@@ -300,8 +331,8 @@ public class MinorityGameFactory {
     /**
      * Checks that the supplied Properties object has an value containing a
      * string representing an odd number for the specified property.
-     * @param properties
-     * @param property
+     * @param properties The Properties object to check.
+     * @param property The name of the property of which to check the value.
      */
     private static void assertPropertyIsOdd(
         Properties properties,
@@ -317,6 +348,13 @@ public class MinorityGameFactory {
         }
     }
 
+    /**
+     * Checks that the supplied Properties object has a value containing a
+     * string representing either a number or a range for the specified
+     * property.
+     * @param properties The Properties object to check.
+     * @param property The name of the property of which to check the value.
+     */
     private static void assertPropertyIsNumericOrRange(
         Properties properties,
         String property

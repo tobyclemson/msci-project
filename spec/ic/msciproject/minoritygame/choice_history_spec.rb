@@ -3,8 +3,8 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 describe MSciProject::MinorityGame::ChoiceHistory do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { package::ChoiceHistory }
-  
-  let(:choice_history) { package::ChoiceHistory.new(2) }
+
+  let(:choice_history) { klass.new(1) }
   
   describe "public interface" do
     it "has an as_list instance method" do
@@ -22,6 +22,8 @@ describe MSciProject::MinorityGame::ChoiceHistory do
   
   describe "constructor" do
     describe "with an initial length argument" do
+      let(:choice_history) { klass.new(2) }
+          
       it "initially sets itself to the specified size" do
         choice_history.size.should == 2
       end
@@ -44,12 +46,12 @@ describe MSciProject::MinorityGame::ChoiceHistory do
         choice_history = klass.new(0)
         choice_history.add(package::Choice::A)
         choice_history.add(package::Choice::B)
-        choice_history.add(package::Choice::A)
+        choice_history.add(package::Choice::B)
         
         list = Java::JavaUtil::ArrayList.new
         list.add(package::Choice::A)
         list.add(package::Choice::B)
-        list.add(package::Choice::A)
+        list.add(package::Choice::B)
                 
         choice_history.as_list.should == list
       end
@@ -69,13 +71,13 @@ describe MSciProject::MinorityGame::ChoiceHistory do
         choice_history.add(package::Choice::A)
         choice_history.add(package::Choice::B)
         choice_history.add(package::Choice::B)
-        choice_history.add(package::Choice::A)
+        choice_history.add(package::Choice::B)
         
         list = Java::JavaUtil::ArrayList.new
         list.add(package::Choice::A)
         list.add(package::Choice::B)
         list.add(package::Choice::B)
-        list.add(package::Choice::A)
+        list.add(package::Choice::B)
         
         choice_history.as_list(4).should == list
       end

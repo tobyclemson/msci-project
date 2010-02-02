@@ -56,7 +56,6 @@ public class Main {
             // create a string builder to hold the data
             output = new StringBuilder();
 
-
             // create a 2D array to hold the resulting data
             int data[][] = new int[numberOfRuns][numberOfTimeSteps];
 
@@ -81,7 +80,7 @@ public class Main {
 
                     // get the attendance for choice A
                     attendanceOfA = minorityGame.
-                        getAgentManager().
+                        getCommunity().
                         getChoiceTotals().
                         get(Choice.A);
 

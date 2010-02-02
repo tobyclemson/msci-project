@@ -1,11 +1,14 @@
 package ic.msciproject.minoritygame;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 /**
- * The ChoiceMemory class wraps a ChoiceHistory object and represents the
- * memory of an agent. Each memory can have a different capacity which is the
- * number of past minority choices it can read back.
+ * The ChoiceMemory class represents the memory of an agent. Each memory can
+ * have a different capacity which is the number of past minority choices it
+ * can remember.
  * @author tobyclemson
  */
 public class ChoiceMemory {
@@ -13,28 +16,45 @@ public class ChoiceMemory {
     /**
      * An integer representing the capacity of the choice memory.
      */
-    public int capacity;
+    private int capacity;
 
     /**
-     * A ChoiceHistory object representing the global choice history containing
-     * the past minority choices for every time step.
+     * A list of choices representing the contents of this memory.
      */
-    public ChoiceHistory choiceHistoryProvider;
+    private Deque<Choice> memory;
 
     /**
-     * Creates a ChoiceMemory instance backed by the supplied ChoiceHistory
-     * instance and with the supplied capacity.
-     * @param choiceHistoryProvider The ChoiceHistory object from which the
-     * memory instance should draw its information.
-     * @param capacity The number of steps back in time the memory has
-     * capacity to remember.
+     * Creates a ChoiceMemory instance with the supplied capacity and initially
+     * populated with the supplied list of choices. If the list of choices 
+     * contains fewer choices than the specified memory capacity, an
+     * IllegalArgumentException is thrown. If the list of choices contains
+     * more choices than the specified memory capacity then the highest index
+     * entries are considered most recent and favoured over the lowers index
+     * entries.
+     * @param capacity The number of minority choices back in time the memory
+     * has capacity to hold.
+     * @param initialChoices A list of choices with which to initially populate
+     * the memory.
      */
     public ChoiceMemory(
-        ChoiceHistory choiceHistoryProvider,
-        int capacity
+        int capacity, List<Choice> initialChoices
     ) {
-        this.choiceHistoryProvider = choiceHistoryProvider;
+        // if there are too few initial choices, throw an
+        // IllegalArgumentException
+        int initialChoiceCount = initialChoices.size();
+        if(initialChoiceCount < capacity){
+            throw new IllegalArgumentException(
+                "Insufficient initial choices in supplied choice list for " +
+                "the specified memory capacity."
+            );
+        }
+
+        // set the capacity and store the supplied initialChoices
         this.capacity = capacity;
+        this.memory = new ArrayDeque<Choice>();
+        for(int i = 0; i < capacity; i++) {
+            memory.addFirst(initialChoices.get(initialChoiceCount - 1 - i));
+        }
     }
 
     /**
@@ -46,20 +66,21 @@ public class ChoiceMemory {
     }
 
     /**
-     * Returns the ChoiceHistory object backing the memory.
-     * @return The choice history that the memory reads from.
+     * Adds the supplied choice to this memory as the most recent entry.
+     * @param choice The choice to add to the memory.
      */
-    public ChoiceHistory getChoiceHistoryProvider() {
-        return choiceHistoryProvider;
+    public void add(Choice choice) {
+        memory.removeFirst();
+        memory.addLast(choice);
     }
 
     /**
-     * Returns the contents of the choice memory as a List of Choice
+     * Returns the contents of this choice memory as a List of Choice
      * enumerations.
-     * @return
+     * @return The contents of this memory as a list of choices.
      */
     public List<Choice> fetch() {
-        return choiceHistoryProvider.asList(capacity);
+        return new ArrayList<Choice>(memory);
     }
 
 }

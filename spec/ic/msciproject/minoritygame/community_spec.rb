@@ -1,54 +1,90 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSciProject::MinorityGame::AgentManager do
+describe MSciProject::MinorityGame::Community do
   let(:package) { MSciProject::MinorityGame }
-  let(:klass) { package::AgentManager }
+  let(:klass) { package::Community }
   
   let(:integer) { Java::JavaLang::Integer }
   let(:array_list) { Java::JavaUtil::ArrayList }
   
   let(:agents) { Mockito.mock(array_list.java_class) }
+  let(:social_network) { Mockito.mock(Jung::Graph::Graph.java_class) }
   
-  let(:agent_manager) { klass.new(agents) }
+  let(:community) { klass.new(social_network) }
   
   describe "public interface" do
     it "has an agents instance method" do
-      agent_manager.should respond_to(:agents)
+      community.should respond_to(:agents)
+    end
+    
+    it "has a friendships instance method" do
+      community.should respond_to(:friendships)
+    end
+    
+    it "has a social_network instance method" do
+      community.should respond_to(:social_network)
     end
     
     it "has a choice_totals instance method" do
-      agent_manager.should respond_to(:choice_totals)
+      community.should respond_to(:choice_totals)
     end
     
     it "has a prepare_agents instance method" do
-      agent_manager.should respond_to(:prepare_agents)
+      community.should respond_to(:prepare_agents)
     end
     
     it "has a make_choices instance method" do
-      agent_manager.should respond_to(:make_choices)
+      community.should respond_to(:make_choices)
     end
     
     it "has a update_agents instance method" do
-      agent_manager.should respond_to(:update_agents)
+      community.should respond_to(:update_agents)
     end
     
     it "has a number_of_agents instance method" do
-      agent_manager.should respond_to(:number_of_agents)
+      community.should respond_to(:number_of_agents)
     end
   end
   
   describe "constructor" do
-    describe "with a List of AbstractAgent instance as an argument" do      
-      it "sets the agents attribute to the supplied collection of agents" do
-        agent_manager.agents.should == agents
+    describe "with a Graph of Agents and Friendships as an argument" do
+      it "sets the social network attribute to the supplied network of the " + 
+        "community" do
+        new_community = klass.new(social_network)
+        new_community.social_network.should == social_network
       end
     end
   end
 
   describe "#number_of_agents" do
-    it "returns the number of agents stored by the agent manager" do
-      Mockito.when(agents.size).then_return(integer.new(3))
-      agent_manager.number_of_agents.should == 3
+    it "returns the number of agents in the social network" do
+      Mockito.when(social_network.vertex_count).then_return(integer.new(3))
+      community.number_of_agents.should == 3
+    end
+  end
+  
+  describe "#agents" do
+    it "returns the agents in the social network sorted by " + 
+      "identification_number" do
+      agents = Java::JavaUtil::HashSet.new
+      11.times { agents.add(package::RandomAgent.new()) }
+
+      Mockito.when(social_network.vertices).then_return(agents)
+      
+      community.agents.to_a.should == agents.sort_by do |agent|
+        agent.identification_number
+      end
+    end
+  end
+  
+  describe "#friendships" do
+    it "returns the friendships in the social network" do
+      friendships = Mockito.mock(Java::JavaUtil::Collection.java_class)
+      Mockito.when(social_network.edges).then_return(friendships)
+      
+      community.friendships.should == friendships
+      
+      Mockito.verify(social_network).edges
     end
   end
 
@@ -65,9 +101,11 @@ describe MSciProject::MinorityGame::AgentManager do
       3.times { agent_list.add(choice_a_agent) }
       5.times { agent_list.add(choice_b_agent) }
       
-      agent_manager = klass.new(agent_list)
+      Mockito.when(social_network.vertices).then_return(agent_list)
       
-      totals = agent_manager.choice_totals
+      community = klass.new(social_network)
+      
+      totals = community.choice_totals
       
       {
         package::Choice::A => 3, 
@@ -86,13 +124,15 @@ describe MSciProject::MinorityGame::AgentManager do
       
       agent_list = array_list.new
       
-      agent_list.add(mock_agent_1)
-      agent_list.add(mock_agent_2)
-      agent_list.add(mock_agent_3)
+      [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
+        agent_list.add(agent)
+      end
       
-      agent_manager = klass.new(agent_list)
+      Mockito.when(social_network.vertices).then_return(agent_list)
       
-      agent_manager.prepare_agents
+      community = klass.new(social_network)
+      
+      community.prepare_agents
       
       Mockito.verify(mock_agent_1).prepare()
       Mockito.verify(mock_agent_2).prepare()
@@ -108,13 +148,15 @@ describe MSciProject::MinorityGame::AgentManager do
       
       agent_list = array_list.new
       
-      agent_list.add(mock_agent_1)
-      agent_list.add(mock_agent_2)
-      agent_list.add(mock_agent_3)
+      [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
+        agent_list.add(agent)
+      end
       
-      agent_manager = klass.new(agent_list)
+      Mockito.when(social_network.vertices).then_return(agent_list)
       
-      agent_manager.make_choices
+      community = klass.new(social_network)
+      
+      community.make_choices
       
       Mockito.verify(mock_agent_1).choose()
       Mockito.verify(mock_agent_2).choose()
@@ -134,9 +176,11 @@ describe MSciProject::MinorityGame::AgentManager do
         agent_list.add(agent)
       end
       
-      agent_manager = klass.new(agent_list)
+      Mockito.when(social_network.vertices).then_return(agent_list)
       
-      agent_manager.update_agents(package::Choice::A)
+      community = klass.new(social_network)
+      
+      community.update_agents(package::Choice::A)
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         Mockito.verify(agent).update(package::Choice::A)

@@ -33,8 +33,8 @@ describe MSciProject::MinorityGame::RandomAgent do
         end
       end
 
-      choice_a_count.should be_between(42, 58)
-      choice_b_count.should be_between(42, 58)
+      choice_a_count.should be_between(40, 60)
+      choice_b_count.should be_between(40, 60)
       choice_a_count.should == 100 - choice_b_count
     end
   end

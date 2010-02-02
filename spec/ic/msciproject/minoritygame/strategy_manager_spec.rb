@@ -159,7 +159,7 @@ describe MSciProject::MinorityGame::StrategyManager do
       1000.times { strategy_manager.highest_scoring_strategy }
       end_time = Time.now
       
-      (end_time - start_time).should be < 2
+      (end_time - start_time).should be < 2.5
     end
   end
 

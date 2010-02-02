@@ -7,18 +7,18 @@ describe MSciProject::MinorityGame::MinorityGame do
   let(:integer) { Java::JavaLang::Integer }
   let(:array_list) { Java::JavaUtil::ArrayList }
   
-  let(:agent_manager) { Mockito.mock(package::AgentManager.java_class) }
+  let(:community) { Mockito.mock(package::Community.java_class) }
   let(:choice_history) { Mockito.mock(package::ChoiceHistory.java_class) }
   
-  let(:minority_game) { klass.new(agent_manager, choice_history) }
+  let(:minority_game) { klass.new(community, choice_history) }
   
   describe "public interface" do
     it "has an agents instance method" do
       minority_game.should respond_to(:agents)
     end
     
-    it "has an agent_manager instance method" do
-      minority_game.should respond_to(:agent_manager)
+    it "has an community instance method" do
+      minority_game.should respond_to(:community)
     end
     
     it "has an choice_history instance method" do
@@ -39,10 +39,10 @@ describe MSciProject::MinorityGame::MinorityGame do
   end
   
   describe "constructor" do
-    describe "with agent_manager and choice history arguments" do
-      it "sets the agent_manager attribute to the supplied AgentManager " + 
+    describe "with community and choice history arguments" do
+      it "sets the community attribute to the supplied Community " + 
         "instance" do
-        minority_game.agent_manager.should == agent_manager
+        minority_game.community.should == community
       end
 
       it "sets the choice_history attribute to the supplied ChoiceHistory " + 
@@ -53,9 +53,9 @@ describe MSciProject::MinorityGame::MinorityGame do
   end
 
   describe "agents" do
-    it "returns the agents stored in the agent manager" do
+    it "returns the agents stored in the community manager" do
       agents = Mockito.mock(array_list.java_class)
-      Mockito.when(agent_manager.get_agents).then_return(agents)
+      Mockito.when(community.get_agents).then_return(agents)
       minority_game.agents.should equal(agents)
     end
   end
@@ -67,7 +67,7 @@ describe MSciProject::MinorityGame::MinorityGame do
       choice_totals.put(package::Choice::A, integer.new(15))
       choice_totals.put(package::Choice::B, integer.new(12))
       
-      Mockito.when(agent_manager.get_choice_totals).
+      Mockito.when(community.get_choice_totals).
         then_return(choice_totals)
       
       minority_game.minority_size.should == 12
@@ -81,7 +81,7 @@ describe MSciProject::MinorityGame::MinorityGame do
       choice_totals.put(package::Choice::A, integer.new(15))
       choice_totals.put(package::Choice::B, integer.new(12))
 
-      Mockito.when(agent_manager.choice_totals).
+      Mockito.when(community.choice_totals).
         then_return(choice_totals)
 
       minority_game.minority_choice.should == package::Choice::B
@@ -101,24 +101,24 @@ describe MSciProject::MinorityGame::MinorityGame do
     }
 
     before(:each) do
-      Mockito.when(agent_manager.choice_totals).
+      Mockito.when(community.choice_totals).
         then_return(choice_totals)
     end
     
     it "tells all agents to prepare to make a choice for this step" do
       minority_game.step_forward
-      Mockito.verify(agent_manager).prepare_agents
+      Mockito.verify(community).prepare_agents
     end
 
     it "tells all agents to make their choice for this step" do
       minority_game.step_forward
-      Mockito.verify(agent_manager).make_choices
+      Mockito.verify(community).make_choices
     end
 
     it "tells all agents to update given the minority choice and choice " + 
       "history" do
       minority_game.step_forward
-      Mockito.verify(agent_manager).update_agents(
+      Mockito.verify(community).update_agents(
         package::Choice::B
       )
     end

@@ -34,6 +34,57 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             package::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
+        
+        it "allows 'empty' to be specified for the 'network-type' property" do
+          properties.set_property("network-type", "empty")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
+        it "allows 'complete' to be specified for the 'network-type' " + 
+          "property" do
+          properties.set_property("network-type", "complete")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
+        it "allows 'random' to be specified for the 'network-type' " + 
+          "property" do
+          properties.set_property("network-type", "random")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
+        it "allows 'basic' to be specified for the 'agent-type' property" do
+          properties.set_property("agent-type", "basic")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
+        it "allows 'learning' to be specified for the 'agent-type' " + 
+          "property" do
+          properties.set_property("agent-type", "learning")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
+        it "allows 'random' to be specified for the 'agent-type' property" do
+          properties.set_property("agent-type", "random")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
       end
       
       describe "for an invalid set of properties" do
@@ -46,7 +97,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             Java::JavaLang::IllegalArgumentException
           )
         end
-
+  
         it "throws an IllegalArgumentException if the options object doesn't " +
           "contain a value for the 'number-of-agents' property" do
           properties.remove("number-of-agents")
@@ -56,7 +107,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             Java::JavaLang::IllegalArgumentException
           )
         end
-
+  
         it "throws an IllegalArgumentException if the options object doesn't " +
           "contain a value for the 'agent-type' property" do
           properties.remove("agent-type")
@@ -66,7 +117,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             Java::JavaLang::IllegalArgumentException
           )
         end
-
+  
         it "throws an IllegalArgumentException if the options object doesn't " +
           "contain a value for the 'number-of-strategies-per-agent' property" do
           properties.remove("number-of-strategies-per-agent")
@@ -76,7 +127,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             Java::JavaLang::IllegalArgumentException
           )
         end
-
+  
         it "throws an IllegalArgumentException if the options object " + 
           "contains anything other than digits or a range for the " + 
           "'agent-memory-size' property" do
@@ -93,7 +144,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             package::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
-
+  
         it "throws an IllegalArgumentException if the range supplied " +
           "for the 'agent-memory-size' property has a negative lower bound" do
           properties.set_property("agent-memory-size", "1..-5")
@@ -101,7 +152,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             package::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
-
+  
         it "throws an IllegalArgumentException if the range supplied " +
           "for the 'agent-memory-size' property has an upper bound smaller " + 
           "than the lower bound" do
@@ -119,7 +170,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             package::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
-
+  
         it "throws an IllegalArgumentException if the options object " + 
           "contains an unrecognised value for the 'agent-type' property" do
           properties.set_property("agent-type", "unsupported!")
@@ -127,7 +178,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             package::MinorityGameFactory.construct(properties) 
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
-
+  
         it "throws an IllegalArgumentException if the options object " + 
           "contains anything other than digits for the " + 
           "'number-of-strategies-per-agent' property" do
@@ -138,7 +189,15 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
             package::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
-
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains an unrecognised value for the 'network-type' property" do
+          properties.set_property("network-type", "unsupported!")
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        end
+  
         it "throws an IllegalArgumentException if the options object " +
           "contains an even number for the 'number-of-agents' property" do
           properties.set_property(
@@ -155,7 +214,7 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
       it "initialises the choice_history attribute with a ChoiceHistory " + 
         "instance of the required initial length" do
         properties.set_property("agent-memory-size", "2")
-
+  
         instance = package::MinorityGameFactory.construct(properties)
         instance.choice_history.should be_a_kind_of(package::ChoiceHistory)
         instance.choice_history.size.should == 2
@@ -165,7 +224,19 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         properties.set_property("agent-memory-size", "2")
         
         instance = package::MinorityGameFactory.construct(properties)
-        instance.agents.first.memory.capacity.should == 2
+        instance.agents.each do |agent|
+          agent.memory.capacity.should == 2
+        end
+      end
+      
+      it "creates agents with an initial choice memory corresponding to " + 
+        "the initial choice history" do
+        properties.set_property("agent-memory-size", "3")
+        instance = package::MinorityGameFactory.construct(properties)
+        instance.agents.each do |agent|
+          agent.memory.fetch.to_a.should == 
+            instance.choice_history.as_list(3).to_a
+        end
       end
       
       it "creates an equal number of agents with each memory capacity when " +
@@ -182,10 +253,10 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         end
         
         scores.each_value do |score|
-          score.should be_between(2400, 2600)
+          score.should be_between(2300, 2700)
         end
       end
-
+  
       it "initialises the agents attribute with the required " +
         "number of agents" do
         properties.set_property("number-of-agents", "101")
@@ -226,6 +297,52 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         instance = package::MinorityGameFactory.construct(properties)
         instance.agents.each do |agent|
           agent.should be_a_kind_of(package::RandomAgent)
+        end
+      end
+      
+      it "initialises the social network to a network with the specified " + 
+        "number of agents when the 'network-type' property is set to " + 
+        "a valid network type" do
+        properties.set_property("network-type", "empty")
+        properties.set_property("number-of-agents", "101")
+        instance = package::MinorityGameFactory.construct(properties)
+        instance.community.should have(101).agents
+      end
+      
+      it "initialises the social network to a network with no friendships " +
+        "when the 'network-type' property is set to 'empty'" do
+        properties.set_property("network-type", "empty")
+        instance = package::MinorityGameFactory.construct(properties)
+        instance.community.should have(0).friendships
+      end
+      
+      it "initialises the social network to a network with N(N-1)/2 " + 
+        "friendships if there are N agents when the 'network-type' " + 
+        "property is set" do
+        properties.set_property("network-type", "complete")
+        properties.set_property("number-of-agents", "11")
+        instance = package::MinorityGameFactory.construct(properties)
+        instance.community.should have((10*11)/2).friendships
+      end
+      
+      it "sets each agent's social network to the corresponding subgraph " +
+        "of the complete social network" do
+        properties.set_property("network-type", "complete")
+        properties.set_property("number-of-agents", "11")
+        
+        instance = package::MinorityGameFactory.construct(properties)
+        
+        global_social_network = instance.community.social_network
+        
+        instance.agents.each do |agent|
+          friends = global_social_network.get_neighbors(agent)
+          agent_network = agent.social_network
+          agent_network.contains_vertex(agent).should be_true
+          agent_network.edge_count.should == friends.size
+          friends.each do |friend|
+            agent_network.contains_vertex(friend).should be_true
+            agent_network.find_edge(agent, friend).should_not be_nil
+          end
         end
       end
     end

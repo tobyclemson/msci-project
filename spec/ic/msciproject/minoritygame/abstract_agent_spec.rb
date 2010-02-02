@@ -41,6 +41,14 @@ describe MSciProject::MinorityGame::AbstractAgent do
       abstract_agent.should respond_to(:choice)
     end
     
+    it "has a social_network instance method" do
+      abstract_agent.should respond_to(:social_network)
+    end
+    
+    it "has a social_network= instance method" do
+      abstract_agent.should respond_to(:social_network=)
+    end
+    
     it "has a prepare instance method" do
       abstract_agent.should respond_to(:prepare)
     end
@@ -55,6 +63,14 @@ describe MSciProject::MinorityGame::AbstractAgent do
     
     it "has an update instance method" do
       abstract_agent.should respond_to(:update)
+    end
+    
+    it "has an identification_number instance method" do
+      abstract_agent.should respond_to(:identification_number)
+    end
+    
+    it "has a compare_to method" do
+      abstract_agent.should respond_to(:compare_to)
     end
   end
   
@@ -80,6 +96,57 @@ describe MSciProject::MinorityGame::AbstractAgent do
           klass.new(strategy_manager, choice_memory)
         }.to raise_error
       end
+      
+      it "sets the id attribute to a unique integer" do
+        agent_ids = (1..10).collect do
+          abstract_agent = klass.new(strategy_manager, choice_memory)
+          abstract_agent.identification_number
+        end
+        
+        agent_ids.uniq.size.should == 10
+      end
+    end
+  end
+  
+  describe "setters" do
+    describe "#social_network=" do
+      it "sets the social_network attribute to the supplied network" do
+        new_social_network = Mockito.mock(
+          Java::EduUciIcsJungGraph::SparseGraph.java_class
+        )
+        abstract_agent.social_network = new_social_network
+        abstract_agent.social_network.should == new_social_network
+      end
+    end
+  end
+  
+  describe "#compare_to" do
+    # agents are assigned id numbers sequentially so the later an agent is
+    # created, the higher its id
+    
+    it "returns a negative integer if the identification_number attribute " + 
+      "of the supplied agent is greater than this agent's " + 
+      "identification_number attribute" do
+      agent_1 = klass.new(strategy_manager, choice_memory)
+      agent_2 = klass.new(strategy_manager, choice_memory)
+      
+      agent_1.compare_to(agent_2).should be < 0
+    end
+    
+    it "returns zero if the identification_number attribute of the " + 
+      "supplied agent is equal to this agent's identification_number " +
+      "attribute" do
+      agent = klass.new(strategy_manager, choice_memory)
+      agent.compare_to(agent).should == 0
+    end
+    
+    it "returns a positive integer if the identification_number attribute " + 
+      "of the supplied agent is smaller than this agent's " + 
+      "identification_number attribute" do
+      agent_1 = klass.new(strategy_manager, choice_memory)
+      agent_2 = klass.new(strategy_manager, choice_memory)
+      
+      agent_2.compare_to(agent_1).should be > 0
     end
   end
   

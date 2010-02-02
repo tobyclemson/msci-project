@@ -12,11 +12,11 @@ public class BasicAgent extends AbstractAgent {
 
     /**
      * Constructs an instance of BasicAgent setting the strategy manager and
-     * memory attributes to the supplied StrategyManager and ChoiceMemroy
+     * memory attributes to the supplied StrategyManager and ChoiceMemory
      * instances.
-     * @param strategyManager A StrategyManager instance representing the
+     * @param strategyManager A StrategyManager instance representing this
      * agent's strategies.
-     * @param choiceMemory A ChoiceMemory instance representing the agent's
+     * @param choiceMemory A ChoiceMemory instance representing this agent's
      * memory of past minority choices.
      */
     public BasicAgent(
@@ -59,6 +59,7 @@ public class BasicAgent extends AbstractAgent {
     ) {
         super.update(minorityChoice);
         strategyManager.incrementScores(memory.fetch(), minorityChoice);
+        memory.add(minorityChoice);
     }
 
 }

@@ -36,7 +36,6 @@ end
 
 Given /^I have a minority game with ([a-zA-Z\-]*) agents? with a memory size of (\d*)$/ do |agent_type, agent_memory_size|
   Given "I have a properties hash"
-  Given "I set the 'type' property to '#{type}'"
   Given "I set the 'agent-type' property to '#{agent_type}'"
   Given "I set the 'agent-memory-size' property to '#{agent_memory_size}'"
   Given "I construct a minority game with the properties hash"
@@ -451,6 +450,61 @@ Then /^it should have agents with strategies with (\d*) mappings$/ do |mappings|
   @minority_game.agents.each do |agent|
     agent.strategies.each do |strategy|
       strategy.map.key_set.size.should == mappings.to_i
+    end
+  end
+end
+
+# Network related steps
+Then /^the associated community should contain (\d+) agents$/ do |number_of_agents|
+  @minority_game.community.agents.size.should == number_of_agents.to_i
+end
+
+Then /^the associated community should contain no friendships$/ do
+  @minority_game.community.friendships.should be_empty
+end
+
+Then /^each agent's social network should consist of just that agent$/ do
+  @minority_game.community.agents.each do |agent|
+    social_network = agent.social_network
+    social_network.vertices.to_a.should == [agent]
+    social_network.edge_count.should == 0
+  end
+end
+
+Then /^each agent's social network should consist of that agent connected to all other agents$/ do
+  agents = @minority_game.community.agents
+  
+  agents.each do |agent|
+    local_social_network = agent.social_network
+    
+    # check for correct number of vertices and edges
+    local_social_network.vertex_count.should == agents.size
+    local_social_network.edge_count.should == agents.size - 1
+    
+    # check an edge exists between the current agent and each other agent
+    agents.each do |friend|
+      next if friend == agent
+      local_social_network.find_edge(agent, friend).should_not be_nil
+    end
+  end
+end
+
+Then /^each agent in the community should be friends with (all|no|\d+) others?$/ do |count|
+  social_network = @minority_game.community.social_network
+  agents = social_network.vertices
+    
+  agents.each do |agent|
+    friends = social_network.get_neighbors(agent)
+    case count
+      when 'all'
+        remaining_agents = Java::JavaUtil::ArrayList.new(agents)
+        remaining_agents.remove(agent)
+        friends.size.should == agents.size - 1
+        friends.contains_all(remaining_agents).should be_true
+      when 'no'
+        friends.size.should == 0
+      when /\d+/
+        friends.size.should == count.to_i
     end
   end
 end

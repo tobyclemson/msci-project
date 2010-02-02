@@ -1,21 +1,22 @@
 package ic.msciproject.minoritygame;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The MinorityGame class represents a minority game which can step forward in
- * time by performing actions on the associated agents and choice history.
+ * time by performing actions on the associated community of agents and
+ * choice history.
  * @author tobyclemson
  */
 public class MinorityGame {
 
     /**
-     * An AgentManager instance containing AbstractAgent instances representing
-     * the agents associated with the minority game. This is returned by the
-     * {@link #getAgentManager} method.
+     * A Community instance containing AbstractAgent instances representing the
+     * agents associated with the minority game. This is returned by the
+     * {@link #getCommunity} method.
      */
-    protected AgentManager agentManager;
+    protected Community community;
 
     /**
      * A ChoiceHistory instance holding a list of choices representing the
@@ -25,19 +26,18 @@ public class MinorityGame {
     protected ChoiceHistory choiceHistory;
 
     /**
-     * Constructs an MinorityGame instance setting the agent manager
-     * and choice history attributes to the supplied AgentManager and
-     * ChoiceHistory instances.
-     * @param agentManager An AgentManager instance containing the agents
-     * associated with this minority game instance.
+     * Constructs a MinorityGame instance setting the community and choice 
+     * history attributes to the supplied Community and ChoiceHistory instances.
+     * @param community A Community instance containing the agents
+     * associated with the minority game instance.
      * @param choiceHistory A ChoiceHistory instance to use as the history
-     * of outcomes for this minority game instance.
+     * of outcomes for the minority game instance.
      */
     public MinorityGame(
-        AgentManager agentManager,
+        Community community,
         ChoiceHistory choiceHistory
     ){
-        this.agentManager = agentManager;
+        this.community = community;
         this.choiceHistory = choiceHistory;
     }
 
@@ -47,15 +47,15 @@ public class MinorityGame {
      * @return The agents associated with the minority game.
      */
     public List<AbstractAgent> getAgents() {
-        return agentManager.getAgents();
+        return community.getAgents();
     }
 
     /**
-     * Returns the associated AgentManager instance.
-     * @return The associated agent manager.
+     * Returns the associated Community instance.
+     * @return The associated community instance.
      */
-    public AgentManager getAgentManager() {
-        return agentManager;
+    public Community getCommunity() {
+        return community;
     }
 
     /**
@@ -78,8 +78,8 @@ public class MinorityGame {
         Integer numberChoosingA, numberChoosingB;
         
         // get a mapping of the choices Choice.A and Choice.B to the number of
-        // agents that have make that choice.
-        choiceTotals = agentManager.getChoiceTotals();
+        // agents making that choice.
+        choiceTotals = community.getChoiceTotals();
         
         // retrieve the numbers of agents making each choice.
         numberChoosingA = choiceTotals.get(Choice.A);
@@ -100,7 +100,7 @@ public class MinorityGame {
 
         // get a mapping of the choices Choice.A and Choice.B to the number of
         // agents that have made that choice.
-        choiceTotals = agentManager.getChoiceTotals();
+        choiceTotals = community.getChoiceTotals();
 
         // retrieve the numbers of agents making each choice.
         numberChoosingA = choiceTotals.get(Choice.A);
@@ -128,18 +128,18 @@ public class MinorityGame {
      * </ul>
      */
     public void stepForward() {
-      // tell the agent manager to prepare the agents to make a choice
-      agentManager.prepareAgents();
+      // tell the community to prepare the agents to make a choice
+      community.prepareAgents();
 
-      // tell the agent manager to tell all agents to actually make a choice
-      agentManager.makeChoices();
+      // tell the community to tell all agents to actually make a choice
+      community.makeChoices();
 
       // find out what the agent consensus is
       Choice minorityChoice = getMinorityChoice();
 
-      // tell the agent manager to update each agent given the minority
+      // tell the community to update each agent given the minority
       // choice
-      agentManager.updateAgents(minorityChoice);
+      community.updateAgents(minorityChoice);
 
       // add the minority choice to the global choice history
       choiceHistory.add(minorityChoice);

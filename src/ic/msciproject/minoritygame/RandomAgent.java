@@ -1,6 +1,5 @@
 package ic.msciproject.minoritygame;
 
-import java.util.List;
 import cern.jet.random.engine.*;
 import cern.jet.random.*;
 
@@ -52,6 +51,15 @@ public class RandomAgent extends AbstractAgent {
         ChoiceMemory choiceMemory
     ) {
         super(strategyManager, choiceMemory);
+    }
+
+    /**
+     * Constructs an instance of RandomAgent with the strategy manager and
+     * memory attributes set to null.
+     * TODO: sort this out during next refactor.
+     */
+    public RandomAgent() {
+        super();
     }
 
     /**

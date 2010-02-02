@@ -123,5 +123,10 @@ describe MSciProject::MinorityGame::BasicAgent do
       Mockito.verify(strategy_manager).
         increment_scores(past_choices, package::Choice::B)
     end
+    
+    it "adds the minority choice to the memory" do
+      basic_agent.update(package::Choice::A)
+      Mockito.verify(choice_memory).add(package::Choice::A)
+    end
   end
 end
