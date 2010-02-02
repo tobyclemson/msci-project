@@ -12,6 +12,7 @@ import ic.msciproject.minoritygame.factories.EmptySocialNetworkFactory;
 import ic.msciproject.minoritygame.factories.FriendshipFactory;
 import ic.msciproject.minoritygame.factories.LearningAgentFactory;
 import ic.msciproject.minoritygame.factories.RandomAgentFactory;
+import ic.msciproject.minoritygame.factories.RandomSocialNetworkFactory;
 import ic.msciproject.minoritygame.factories.RandomValueFactory;
 import ic.msciproject.minoritygame.factories.SocialNetworkFactory;
 import java.util.Properties;
@@ -90,6 +91,7 @@ public class MinorityGameFactory {
         int numberOfAgents,
             numberOfStrategiesPerAgent,
             maximumAgentMemorySize = 0;
+        double  linkProbability = 0.0;
         String  agentType,
                 networkType,
                 requiredAgentMemorySize;
@@ -164,6 +166,12 @@ public class MinorityGameFactory {
             networkType = "empty";
         }
 
+        if(properties.containsKey("link-probability")) {
+            linkProbability = Double.valueOf(
+                properties.getProperty("link-probability")
+            );
+        }
+
         // build the correct agent factory based on the agent type property
         if(agentType.equals("basic")) {
             agentFactory = new BasicAgentFactory(
@@ -189,6 +197,10 @@ public class MinorityGameFactory {
         if(networkType.equals("complete")) {
             socialNetworkFactory = new CompleteSocialNetworkFactory(
                 agentFactory, friendshipFactory, numberOfAgents
+            );
+        } else if(networkType.equals("random")) {
+            socialNetworkFactory = new RandomSocialNetworkFactory(
+                agentFactory, friendshipFactory, numberOfAgents, linkProbability
             );
         } else {
             socialNetworkFactory = new EmptySocialNetworkFactory(
@@ -248,8 +260,8 @@ public class MinorityGameFactory {
         assertPropertyExists(properties, "agent-type");
         assertPropertyExists(properties, "number-of-strategies-per-agent");
 
-        assertPropertyIsNumericOrRange(properties, "agent-memory-size");
-        assertPropertyIsNumeric(properties, "number-of-strategies-per-agent");
+        assertPropertyIsIntegerOrRange(properties, "agent-memory-size");
+        assertPropertyIsInteger(properties, "number-of-strategies-per-agent");
 
         assertPropertyIsOdd(properties, "number-of-agents");
 
@@ -269,6 +281,10 @@ public class MinorityGameFactory {
             assertPropertyInSet(
                 properties, "network-type", acceptedNetworkTypes
             );
+            if(properties.getProperty("network-type").equals("random")){
+                assertPropertyExists(properties, "link-probability");
+                assertPropertyIsProbability(properties, "link-probability");
+            }
         }
     }
 
@@ -312,25 +328,25 @@ public class MinorityGameFactory {
 
     /**
      * Checks that the supplied Properties object has a value containing a
-     * string representing a number for the specified property.
+     * string representing an integer for the specified property.
      * @param properties The Properties object to check.
      * @param property The name of the property of which to check the value.
      */
-    private static void assertPropertyIsNumeric(
+    private static void assertPropertyIsInteger(
         Properties properties, String property
     ){
         String value = properties.getProperty(property);
         if(!value.matches("\\d+")){
             throw new IllegalArgumentException(
-                "Expected properties object to contain a numeric value for " +
+                "Expected properties object to contain an integer value for " +
                 "the '" + property + "' property."
             );
         }
     }
 
     /**
-     * Checks that the supplied Properties object has an value containing a
-     * string representing an odd number for the specified property.
+     * Checks that the supplied Properties object has a value containing a
+     * string representing an odd integer for the specified property.
      * @param properties The Properties object to check.
      * @param property The name of the property of which to check the value.
      */
@@ -338,7 +354,7 @@ public class MinorityGameFactory {
         Properties properties,
         String property
     ) {
-        assertPropertyIsNumeric(properties, property);
+        assertPropertyIsInteger(properties, property);
         int value = Integer.parseInt(properties.getProperty(property));
         if(value % 2 == 0) {
             throw new IllegalArgumentException(
@@ -350,22 +366,22 @@ public class MinorityGameFactory {
 
     /**
      * Checks that the supplied Properties object has a value containing a
-     * string representing either a number or a range for the specified
+     * string representing either an integer or a range for the specified
      * property.
      * @param properties The Properties object to check.
      * @param property The name of the property of which to check the value.
      */
-    private static void assertPropertyIsNumericOrRange(
+    private static void assertPropertyIsIntegerOrRange(
         Properties properties,
         String property
     ) {
-        boolean isNumeric = false,
+        boolean isInteger = false,
                 isRange = false;
 
         String value = properties.getProperty(property);
 
         if(value.matches("\\d+")) {
-            isNumeric = true;
+            isInteger = true;
         } else if(value.matches("\\d+\\.\\.\\d+")) {
             int lowerBound, upperBound;
 
@@ -394,10 +410,48 @@ public class MinorityGameFactory {
             isRange = true;
         }
 
-        if(!(isNumeric || isRange)) {
+        if(!(isInteger || isRange)) {
             throw new IllegalArgumentException(
-                "Expected properties object to contain a number or a range " +
+                "Expected properties object to contain an integer or a range " +
                 "for the '" + property + "' property."
+            );
+        }
+    }
+
+    /**
+     * Checks that the supplied Properties object has a value containing a
+     * string representing a decimal for the specified property.
+     * @param properties The Properties object to check.
+     * @param property The name of the property of which to check the value.
+     */
+    private static void assertPropertyIsDecimal(
+        Properties properties, String property
+    ) {
+        String value = properties.getProperty(property);
+        if(!value.matches("\\d+(\\.\\d+)?")){
+            throw new IllegalArgumentException(
+                "Expected properties object to contain an decimal value for " +
+                "the '" + property + "' property."
+            );
+        }
+    }
+
+        /**
+     * Checks that the supplied Properties object has a value containing a
+     * string representing a probability for the specified property.
+     * @param properties The Properties object to check.
+     * @param property The name of the property of which to check the value.
+     */
+    private static void assertPropertyIsProbability(
+        Properties properties, String property
+    ) {
+        assertPropertyIsDecimal(properties, property);
+        double value = Double.valueOf(properties.getProperty(property));
+        if(value < 0 || value > 1) {
+            throw new IllegalArgumentException(
+                "Expected properties object to contain an probability for " +
+                "the '" + property + "' property, i.e., a floating point " +
+                "value between 0 and 1."
             );
         }
     }

@@ -35,7 +35,7 @@ describe MSciProject::MinorityGame::Factories::EmptySocialNetworkFactory do
       friendship_factory_klass = Class.new(package::FriendshipFactory) do
         def create
           return Mockito.mock(
-            MSciProject::MinorityGame::AbstractAgent.java_class
+            MSciProject::MinorityGame::Friendship.java_class
           )
         end
       end

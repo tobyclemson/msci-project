@@ -56,6 +56,9 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
           "property" do
           properties.set_property("network-type", "random")
           
+          # if the network type is random, a link probability must be supplied
+          properties.set_property("link-probability", "0.1")
+          
           expect {
             package::MinorityGameFactory.construct(properties)
           }.to_not raise_error
@@ -80,6 +83,19 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         
         it "allows 'random' to be specified for the 'agent-type' property" do
           properties.set_property("agent-type", "random")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
+        it "allows an integer to be specified for the 'link-probability' " + 
+          "property" do
+          properties.set_property("link-probability", "1");
+          
+          # the link-probability property is only required for a network type
+          # of random
+          properties.set_property("network-type", "random")
           
           expect {
             package::MinorityGameFactory.construct(properties)
@@ -193,6 +209,61 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         it "throws an IllegalArgumentException if the options object " +
           "contains an unrecognised value for the 'network-type' property" do
           properties.set_property("network-type", "unsupported!")
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains 'random' for the 'network-type' property but doesn't " +
+          "contain a value for the 'link-probability' property" do
+          properties.set_property("network-type", "random")
+          if properties.contains_key("link-probability")
+            properties.remove("link-probability")
+          end
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains a non-decimal value for the 'link-probability' " + 
+          "property" do
+          properties.set_property("link-probability", "non-decimal")
+          
+          # the link-probability property is only required for a network type
+          # of random
+          properties.set_property("network-type", "random")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains a decimal value less than 0.0 for the " + 
+          "'link-probability' property" do
+          properties.set_property("link-probability", "-0.3")
+          
+          # the link-probability property is only required for a network type
+          # of random
+          properties.set_property("network-type", "random")
+          
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains a decimal value greater than 1.0 for the " + 
+          "'link-probability' property" do
+          properties.set_property("link-probability", "1.3")
+          
+          # the link-probability property is only required for a network type
+          # of random
+          properties.set_property("network-type", "random")
+          
           expect {
             package::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)

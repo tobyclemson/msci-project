@@ -21,4 +21,12 @@ Feature: agents have friends whose opinion influences their decision making
     And each agent in the community should be friends with all others
     And each agent's social network should consist of that agent connected to all other agents
   
+  Scenario: construct a minority game with an Erdos-Renyi type random graph as the social network
+    Given I have a properties hash
+    When I set the 'network-type' property to 'random'
+    And I set the 'link-probability' property to '0.1'
+    And I set the 'number-of-agents' property to '501'
+    And I construct a minority game with the properties hash
+    Then I should have a minority game
+    And each agent in the community should be friends with approximately 50 others
   

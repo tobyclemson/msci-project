@@ -489,7 +489,7 @@ Then /^each agent's social network should consist of that agent connected to all
   end
 end
 
-Then /^each agent in the community should be friends with (all|no|\d+) others?$/ do |count|
+Then /^each agent in the community should be friends with (approximately )?(all|no|\d+) others?$/ do |approximate, count|
   social_network = @minority_game.community.social_network
   agents = social_network.vertices
     
@@ -504,7 +504,12 @@ Then /^each agent in the community should be friends with (all|no|\d+) others?$/
       when 'no'
         friends.size.should == 0
       when /\d+/
-        friends.size.should == count.to_i
+        if(approximate)
+          count = count.to_i
+          friends.size.should be_between(0.8 * count, 1.2 * count)
+        else
+          friends.size.should == count.to_i
+        end
     end
   end
 end
