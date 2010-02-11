@@ -21,7 +21,7 @@ Feature: Versatile minority game construction
     Given I have a properties hash
     When I set the 'number-of-agents' property to '<invalid_number_of_agents>'
     And I construct a minority game with the properties hash
-    Then a Java::Lang::IllegalArgumentException should be thrown
+    Then a Java::JavaLang::IllegalArgumentException should be thrown
     
     Examples:
       | invalid_number_of_agents |
@@ -34,7 +34,7 @@ Feature: Versatile minority game construction
     Given I have a properties hash
     When I set the 'number-of-agents' property to '<even_number_of_agents>'
     And I construct a minority game with the properties hash
-    Then a Java::Lang::IllegalArgumentException should be thrown
+    Then a Java::JavaLang::IllegalArgumentException should be thrown
     
     Examples:
       | even_number_of_agents |
@@ -60,7 +60,7 @@ Feature: Versatile minority game construction
     Given I have a properties hash
     When I set the 'number-of-strategies-per-agent' property to '<invalid_number_of_strategies>'
     And I construct a minority game with the properties hash
-    Then a Java::Lang::IllegalArgumentException should be thrown
+    Then a Java::JavaLang::IllegalArgumentException should be thrown
 
     Examples:
       | invalid_number_of_strategies |
@@ -86,7 +86,7 @@ Feature: Versatile minority game construction
     Given I have a properties hash
     When I set the 'agent-memory-size' property to '<invalid_length>'
     And I construct a minority game with the properties hash
-    Then a Java::Lang::IllegalArgumentException should be thrown
+    Then a Java::JavaLang::IllegalArgumentException should be thrown
 
     Examples:
       | invalid_length |
@@ -112,7 +112,7 @@ Feature: Versatile minority game construction
     Given I have a properties hash
     When I set the 'agent-memory-size' property to '<invalid_range>'
     And I construct a minority game with the properties hash
-    Then a Java::Lang::IllegalArgumentException should be thrown
+    Then a Java::JavaLang::IllegalArgumentException should be thrown
 
     Examples:  
       | invalid_range |
@@ -128,15 +128,15 @@ Feature: Versatile minority game construction
     
     Examples:
       | agent_type   | agent_class_name                                      |
-      | basic        | MSciProject::MinorityGame::BasicAgent                 |
-      | learning     | MSciProject::MinorityGame::LearningAgent              |
-      | random       | MSciProject::MinorityGame::RandomAgent                |
+      | basic        | MSci::MG::BasicAgent                 |
+      | learning     | MSci::MG::LearningAgent              |
+      | random       | MSci::MG::RandomAgent                |
   
   Scenario Outline: construct a minority game with agents of an invalid type
     Given I have a properties hash
     When I set the 'agent-type' property to '<invalid_type>'
     And I construct a minority game with the properties hash
-    Then a Java::Lang::IllegalArgumentException should be thrown
+    Then a Java::JavaLang::IllegalArgumentException should be thrown
 
     Examples:  
       | invalid_type |

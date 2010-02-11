@@ -11,7 +11,7 @@ end
 When /^I construct a minority game with the properties hash$/ do
   begin
     @minority_game =
-      MSciProject::MinorityGame::MinorityGameFactory.construct(@properties)
+      MSci::MG::MinorityGameFactory.construct(@properties)
   rescue Exception => exception
     @exception = exception
   end
@@ -56,9 +56,9 @@ end
 
 Given /^I set the experimentalist to record the attendance of choice '(.)'$/ do |choice|
   if choice == "A"
-    @choice = MSciProject::MinorityGame::Choice::A
+    @choice = MSci::MG::Choice::A
   elsif choice == "B"
-    @choice = MSciProject::MinorityGame::Choice::B
+    @choice = MSci::MG::Choice::B
   end
   
   @experimentalist.add_measurement(:choice_attendance) { |minority_game|
@@ -231,17 +231,17 @@ Then /^the minority choice at each time step should be correct with respect to t
     choice_b_count = 0
     
     agent_choices.each do |choice|
-      if(choice == MSciProject::MinorityGame::Choice::A)
+      if(choice == MSci::MG::Choice::A)
         choice_a_count += 1
-      elsif(choice == MSciProject::MinorityGame::Choice::B)
+      elsif(choice == MSci::MG::Choice::B)
         choice_b_count += 1
       end
     end
     
     minority_choice = if(choice_a_count < choice_b_count)
-      MSciProject::MinorityGame::Choice::A
+      MSci::MG::Choice::A
     else
-      MSciProject::MinorityGame::Choice::B
+      MSci::MG::Choice::B
     end
     
     minority_choice.should == all_minority_choices[step]
@@ -257,9 +257,9 @@ Then /^the minority size at each time step should be correct with respect to the
     choice_b_count = 0
     
     agent_choices.each do |choice|
-      if(choice == MSciProject::MinorityGame::Choice::A)
+      if(choice == MSci::MG::Choice::A)
         choice_a_count += 1
-      elsif(choice == MSciProject::MinorityGame::Choice::B)
+      elsif(choice == MSci::MG::Choice::B)
         choice_b_count += 1
       end
     end
@@ -308,9 +308,9 @@ Then /^each choice should have been made approximately an equal number of times$
   
   @experimentalist.measurement_results(:agent_choice).each do |choice|
     case choice
-    when MSciProject::MinorityGame::Choice::A
+    when MSci::MG::Choice::A
       choice_a_count += 1
-    when MSciProject::MinorityGame::Choice::B
+    when MSci::MG::Choice::B
       choice_b_count += 1
     end
   end
@@ -548,7 +548,7 @@ end
 Then /^I should have a minority game$/ do
   if(@minority_game)
     @minority_game.should be_a_kind_of(
-      MSciProject::MinorityGame::MinorityGame
+      MSci::MG::MinorityGame
     )
   else
     raise @exception
@@ -673,7 +673,8 @@ end
 
 # Miscellaneous steps
 Then /^a (.*) should be thrown$/ do |exception|
-  @exception.cause.should be_a_kind_of(
-    exception.constantize
-  )
+  lambda {
+    raise @exception.cause
+  }.should raise_error(eval(exception))
+    
 end
