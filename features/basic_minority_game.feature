@@ -20,7 +20,7 @@ Feature: Basic version of the minority game with strategic agents
     And I set the experimentalist to record the choices of all agents
     And I set the experimentalist to record the strategy scores
     When I take 20 time steps
-    Then every step except the first should use the highest scoring strategy
+    Then every agent choice except the first should use the highest scoring strategy
     
   # check random strategies are used during the first term and if more than
   # one has the highest score

@@ -89,6 +89,15 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
           }.to_not raise_error
         end
         
+        it "allows 'networked' to be specified for the 'agent-type' " + 
+          "property" do
+          properties.set_property("agent-type", "networked")
+
+          expect {
+            package::MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
         it "allows an integer to be specified for the 'link-probability' " + 
           "property" do
           properties.set_property("link-probability", "1");
@@ -368,6 +377,15 @@ describe MSciProject::MinorityGame::MinorityGameFactory do
         instance = package::MinorityGameFactory.construct(properties)
         instance.agents.each do |agent|
           agent.should be_a_kind_of(package::RandomAgent)
+        end
+      end
+      
+      it "initialises the agents attribute with NetworkedAgent instances " + 
+        "when the 'agent-type' property is set to 'networked'" do
+        properties.set_property("agent-type", "networked")
+        instance = package::MinorityGameFactory.construct(properties)
+        instance.agents.each do |agent|
+          agent.should be_a_kind_of(package::NetworkedAgent)
         end
       end
       

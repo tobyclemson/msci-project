@@ -31,9 +31,18 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
 
     /**
      * An integer representing this agent's score. This is returned by the
-     * {@link #getScore} method.
+     * {@link #getScore} method and incremented by the {@link #incrementScore}
+     * method.
      */
     protected int score = 0;
+
+    /**
+     * An integer representing the number of times this agent has predicted
+     * the correct minority choice. This is returned by the {@link
+     * #getCorrectPredictionCount} method and incremented by the {@link
+     * #incrementCorrectPredictionCount} method.
+     */
+    protected int correctPredictionCount = 0;
 
     /**
      * An instance of ChoiceMemory representing this agent's memory. This is
@@ -42,10 +51,30 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
     protected ChoiceMemory memory;
 
     /**
+     * An instance of Neighbourhood representing this agent's neighbourhood of
+     * friends. This is returned by the {@link #getNeighbourhood} method.
+     */
+    protected Neighbourhood neighbourhood;
+
+    /**
+     * An AbstractAgent instance representing this agent's best friend, i.e.,
+     * the agent whose prediction this agent most recently followed. This is
+     * returned by the {@link #getBestFriend} method.
+     */
+    protected AbstractAgent bestFriend;
+
+    /**
      * A graph representing this agents social network of friends. This is
      * returned by the {@link #getSocialNetwork} method.
      */
     protected Graph<AbstractAgent, Friendship> socialNetwork;
+
+    /**
+     * A Choice instance representing this agent's prediction for the minority
+     * choice in this time step. This is returned by the {@link #getPrediction}
+     * method.
+     */
+    protected Choice prediction = null;
 
     /**
      * A Choice instance representing this agent's current choice. This is
@@ -102,6 +131,14 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
     }
 
     /**
+     * Sets this agents neighbourhood to the supplied graph.
+     * @param neighbourhood The neighbourhood to be set.
+     */
+    public void setNeighbourhood(Neighbourhood neighbourhood) {
+        this.neighbourhood = neighbourhood;
+    }
+
+    /**
      * Returns this agent's identification number. No two agents will have the
      * same identification number and one pool of identification numbers is
      * shared amongst all subclasses.
@@ -138,6 +175,15 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
     }
 
     /**
+     * Returns the number of times this agent has predicted the correct minority
+     * choice.
+     * @return This agent's correct prediction count.
+     */
+    public int getCorrectPredictionCount() {
+        return correctPredictionCount;
+    }
+
+    /**
      * Returns the choice made by this agent, either Choice.A or Choice.B.
      * If the {@link #choose} method has not yet been called, an
      * IllegalStateException is thrown.
@@ -153,6 +199,21 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
     }
 
     /**
+     * Returns the prediction made by this agent, either Choice.A or Choice.B.
+     * If no prediction has been made yet, an IllegalStateException is thrown.
+     * @return The prediction for the minority choice this turn as made by this
+     * agent.
+     */
+    public Choice getPrediction() {
+        if(prediction == null) {
+            throw new IllegalStateException(
+                "No prediction has been made yet"
+            );
+        }
+        return prediction;
+    }
+
+    /**
      * Returns the ChoiceMemory instance associated with this agent.
      * @return This agent's memory.
      */
@@ -161,12 +222,36 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
     }
 
     /**
+     * Returns an instance of Neighbourhood representing this agent's
+     * neighbourhood of friends.
+     * @return This agent's neighbourhood.
+     */
+    public Neighbourhood getNeighbourhood() {
+        return neighbourhood;
+    }
+
+    /**
      * Returns a List of Agents that are friends with this agent.
      * @return a list of this agent's friends.
      */
-//    public List<AbstractAgent> getFriends() {
-//        return new ArrayList<AbstractAgent>();
-//    }
+    public List<AbstractAgent> getFriends() {
+        if(this.neighbourhood == null) {
+            throw new IllegalStateException("No neighbourhood has been set.");
+        }
+
+        return this.neighbourhood.getFriends();
+    }
+
+    /**
+     * Returns this agent's best friend, i.e., the agent whose prediction this
+     * agent most recently followed. In the default implementation, since
+     * agents have no knowledge of each other, a reference to this agent is
+     * returned since this agent always follows its own predictions.
+     * @return This agent's best friend.
+     */
+    public AbstractAgent getBestFriend() {
+        return this;
+    }
 
     /**
      * Returns the social network associated with this agent. This network will
@@ -175,19 +260,11 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
      * @return A graph representing this agent's social network.
      */
     public Graph<AbstractAgent, Friendship> getSocialNetwork() {
-        return socialNetwork;
-    }
+        if(this.neighbourhood == null) {
+            throw new IllegalStateException("No neighbourhood has been set.");
+        }
 
-    /**
-     * Sets this agents social network to the supplied graph.
-     * TODO: make this method check that this agent is in the graph and that
-     * the only edges present are between this agent and its friends.
-     * @param socialNetwork A graph representing this agent's social network.
-     */
-    public void setSocialNetwork(
-        Graph<AbstractAgent, Friendship> socialNetwork
-    ) {
-        this.socialNetwork = socialNetwork;
+        return neighbourhood.getSocialNetwork();
     }
 
     /**
@@ -222,6 +299,14 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
      */
     public void incrementScore() {
         score += 1;
+    }
+
+    /**
+     * Increments the agent's correct prediction count. The default
+     * implementation adds 1 to the correct prediction count.
+     */
+    public void incrementCorrectPredictionCount() {
+        correctPredictionCount += 1;
     }
 
     /**

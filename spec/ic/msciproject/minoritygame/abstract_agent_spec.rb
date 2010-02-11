@@ -4,19 +4,26 @@ describe MSciProject::MinorityGame::AbstractAgent do
   let(:package) { MSciProject::MinorityGame }
   let(:klass) { 
     Class.new(package::AbstractAgent) do
-      field_accessor :choice
+      field_accessor :choice, :prediction
       
       def choose(*args)
         self.choice = MSciProject::MinorityGame::Choice::A
+      end
+      
+      def prepare
+        self.prediction = MSciProject::MinorityGame::Choice::A
       end
     end
   }
   
   let(:integer) { Java::JavaLang::Integer }
   let(:array_list) { Java::JavaUtil::ArrayList }
+  let(:graph) { Java::EduUciIcsJungGraph::Graph }
 
   let(:strategy_manager) { Mockito.mock(package::StrategyManager.java_class) }
   let(:choice_memory) { Mockito.mock(package::ChoiceMemory.java_class) }
+  
+  let(:neighbourhood) { Mockito.mock(package::Neighbourhood.java_class)}
   
   let(:abstract_agent) { klass.new(strategy_manager, choice_memory) }
   
@@ -37,6 +44,14 @@ describe MSciProject::MinorityGame::AbstractAgent do
       abstract_agent.should respond_to(:memory)
     end
     
+    it "has a prediction instance method" do
+      abstract_agent.should respond_to(:prediction)
+    end
+    
+    it "has a correct_prediction_count instance method" do
+      abstract_agent.should respond_to(:correct_prediction_count)
+    end
+    
     it "has a choice instance method" do
       abstract_agent.should respond_to(:choice)
     end
@@ -45,8 +60,20 @@ describe MSciProject::MinorityGame::AbstractAgent do
       abstract_agent.should respond_to(:social_network)
     end
     
-    it "has a social_network= instance method" do
-      abstract_agent.should respond_to(:social_network=)
+    it "has a neighbourhood method" do
+      abstract_agent.should respond_to(:neighbourhood)
+    end
+    
+    it "has a neighbourhood= method" do
+      abstract_agent.should respond_to(:neighbourhood=)
+    end
+    
+    it "has a friends instance method" do
+      abstract_agent.should respond_to(:friends)
+    end
+    
+    it "has a best_friend instance method" do
+      abstract_agent.should respond_to(:best_friend)
     end
     
     it "has a prepare instance method" do
@@ -59,6 +86,10 @@ describe MSciProject::MinorityGame::AbstractAgent do
     
     it "has an increment_score instance method" do
       abstract_agent.should respond_to(:increment_score)
+    end
+    
+    it "has an increment_correct_prediction_count method" do
+      abstract_agent.should respond_to(:increment_correct_prediction_count)
     end
     
     it "has an update instance method" do
@@ -109,14 +140,58 @@ describe MSciProject::MinorityGame::AbstractAgent do
   end
   
   describe "setters" do
-    describe "#social_network=" do
-      it "sets the social_network attribute to the supplied network" do
-        new_social_network = Mockito.mock(
-          Java::EduUciIcsJungGraph::SparseGraph.java_class
-        )
-        abstract_agent.social_network = new_social_network
-        abstract_agent.social_network.should == new_social_network
+    describe "#neighbourhood" do
+      it "sets the neighbourhood attribute to the supplied object" do
+        new_neighbourhood = Mockito.mock(package::Neighbourhood.java_class)
+        abstract_agent.neighbourhood = new_neighbourhood
+        abstract_agent.neighbourhood.should == new_neighbourhood
       end
+    end
+  end
+  
+  describe "#friends" do
+    it "returns the result of calling friends on the supplied " + 
+      "neighbourhood" do
+      friends = Mockito.mock(array_list.java_class)
+      Mockito.when(neighbourhood.friends).then_return(friends)
+      
+      abstract_agent.neighbourhood = neighbourhood
+      
+      abstract_agent.friends.should == friends
+    end
+    
+    it "throws an IllegalStateException if no neighbourhood has been " +
+      "set" do
+      abstract_agent.neighbourhood = nil
+      expect {
+        abstract_agent.friends
+      }.to raise_error(Java::JavaLang::IllegalStateException)
+    end
+  end
+  
+  describe "#best_friend" do
+    it "returns this agent itself" do
+      abstract_agent.best_friend.should == abstract_agent
+    end
+  end
+  
+  describe "#social_network" do
+    it "returns the result of calling social_network on the supplied " +
+      "neighbourhood" do
+      social_network = Mockito.mock(graph.java_class)
+      Mockito.when(neighbourhood.social_network).then_return(social_network)
+      
+      abstract_agent.neighbourhood = neighbourhood
+      
+      abstract_agent.social_network.should == social_network
+    end
+    
+    it "throws an IllegalStateException if no neighbourhood has been " +
+      "set" do
+      abstract_agent.neighbourhood = nil
+      expect {
+        abstract_agent.social_network
+      }.to raise_error(Java::JavaLang::IllegalStateException)
     end
   end
   
@@ -176,11 +251,35 @@ describe MSciProject::MinorityGame::AbstractAgent do
     end
   end
   
+  describe "#prediction" do
+    it "throws an IllegalStateException if no prediction has been made yet" do
+      expect {
+        abstract_agent.get_prediction
+      }.to raise_error(Java::JavaLang::IllegalStateException)
+    end
+    
+    it "doesn't throw an IllegalStateException if a prediction has been " + 
+      "made" do
+      abstract_agent.prepare
+      expect {
+        abstract_agent.get_prediction
+      }.to_not raise_error(Java::JavaLang::IllegalStateException)
+    end
+  end
+  
   describe "#increment_score" do
     it "increases the agent's score by 1" do
       expect {
         abstract_agent.increment_score
       }.to change(abstract_agent, :score).by(+1)
+    end
+  end
+  
+  describe "#increment_correct_prediction_count" do
+    it "increases the agent's correct prediction count by 1" do
+      expect {
+        abstract_agent.increment_correct_prediction_count
+      }.to change(abstract_agent, :correct_prediction_count).by(+1)
     end
   end
   
@@ -196,7 +295,7 @@ describe MSciProject::MinorityGame::AbstractAgent do
       expect {
         abstract_agent.choose
         abstract_agent.update(abstract_agent.choice)
-      }.to change(abstract_agent, :score)
+      }.to change(abstract_agent, :score).by(+1)
     end
     
     it "doesn't increment the score if the minority choice is not equal " + 

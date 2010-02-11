@@ -16,6 +16,7 @@ Feature: general structure of the minority game
       | agent_type |
       | basic      |
       | random     |
+      | networked  |
   
   Scenario Outline: the minority size is correct at each time step
     Given I have a minority game with <agent_type> agents
@@ -29,6 +30,7 @@ Feature: general structure of the minority game
       | agent_type |
       | basic      |
       | random     |
+      | networked  |
   
   Scenario Outline: the agent scores are correct at each time step
     Given I have a minority game with <agent_type> agents
@@ -43,6 +45,7 @@ Feature: general structure of the minority game
       | agent_type |
       | basic      |
       | random     |
+      | networked  |
   
   Scenario Outline: the choice history is updated correctly at each time step
     Given I have a minority game with <agent_type> agents
@@ -57,4 +60,5 @@ Feature: general structure of the minority game
       | agent_type |
       | basic      |
       | random     |
+      | networked  |
   

@@ -11,6 +11,7 @@ import ic.msciproject.minoritygame.factories.CompleteSocialNetworkFactory;
 import ic.msciproject.minoritygame.factories.EmptySocialNetworkFactory;
 import ic.msciproject.minoritygame.factories.FriendshipFactory;
 import ic.msciproject.minoritygame.factories.LearningAgentFactory;
+import ic.msciproject.minoritygame.factories.NetworkedAgentFactory;
 import ic.msciproject.minoritygame.factories.RandomAgentFactory;
 import ic.msciproject.minoritygame.factories.RandomSocialNetworkFactory;
 import ic.msciproject.minoritygame.factories.RandomValueFactory;
@@ -185,6 +186,12 @@ public class MinorityGameFactory {
                 numberOfStrategiesFactory,
                 choiceHistory.asList()
             );
+        } else if(agentType.equals("networked")) {
+            agentFactory = new NetworkedAgentFactory(
+                memoryCapacityFactory,
+                numberOfStrategiesFactory,
+                choiceHistory.asList()
+            );
         } else if(agentType.equals("random")) {
             agentFactory = new RandomAgentFactory();
         }
@@ -231,8 +238,14 @@ public class MinorityGameFactory {
                 );
             }
 
-            // set the graph as the agent's social network
-            agent.setSocialNetwork(localSocialNetwork);
+            // construct a neighbourhood using the local social network and the
+            // agent
+            Neighbourhood neighbourhood = new Neighbourhood(
+                localSocialNetwork, agent
+            );
+
+            // set the agent's neighbourhood
+            agent.setNeighbourhood(neighbourhood);
         }
 
         // create a Community instance using the generated list of agents.
@@ -269,6 +282,7 @@ public class MinorityGameFactory {
         acceptedAgentTypes.add("basic");
         acceptedAgentTypes.add("learning");
         acceptedAgentTypes.add("random");
+        acceptedAgentTypes.add("networked");
 
         assertPropertyInSet(properties, "agent-type", acceptedAgentTypes);
 

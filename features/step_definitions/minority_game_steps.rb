@@ -41,6 +41,14 @@ Given /^I have a minority game with ([a-zA-Z\-]*) agents? with a memory size of 
   Given "I construct a minority game with the properties hash"
 end
 
+Given /^I have a minority game with ([a-zA-Z\-]*) agents connected by a ([a-zA-Z\-]*) network$/ do |agent_type, network_type|
+  Given "I have a properties hash"
+  Given "I set the 'agent-type' property to '#{agent_type}'"
+  Given "I set the 'network-type' property to '#{network_type}'"
+  Given "I set the 'link-probability' property to '0.1'"
+  Given "I construct a minority game with the properties hash"
+end
+
 # Experimentalist setup steps
 Given /^I have an experimentalist$/ do
   @experimentalist = Experimentalist.new
@@ -86,21 +94,34 @@ Given /^I set the experimentalist to record the scores? of (all|one) agents?$/ d
   end
 end
 
-Given /^I set the experimentalist to record the choices? of (all|one) agents?$/ do |how_many|
+Given /^I set the experimentalist to record the (choice|prediction)s? of (all|one) agents?$/ do |measurement, how_many|
+  measurement_id = "agent_#{measurement}".intern
+  measurement_method = measurement.intern
   if how_many == "all"
-    @experimentalist.add_measurement(:agent_choice) { |minority_game| 
-      choices = []
+    @experimentalist.add_measurement(measurement_id) { |minority_game| 
+      measurements = []
       minority_game.agents.each do |agent|
-        choices << agent.choice
+        measurements << agent.send(measurement_method)
       end
-      choices
+      measurements
     }
   elsif how_many == "one"
-    @experimentalist.add_measurement(:agent_choice) { |minority_game| 
-      minority_game.agents.first.choice
+    @experimentalist.add_measurement(measurement_id) { |minority_game| 
+      minority_game.agents.first.send(measurement_method)
     }
   end
 end
+
+Given /^I set the experimentalist to record the predictions of the best friend of all agents$/ do
+  @experimentalist.add_measurement(:best_friend_prediction) do |minority_game|
+    predictions = []
+    minority_game.agents.each do |agent|
+      predictions << agent.best_friend.prediction
+    end
+    predictions
+  end
+end
+
 
 Given /^I set the experimentalist to record the initial choice history$/ do
   first_step = true
@@ -161,6 +182,30 @@ Given /^I set the experimentalist to record the strategy scores$/ do
     strategy_array
   }
 end
+
+Given /^I set the experimentalist to record the correct prediction counts of all agents$/ do
+  @experimentalist.add_measurement(:agent_correct_prediction_count) do |minority_game|
+    correct_prediction_counts = []
+    minority_game.agents.each do |agent|
+      correct_prediction_counts << agent.correct_prediction_count
+    end
+    correct_prediction_counts
+  end
+end
+
+
+Given /^I set the experimentalist to record the agent identification numbers$/ do
+  first_step = true
+  @experimentalist.add_measurement(:agent_identification_number) do |minority_game|
+    if first_step
+      first_step = false
+      minority_game.agents.collect do |agent|
+        agent.identification_number
+      end
+    end
+  end
+end
+
 
 # Time step related steps
 Given /^no time steps have occurred yet$/ do
@@ -333,7 +378,28 @@ Then /^the strategy scores at each time step should be correct with respect to t
   end
 end
 
-Then /^every step except the first should use the highest scoring strategy$/ do
+Then /^the correct prediction counts at each time step should be correct with respect to the predictions and the minority choice$/ do
+  minority_choice = @experimentalist.measurement_results(:minority_choice)
+  predictions = @experimentalist.measurement_results(:agent_prediction)
+  correct_prediction_counts = @experimentalist.measurement_results(
+    :agent_correct_prediction_count
+  )
+  
+  expected_correct_prediction_counts = Array.new(predictions.first.size, 0)
+  
+  minority_choice.each_with_index do |minority_choice, time_step|
+    predictions[time_step].each_with_index do |prediction, agent_index|
+      if prediction == minority_choice
+        expected_correct_prediction_counts[agent_index] += 1
+      end
+    end
+    correct_prediction_counts[time_step].should == 
+      expected_correct_prediction_counts
+  end
+end
+
+
+Then /^every agent (choice|prediction) except the first should use the highest scoring strategy$/ do |measurement|
   # fetch the data for each step
   strategies_and_scores = @experimentalist.measurement_results(
     :strategy_score
@@ -341,8 +407,8 @@ Then /^every step except the first should use the highest scoring strategy$/ do
   choice_histories = @experimentalist.measurement_results(
     :choice_history
   )
-  agent_choices = @experimentalist.measurement_results(
-    :agent_choice
+  agent_measurements = @experimentalist.measurement_results(
+    "agent_#{measurement}".intern
   )
   
   # find out the number of strategies per agent
@@ -354,7 +420,7 @@ Then /^every step except the first should use the highest scoring strategy$/ do
     next if step == 0
     
     # iterate through the agents
-    agent_choices[step].each_with_index do |choice, agent_index|
+    agent_measurements[step].each_with_index do |choice, agent_index|
       
       # create arrays to hold the strategies and their scores
       strategies = []
@@ -391,11 +457,102 @@ Then /^every step except the first should use the highest scoring strategy$/ do
   end   
 end
 
+Then /^every agent choice except the first should follow the agent in their social network that has predicted correctly most often$/ do
+  predictions = @experimentalist.measurement_results(:agent_prediction)
+  choices = @experimentalist.measurement_results(:agent_choice)
+  minority_choices = @experimentalist.measurement_results(:minority_choice)
+  agent_identification_numbers = @experimentalist.
+    measurement_results(:agent_identification_number)
+  
+  agents = @minority_game.agents
+  
+  agent_prediction_scores = Array.new(agents.size, 0)
+  
+  # iterate over each time step
+  minority_choices.each_with_index do |minority_choice, time_step|
+    # iterate over each agent
+    agents.each_with_index do |agent, array_position|
+      # get a list of the positions in the arrays for this time step of this
+      # agent's friends
+      friend_indices = agent.friends.collect do |friend|
+        agent_identification_numbers.index(friend.identification_number)
+      end
+      
+      # get this agents choice from the array
+      agent_choice = choices[time_step][array_position]
+      
+      # get this agents prediction from the array
+      agent_prediction = predictions[time_step][array_position]
+      
+      # get the array of friend prediction scores for this agent
+      friend_prediction_scores = agent_prediction_scores.
+        values_at(*friend_indices)
+      
+      # find out the highest prediction score for all friends
+      highest_friend_prediction_score = friend_prediction_scores.max
+      
+      # find out the indices of the friends that have the highest prediction 
+      # score
+      indices_of_friends_with_highest_prediction_score = 
+        friend_indices.select do |index|
+          agent_prediction_scores[index] == highest_friend_prediction_score
+        end
+      
+      # get an array of the possible choices given the friend predictions
+      possible_choices = predictions[time_step].values_at(
+        *indices_of_friends_with_highest_prediction_score
+      )
+      
+      # find out this agents prediction score
+      this_agents_prediction_score = agent_prediction_scores[array_position]
+      
+      # if this agent has predicted correctly more often than the highest 
+      # performing friends then this agent's choice should equal this agent's 
+      # prediction
+      if this_agents_prediction_score > highest_friend_prediction_score
+        agent_choice.should == agent_prediction
+      # if this agent has predicted correctly the same number of times as
+      # the highest performing friends then this agents choice should be 
+      # included in the predictions of this agent and all highest performing
+      # friends
+      elsif this_agents_prediction_score == highest_friend_prediction_score
+        (
+          possible_choices + [agent_prediction]
+        ).uniq.should include(agent_choice)
+      # if this agent has not predicted correctly as many times as one (or 
+      # more) of its friends then the highest performing friends' predictions
+      # should include this agent's choice
+      else
+        possible_choices.uniq.should include(agent_choice)
+      end
+    end
+    
+    # increment the prediction scores based on the prediction and the minority
+    # choice
+    predictions.each_with_index do |agent_prediction, index|
+      if minority_choice == agent_prediction
+        agent_prediction_scores[index] += 1
+      end
+    end
+  end
+end
+
+Then /^every agent choice should follow the prediction of their best friend$/ do
+  best_friend_predictions = @experimentalist.measurement_results(:best_friend_prediction)
+  choices = @experimentalist.measurement_results(:agent_choice)
+  
+  choices.should == best_friend_predictions
+end
+
 # Minority game verification steps
 Then /^I should have a minority game$/ do
-  @minority_game.should be_a_kind_of(
-    MSciProject::MinorityGame::MinorityGame
-  )
+  if(@minority_game)
+    @minority_game.should be_a_kind_of(
+      MSciProject::MinorityGame::MinorityGame
+    )
+  else
+    raise @exception
+  end
 end
 
 Then /^its class should be (.*)$/ do |class_name|
@@ -506,7 +663,7 @@ Then /^each agent in the community should be friends with (approximately )?(all|
       when /\d+/
         if(approximate)
           count = count.to_i
-          friends.size.should be_between(0.8 * count, 1.2 * count)
+          friends.size.should be_between(0.7 * count, 1.3 * count)
         else
           friends.size.should == count.to_i
         end

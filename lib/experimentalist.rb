@@ -1,5 +1,4 @@
 class Experimentalist
-  
   def initialize
     @measurement_results = {}
     @measurement_procs = {}

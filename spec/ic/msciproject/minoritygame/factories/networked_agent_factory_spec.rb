@@ -2,9 +2,9 @@ require File.join(
   File.dirname(__FILE__), '..', '..', '..', '..', 'spec_helper.rb'
 )
 
-describe MSciProject::MinorityGame::Factories::BasicAgentFactory do
+describe MSciProject::MinorityGame::Factories::NetworkedAgentFactory do
   let(:package) { MSciProject::MinorityGame::Factories }
-  let(:klass) { package::BasicAgentFactory }
+  let(:klass) { package::NetworkedAgentFactory }
   
   let(:factory_interface) {
     Java::OrgApacheCommonsCollections15::Factory
