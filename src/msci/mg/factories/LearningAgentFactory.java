@@ -1,7 +1,7 @@
 package msci.mg.factories;
 
 import msci.mg.Choice;
-import msci.mg.LearningAgent;
+import msci.mg.agents.LearningAgent;
 import msci.mg.ChoiceMemory;
 import msci.mg.Strategy;
 import msci.mg.StrategyManager;

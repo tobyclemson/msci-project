@@ -1,25 +1,20 @@
-package msci.mg;
+package msci.mg.factories;
 
 import cern.jet.random.AbstractDistribution;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
-import msci.mg.factories.AgentFactory;
-import msci.mg.factories.BasicAgentFactory;
-import msci.mg.factories.CompleteSocialNetworkFactory;
-import msci.mg.factories.EmptySocialNetworkFactory;
-import msci.mg.factories.FriendshipFactory;
-import msci.mg.factories.LearningAgentFactory;
-import msci.mg.factories.NetworkedAgentFactory;
-import msci.mg.factories.RandomAgentFactory;
-import msci.mg.factories.RandomSocialNetworkFactory;
-import msci.mg.factories.RandomValueFactory;
-import msci.mg.factories.SocialNetworkFactory;
 import java.util.Properties;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import msci.mg.MinorityGame;
+import msci.mg.ChoiceHistory;
+import msci.mg.Community;
+import msci.mg.Friendship;
+import msci.mg.Neighbourhood;
+import msci.mg.agents.AbstractAgent;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.FactoryUtils;
 
@@ -216,7 +211,7 @@ public class MinorityGameFactory {
         }
 
         // construct the social network
-        Graph<AbstractAgent, Friendship> socialNetwork =
+        Graph<AbstractAgent,Friendship> socialNetwork =
             socialNetworkFactory.create();
 
         // update each agent's social network to reflect the friendships in the

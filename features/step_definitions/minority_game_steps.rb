@@ -11,7 +11,7 @@ end
 When /^I construct a minority game with the properties hash$/ do
   begin
     @minority_game =
-      MSci::MG::MinorityGameFactory.construct(@properties)
+      MSci::MG::Factories::MinorityGameFactory.construct(@properties)
   rescue Exception => exception
     @exception = exception
   end

@@ -5,7 +5,7 @@ describe MSci::MG::Neighbourhood do
   let(:klass) { package::Neighbourhood }
   
   let(:graph) { Java::EduUciIcsJungGraph::Graph }
-  let(:agent) { package::AbstractAgent }
+  let(:agent) { package::Agents::AbstractAgent }
   
   let(:social_network) { Mockito.mock(graph.java_class) }
   let(:root_agent) { Mockito.mock(agent.java_class) }
@@ -17,8 +17,8 @@ describe MSci::MG::Neighbourhood do
   end
   
   describe "constructor" do
-    it "throws an IllegalArgumentException if the supplied root agent doesn't " +
-      "exist in teh supplied graph"do
+    it "throws an IllegalArgumentException if the supplied root agent " + 
+      "doesn't exist in teh supplied graph"do
       Mockito.when(social_network.contains_vertex(root_agent)).
         then_return(false)
         
@@ -41,7 +41,7 @@ describe MSci::MG::Neighbourhood do
       "identification number connected to the root agent but excluding the " + 
       "root agent" do
       neighbours = Java::JavaUtil::HashSet.new
-      11.times { neighbours.add(package::RandomAgent.new()) }
+      11.times { neighbours.add(package::Agents::RandomAgent.new()) }
 
       Mockito.when(social_network.get_neighbors(root_agent)).
         then_return(neighbours)
@@ -185,7 +185,7 @@ describe MSci::MG::Neighbourhood do
         ]
         
         counts.each do |frequency|
-          frequency.should be_between(18, 32)
+          frequency.should be_between(15, 35)
         end
                  
         counts.inject(0) { |memo, obj| memo + obj }.should == 100

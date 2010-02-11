@@ -1,6 +1,6 @@
 package msci.mg.factories;
 
-import msci.mg.RandomAgent;
+import msci.mg.agents.RandomAgent;
 
 /**
  * The RandomAgentFactory creates random choice agents with no memory or

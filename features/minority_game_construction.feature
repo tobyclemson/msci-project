@@ -128,9 +128,9 @@ Feature: Versatile minority game construction
     
     Examples:
       | agent_type   | agent_class_name                                      |
-      | basic        | MSci::MG::BasicAgent                 |
-      | learning     | MSci::MG::LearningAgent              |
-      | random       | MSci::MG::RandomAgent                |
+      | basic        | MSci::MG::Agents::BasicAgent                 |
+      | learning     | MSci::MG::Agents::LearningAgent              |
+      | random       | MSci::MG::Agents::RandomAgent                |
   
   Scenario Outline: construct a minority game with agents of an invalid type
     Given I have a properties hash

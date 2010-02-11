@@ -1,6 +1,6 @@
 package msci.mg.factories;
 
-import msci.mg.AbstractAgent;
+import msci.mg.agents.AbstractAgent;
 import org.apache.commons.collections15.Factory;
 
 /**

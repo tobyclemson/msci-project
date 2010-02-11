@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import msci.mg.agents.AbstractAgent;
 
 /**
  * The Community class holds a collection of AbstractAgent objects

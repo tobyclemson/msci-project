@@ -1,4 +1,7 @@
-package msci.mg;
+package msci.mg.agents;
+
+import msci.mg.ChoiceMemory;
+import msci.mg.StrategyManager;
 
 /**
  * The LearningAgent class represents the simplest type of evolutionary agent

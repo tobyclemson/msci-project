@@ -5,6 +5,9 @@ module MSci
     module Factories
       include_package 'msci.mg.factories'
     end
+    module Agents
+      include_package 'msci.mg.agents'
+    end
   end
 end
 

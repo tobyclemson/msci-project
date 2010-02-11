@@ -2,7 +2,7 @@ package msci.mg.factories;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
-import msci.mg.AbstractAgent;
+import msci.mg.agents.AbstractAgent;
 import msci.mg.Friendship;
 import org.apache.commons.collections15.Factory;
 

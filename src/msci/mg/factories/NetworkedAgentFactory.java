@@ -2,7 +2,7 @@ package msci.mg.factories;
 
 import msci.mg.Choice;
 import msci.mg.ChoiceMemory;
-import msci.mg.NetworkedAgent;
+import msci.mg.agents.NetworkedAgent;
 import msci.mg.Strategy;
 import msci.mg.StrategyManager;
 import msci.mg.StrategySpace;

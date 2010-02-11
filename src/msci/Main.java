@@ -4,6 +4,7 @@ import msci.mg.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
+import msci.mg.factories.MinorityGameFactory;
 //import javax.swing.JFrame;
 //import javax.swing.JLabel;
 //import javax.swing.JMenuBar;

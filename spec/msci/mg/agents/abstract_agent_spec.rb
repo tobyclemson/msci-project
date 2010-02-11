@@ -1,9 +1,9 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::AbstractAgent do
+describe MSci::MG::Agents::AbstractAgent do
   let(:package) { MSci::MG }
   let(:klass) { 
-    Class.new(package::AbstractAgent) do
+    Class.new(package::Agents::AbstractAgent) do
       field_accessor :choice, :prediction
       
       def choose(*args)

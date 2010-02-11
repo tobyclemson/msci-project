@@ -7,6 +7,7 @@ import edu.uci.ics.jung.graph.Graph;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import msci.mg.agents.AbstractAgent;
 
 /**
  * The Neighbourhood class contains a graph of agents and friendships as well

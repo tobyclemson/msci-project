@@ -1,8 +1,8 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::RandomAgent do
+describe MSci::MG::Agents::RandomAgent do
   let(:package) { MSci::MG }
-  let(:klass) { package::RandomAgent }
+  let(:klass) { package::Agents::RandomAgent }
   
   let(:strategy_manager) { Mockito.mock(package::StrategyManager.java_class) }
   let(:choice_memory) { Mockito.mock(package::ChoiceMemory.java_class) }
@@ -10,7 +10,7 @@ describe MSci::MG::RandomAgent do
   let(:random_agent) { klass.new(strategy_manager, choice_memory) }
   
   it "extends AbstractAgent" do
-    random_agent.should be_a_kind_of(package::AbstractAgent)
+    random_agent.should be_a_kind_of(package::Agents::AbstractAgent)
   end
   
   describe "#choose" do

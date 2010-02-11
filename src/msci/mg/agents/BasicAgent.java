@@ -1,4 +1,9 @@
-package msci.mg;
+package msci.mg.agents;
+
+import msci.mg.Choice;
+import msci.mg.ChoiceMemory;
+import msci.mg.Strategy;
+import msci.mg.StrategyManager;
 
 /**
  * The BasicAgent class represents the simplest type of agent to be used in the

@@ -67,7 +67,7 @@ describe MSci::MG::Community do
     it "returns the agents in the social network sorted by " + 
       "identification_number" do
       agents = Java::JavaUtil::HashSet.new
-      11.times { agents.add(package::RandomAgent.new()) }
+      11.times { agents.add(package::Agents::RandomAgent.new()) }
 
       Mockito.when(social_network.vertices).then_return(agents)
       
@@ -90,8 +90,8 @@ describe MSci::MG::Community do
 
   describe "#choice_totals" do
     it "counts the number of agents that have made each choice" do
-      choice_a_agent = Mockito.mock(package::AbstractAgent.java_class)
-      choice_b_agent = Mockito.mock(package::AbstractAgent.java_class)
+      choice_a_agent = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      choice_b_agent = Mockito.mock(package::Agents::AbstractAgent.java_class)
       
       Mockito.when(choice_a_agent.choice).thenReturn(package::Choice::A)
       Mockito.when(choice_b_agent.choice).thenReturn(package::Choice::B)
@@ -118,9 +118,9 @@ describe MSci::MG::Community do
   
   describe "#prepare_agents" do
     it "calls prepare on each agent" do
-      mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
-      mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
-      mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
+      mock_agent_1 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_2 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_3 = Mockito.mock(package::Agents::AbstractAgent.java_class)
       
       agent_list = array_list.new
       
@@ -142,9 +142,9 @@ describe MSci::MG::Community do
 
   describe "#make_choices" do
     it "calls choose on each agent" do
-      mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
-      mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
-      mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
+      mock_agent_1 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_2 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_3 = Mockito.mock(package::Agents::AbstractAgent.java_class)
       
       agent_list = array_list.new
       
@@ -166,9 +166,9 @@ describe MSci::MG::Community do
   
   describe "#update_agents" do
     it "calls update on each agent" do
-      mock_agent_1 = Mockito.mock(package::AbstractAgent.java_class)
-      mock_agent_2 = Mockito.mock(package::AbstractAgent.java_class)
-      mock_agent_3 = Mockito.mock(package::AbstractAgent.java_class)
+      mock_agent_1 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_2 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_3 = Mockito.mock(package::Agents::AbstractAgent.java_class)
       
       agent_list = array_list.new
 

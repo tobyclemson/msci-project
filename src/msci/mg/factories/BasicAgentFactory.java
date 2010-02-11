@@ -1,6 +1,6 @@
 package msci.mg.factories;
 
-import msci.mg.BasicAgent;
+import msci.mg.agents.BasicAgent;
 import msci.mg.Choice;
 import msci.mg.ChoiceMemory;
 import msci.mg.Strategy;

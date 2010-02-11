@@ -1,7 +1,10 @@
-package msci.mg;
+package msci.mg.agents;
 
 import cern.jet.random.engine.*;
 import cern.jet.random.*;
+import msci.mg.Choice;
+import msci.mg.ChoiceMemory;
+import msci.mg.StrategyManager;
 
 /**
  * The RandomAgent class represents a completely unintelligent agent which

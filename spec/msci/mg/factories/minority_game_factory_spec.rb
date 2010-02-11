@@ -1,17 +1,17 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
 # This is a functional test, not a unit test!!! How do I unit test this
 # factory without returning a mock when new is called? This implies the class
 # is badly written but at the moment don't really want to have to rewrite it.
 
-describe MSci::MG::MinorityGameFactory do
+describe MSci::MG::Factories::MinorityGameFactory do
   include FactoryHelpers
   
   let(:package) { MSci::MG }
   
   describe "API" do
     it "has a static construct method" do
-      package::MinorityGameFactory.should respond_to(:construct)
+      package::Factories::MinorityGameFactory.should respond_to(:construct)
     end
   end
   
@@ -22,7 +22,7 @@ describe MSci::MG::MinorityGameFactory do
       describe "for a valid set of properties" do
         it "successfully creates a minority game" do
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -31,7 +31,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("agent-memory-size", "2..3")
             
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -39,7 +39,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("network-type", "empty")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -48,7 +48,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("network-type", "complete")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -60,7 +60,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("link-probability", "0.1")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -68,7 +68,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("agent-type", "basic")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -77,7 +77,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("agent-type", "learning")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -85,7 +85,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("agent-type", "random")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -94,7 +94,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("agent-type", "networked")
 
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
         
@@ -107,47 +107,48 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("network-type", "random")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to_not raise_error
         end
       end
       
       describe "for an invalid set of properties" do
-        it "throws an IllegalArgumentException if the options object doesn't " +
-          "contain a value for the 'agent-memory-size' property" do
+        it "throws an IllegalArgumentException if the options object " + 
+          "doesn't contain a value for the 'agent-memory-size' property" do
           properties.remove("agent-memory-size")
           expect { 
-            package::MinorityGameFactory.construct(properties) 
+            package::Factories::MinorityGameFactory.construct(properties) 
           }.to raise_error(
             Java::JavaLang::IllegalArgumentException
           )
         end
   
-        it "throws an IllegalArgumentException if the options object doesn't " +
-          "contain a value for the 'number-of-agents' property" do
+        it "throws an IllegalArgumentException if the options object " + 
+          "doesn't contain a value for the 'number-of-agents' property" do
           properties.remove("number-of-agents")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(
             Java::JavaLang::IllegalArgumentException
           )
         end
   
-        it "throws an IllegalArgumentException if the options object doesn't " +
-          "contain a value for the 'agent-type' property" do
+        it "throws an IllegalArgumentException if the options object " + 
+          "doesn't contain a value for the 'agent-type' property" do
           properties.remove("agent-type")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(
             Java::JavaLang::IllegalArgumentException
           )
         end
   
-        it "throws an IllegalArgumentException if the options object doesn't " +
-          "contain a value for the 'number-of-strategies-per-agent' property" do
+        it "throws an IllegalArgumentException if the options object " + 
+          "doesn't contain a value for the " + 
+          "'number-of-strategies-per-agent' property" do
           properties.remove("number-of-strategies-per-agent")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(
             Java::JavaLang::IllegalArgumentException
           )
@@ -158,23 +159,25 @@ describe MSci::MG::MinorityGameFactory do
           "'agent-memory-size' property" do
           properties.set_property("agent-memory-size", "non-numeric")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
         
         it "throws an IllegalArgumentException if the range supplied " +
-          "for the 'agent-memory-size' property has a negative lower bound" do
+          "for the 'agent-memory-size' property has a negative lower " + 
+          "bound" do
           properties.set_property("agent-memory-size", "-1..2")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
   
         it "throws an IllegalArgumentException if the range supplied " +
-          "for the 'agent-memory-size' property has a negative lower bound" do
+          "for the 'agent-memory-size' property has a negative lower " + 
+          "bound" do
           properties.set_property("agent-memory-size", "1..-5")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
   
@@ -183,7 +186,7 @@ describe MSci::MG::MinorityGameFactory do
           "than the lower bound" do
           properties.set_property("agent-memory-size", "5..2")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
         
@@ -192,7 +195,7 @@ describe MSci::MG::MinorityGameFactory do
           "'number-of-agents' property" do
           properties.set_property("number-of-agents", "non-numeric")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
   
@@ -200,7 +203,7 @@ describe MSci::MG::MinorityGameFactory do
           "contains an unrecognised value for the 'agent-type' property" do
           properties.set_property("agent-type", "unsupported!")
           expect { 
-            package::MinorityGameFactory.construct(properties) 
+            package::Factories::MinorityGameFactory.construct(properties) 
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
   
@@ -211,7 +214,7 @@ describe MSci::MG::MinorityGameFactory do
             "number-of-strategies-per-agent", "non-numeric"
           )
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
         
@@ -219,7 +222,7 @@ describe MSci::MG::MinorityGameFactory do
           "contains an unrecognised value for the 'network-type' property" do
           properties.set_property("network-type", "unsupported!")
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
         
@@ -232,7 +235,7 @@ describe MSci::MG::MinorityGameFactory do
           end
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
         
@@ -246,7 +249,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("network-type", "random")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
         
@@ -260,7 +263,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("network-type", "random")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
         
@@ -274,7 +277,7 @@ describe MSci::MG::MinorityGameFactory do
           properties.set_property("network-type", "random")
           
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
   
@@ -284,7 +287,7 @@ describe MSci::MG::MinorityGameFactory do
             "number-of-agents", "1000"
           )
           expect {
-            package::MinorityGameFactory.construct(properties)
+            package::Factories::MinorityGameFactory.construct(properties)
           }.to raise_error(Java::JavaLang::IllegalArgumentException)
         end
       end
@@ -295,7 +298,9 @@ describe MSci::MG::MinorityGameFactory do
         "instance of the required initial length" do
         properties.set_property("agent-memory-size", "2")
   
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.choice_history.should be_a_kind_of(package::ChoiceHistory)
         instance.choice_history.size.should == 2
       end
@@ -303,7 +308,9 @@ describe MSci::MG::MinorityGameFactory do
       it "creates agents with memories of the specified capacity" do
         properties.set_property("agent-memory-size", "2")
         
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.agents.each do |agent|
           agent.memory.capacity.should == 2
         end
@@ -312,7 +319,9 @@ describe MSci::MG::MinorityGameFactory do
       it "creates agents with an initial choice memory corresponding to " + 
         "the initial choice history" do
         properties.set_property("agent-memory-size", "3")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.agents.each do |agent|
           agent.memory.fetch.to_a.should == 
             instance.choice_history.as_list(3).to_a
@@ -324,7 +333,9 @@ describe MSci::MG::MinorityGameFactory do
         properties.set_property("agent-memory-size", "2..5")
         properties.set_property("number-of-agents", "10001")
         
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         
         scores = {2 => 0, 3 => 0, 4 => 0, 5 => 0}
         
@@ -340,14 +351,18 @@ describe MSci::MG::MinorityGameFactory do
       it "initialises the agents attribute with the required " +
         "number of agents" do
         properties.set_property("number-of-agents", "101")
-        instance = package::MinorityGameFactory.construct(properties)      
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.agents.should have(101).agents
       end
       
       it "initialises the agents attribute with agents with the required " + 
         "number of strategies" do
         properties.set_property("number-of-strategies-per-agent", "2")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.agents.
           first.
           should have(2).strategies
@@ -356,36 +371,44 @@ describe MSci::MG::MinorityGameFactory do
       it "initialises the agents attribute with BasicAgent instances when " +
         "the 'agent-type' property is set to 'basic'" do
         properties.set_property("agent-type", "basic")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.agents.each do |agent|
-          agent.should be_a_kind_of(package::BasicAgent)
+          agent.should be_a_kind_of(package::Agents::BasicAgent)
         end
       end
       
       it "initialises the agents attribute with LearningAgent instances " + 
         "when the 'agent-type' property is set to 'learning'" do
         properties.set_property("agent-type", "learning")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.agents.each do |agent|
-          agent.should be_a_kind_of(package::LearningAgent)
+          agent.should be_a_kind_of(package::Agents::LearningAgent)
         end
       end
       
       it "initialises the agents attribute with RandomAgent instances when " +
         "the 'agent-type' property is set to 'random'" do
         properties.set_property("agent-type", "random")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.agents.each do |agent|
-          agent.should be_a_kind_of(package::RandomAgent)
+          agent.should be_a_kind_of(package::Agents::RandomAgent)
         end
       end
       
       it "initialises the agents attribute with NetworkedAgent instances " + 
         "when the 'agent-type' property is set to 'networked'" do
         properties.set_property("agent-type", "networked")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.agents.each do |agent|
-          agent.should be_a_kind_of(package::NetworkedAgent)
+          agent.should be_a_kind_of(package::Agents::NetworkedAgent)
         end
       end
       
@@ -394,14 +417,18 @@ describe MSci::MG::MinorityGameFactory do
         "a valid network type" do
         properties.set_property("network-type", "empty")
         properties.set_property("number-of-agents", "101")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.community.should have(101).agents
       end
       
       it "initialises the social network to a network with no friendships " +
         "when the 'network-type' property is set to 'empty'" do
         properties.set_property("network-type", "empty")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.community.should have(0).friendships
       end
       
@@ -410,7 +437,9 @@ describe MSci::MG::MinorityGameFactory do
         "property is set" do
         properties.set_property("network-type", "complete")
         properties.set_property("number-of-agents", "11")
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         instance.community.should have((10*11)/2).friendships
       end
       
@@ -419,7 +448,9 @@ describe MSci::MG::MinorityGameFactory do
         properties.set_property("network-type", "complete")
         properties.set_property("number-of-agents", "11")
         
-        instance = package::MinorityGameFactory.construct(properties)
+        instance = package::Factories::MinorityGameFactory.construct(
+          properties
+        )
         
         global_social_network = instance.community.social_network
         

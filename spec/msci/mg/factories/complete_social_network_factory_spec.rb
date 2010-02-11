@@ -25,7 +25,7 @@ describe MSci::MG::Factories::CompleteSocialNetworkFactory do
       agent_factory_klass = Class.new(package::AgentFactory) do
         def create
           return Mockito.mock(
-            MSci::MG::AbstractAgent.java_class
+            MSci::MG::Agents::AbstractAgent.java_class
           )
         end
       end

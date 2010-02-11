@@ -1,4 +1,9 @@
-package msci.mg;
+package msci.mg.agents;
+
+import msci.mg.Choice;
+import msci.mg.ChoiceMemory;
+import msci.mg.Strategy;
+import msci.mg.StrategyManager;
 
 /**
  * The NetworkedAgent class represents an agent that utilises local information

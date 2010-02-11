@@ -1,18 +1,22 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
+require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::BasicAgent do
+describe MSci::MG::Agents::BasicAgent do
   let(:package) { MSci::MG }
-  let(:klass) { package::BasicAgent }
+  let(:klass) { package::Agents::BasicAgent }
   
   let(:array_list) { Java::JavaUtil::ArrayList }
   
-  let(:strategy_manager) { Mockito.mock(package::StrategyManager.java_class) }
-  let(:choice_memory) { Mockito.mock(package::ChoiceMemory.java_class) }
+  let(:strategy_manager) { 
+    Mockito.mock(package::StrategyManager.java_class) 
+  }
+  let(:choice_memory) { 
+    Mockito.mock(package::ChoiceMemory.java_class) 
+  }
   
   let(:basic_agent) { klass.new(strategy_manager, choice_memory) }
   
   it "extends the AbstractAgent class" do
-    basic_agent.should be_a_kind_of(package::AbstractAgent)
+    basic_agent.should be_a_kind_of(package::Agents::AbstractAgent)
   end
   
   describe "#choose" do

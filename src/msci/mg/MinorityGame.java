@@ -2,6 +2,7 @@ package msci.mg;
 
 import java.util.List;
 import java.util.Map;
+import msci.mg.agents.AbstractAgent;
 
 /**
  * The MinorityGame class represents a minority game which can step forward in

@@ -1,7 +1,13 @@
-package msci.mg;
+package msci.mg.agents;
 
 import java.util.List;
 import edu.uci.ics.jung.graph.Graph;
+import msci.mg.Choice;
+import msci.mg.ChoiceMemory;
+import msci.mg.Friendship;
+import msci.mg.Neighbourhood;
+import msci.mg.Strategy;
+import msci.mg.StrategyManager;
 
 /**
  * The AbstractAgent class implements the basic functionality of an agent in the

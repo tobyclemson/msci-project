@@ -1,8 +1,7 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
-
-describe MSci::MG::NetworkedAgent do
+require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
+describe MSci::MG::Agents::NetworkedAgent do
   let(:package) { MSci::MG }
-  let(:klass) { package::NetworkedAgent }
+  let(:klass) { package::Agents::NetworkedAgent }
   
   let(:array_list) { Java::JavaUtil::ArrayList }
   
@@ -18,7 +17,7 @@ describe MSci::MG::NetworkedAgent do
   }
   
   it "extends the AbstractAgent class" do
-    agent.should be_a_kind_of(package::AbstractAgent)
+    agent.should be_a_kind_of(package::Agents::AbstractAgent)
   end
   
   describe "#best_friend" do
@@ -29,7 +28,7 @@ describe MSci::MG::NetworkedAgent do
     end
     
     it "returns the most recently followed agent if a choice has been made" do
-      best_friend = Mockito.mock(package::RandomAgent.java_class)
+      best_friend = Mockito.mock(package::Agents::RandomAgent.java_class)
       Mockito.when(neighbourhood.most_successful_predictor).
         then_return(best_friend)
         
@@ -93,7 +92,7 @@ describe MSci::MG::NetworkedAgent do
   
   describe "#choose" do
     let(:most_successful_predictor) { 
-      Mockito.mock(package::AbstractAgent.java_class) 
+      Mockito.mock(package::Agents::AbstractAgent.java_class) 
     }
     
     before(:each) do
