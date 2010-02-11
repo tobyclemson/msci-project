@@ -4,6 +4,7 @@ import java.util.List;
 import cern.jet.random.AbstractDistribution;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
+import java.util.ArrayList;
 
 /**
  * The StrategyManager class holds a collection of Strategy objects extending
@@ -106,30 +107,41 @@ public class StrategyManager {
      * @return A strategy with the highest score from the stored collection.
      */
     public Strategy getHighestScoringStrategy() {
+        // fetch the first strategy from the strategy store
+        Strategy firstStrategy = strategyStorage.get(0);
+
         // declare required variables
-        Strategy highestStrategy = strategyStorage.get(0);
+        List<Strategy> highestScoringStrategies = new ArrayList<Strategy>();
+        int highestScore;
+
+        // temporarily set the first strategy as the only highest scoring one
+        highestScoringStrategies.add(firstStrategy);
+        highestScore = firstStrategy.getScore();
 
         // iterate through the strategies replacing the highest strategy if the
-        // current strategy has a higher score or randomly replacing if the
-        // score is the same.
+        // current strategy has a higher score or adding the strategy to the
+        // array of highest scoring strategies if it has the same score.
         for(
             Strategy currentStrategy : strategyStorage.subList(
                 1, strategyStorage.size()
             )
         ) {
-            if(currentStrategy.getScore() > highestStrategy.getScore()) {
-                highestStrategy = currentStrategy;
+            if(currentStrategy.getScore() > highestScore) {
+                highestScoringStrategies.clear();
+                highestScoringStrategies.add(currentStrategy);
+                highestScore = currentStrategy.getScore();
             } else if(
-               currentStrategy.getScore() == highestStrategy.getScore()
+               currentStrategy.getScore() == highestScore
             ) {
-                if(randomNumberGenerator.nextInt() == 1) {
-                    highestStrategy = currentStrategy;
-                }
+               highestScoringStrategies.add(currentStrategy);
             }
         }
 
-        // return the strategy with the highest score found
-        return highestStrategy;
+        // return a strategy at random from the array of highes scoring
+        // strategies.
+        return highestScoringStrategies.get(
+            getRandomIndex(highestScoringStrategies.size())
+        );
     }
 
     /**

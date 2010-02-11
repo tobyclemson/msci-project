@@ -152,7 +152,7 @@ public class Neighbourhood {
             }
         }
 
-        // return one of those most successful predictor at random
+        // return one of those most successful predictors at random
         return mostSuccessfulPredictors.get(
             getRandomIndex(mostSuccessfulPredictors.size())
         );

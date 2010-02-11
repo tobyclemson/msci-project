@@ -105,10 +105,11 @@ describe MSciProject::MinorityGame::StrategyManager do
     let(:strategy_1) { Mockito.mock(package::Strategy.java_class) }
     let(:strategy_2) { Mockito.mock(package::Strategy.java_class) }
     let(:strategy_3) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_4) { Mockito.mock(package::Strategy.java_class) }
     let(:strategy_manager) {
       strategies = Java::JavaUtil::ArrayList.new
       
-      [strategy_1, strategy_2, strategy_3].each do |mock_strategy|
+      [strategy_1, strategy_2, strategy_3, strategy_4].each do |mock_strategy|
         strategies.add(mock_strategy)
       end
       
@@ -122,7 +123,9 @@ describe MSciProject::MinorityGame::StrategyManager do
       Mockito.when(strategy_2.score).
         then_return(Java::JavaLang::Integer.new(2))
       Mockito.when(strategy_3.score).
-        then_return(Java::JavaLang::Integer.new(7))  
+        then_return(Java::JavaLang::Integer.new(7))
+      Mockito.when(strategy_4.score).
+        then_return(Java::JavaLang::Integer.new(2))
         
       strategy_manager.
         highest_scoring_strategy.should == strategy_3
@@ -136,30 +139,37 @@ describe MSciProject::MinorityGame::StrategyManager do
         then_return(Java::JavaLang::Integer.new(2))
       Mockito.when(strategy_3.score).
         then_return(Java::JavaLang::Integer.new(7))
+      Mockito.when(strategy_4.score).
+        then_return(Java::JavaLang::Integer.new(7))
         
-        count_1 = count_2 = count_3 = 0;
+      count_1 = count_2 = count_3 = count_4 = 0;
 
       1000.times do
         case strategy_manager.highest_scoring_strategy
           when strategy_1 then count_1 += 1
           when strategy_2 then count_2 += 1
           when strategy_3 then count_3 += 1
+          when strategy_4 then count_4 += 1
         end
       end
       
       count_2.should == 0
       
-      [count_1, count_3].each do |count|
-        count.should be_between(460, 540)
+      non_zero_counts = [count_1, count_3, count_4]
+      
+      non_zero_counts.each do |count|
+        count.should be_between(300, 360)
       end
+      
+      non_zero_counts.inject(0) { |memo, obj| memo + obj }.should == 1000
     end
     
-    it "runs in less than five hundredths of a second" do
+    it "runs in less than five thousandths of a second" do
       start_time = Time.now
       1000.times { strategy_manager.highest_scoring_strategy }
       end_time = Time.now
       
-      (end_time - start_time).should be < 2.5
+      (end_time - start_time).should be < 5
     end
   end
 
