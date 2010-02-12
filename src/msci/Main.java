@@ -39,7 +39,6 @@ public class Main {
 
         // initialise game properties
         properties = new Properties();
-        properties.setProperty("type", "standard");
         properties.setProperty("number-of-agents", "101");
         properties.setProperty("agent-type", "basic");
         properties.setProperty("number-of-strategies-per-agent", "2");
