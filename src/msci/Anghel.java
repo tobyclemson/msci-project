@@ -1,10 +1,7 @@
 package msci;
 
-import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.graph.Tree;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +12,8 @@ import msci.mg.agents.AbstractAgent;
 import msci.mg.factories.MinorityGameFactory;
 
 /**
- *
+ * Calculates the in degree distribution for a number of different parameter
+ * sets and outputs them to file.
  * @author tobyclemson
  */
 public class Anghel {
@@ -38,7 +36,11 @@ public class Anghel {
         int[][] resultsTable;
 
         String[][] runProperties = {
-            {"601", "0.1"}, {"201", "0.2"}, {"601", "0.2"}, {"1001", "0.1"}
+            {"201", "0.1"},
+            {"201", "0.2"},
+            {"601", "0.1"},
+            {"601", "0.2"},
+            {"1001", "0.1"}
         };
 
         // set the required number of timesteps and runs and the maximum
@@ -49,6 +51,7 @@ public class Anghel {
         numberOfRows = maximumDegree + 2;
         numberOfColumns = numberOfRuns + 1;
 
+        // iterate through all property sets
         for(
             int propertySet = 0;
             propertySet < runProperties.length;
@@ -116,8 +119,13 @@ public class Anghel {
                     leadershipStructure.addVertex(agent);
                 }
 
-                // add all the edges to the graph
+                // add all the valid  edges to the graph
                 for(AbstractAgent agent : minorityGame.getAgents()) {
+                    // prevent self loops
+                    if(agent.getBestFriend() == agent) {
+                        continue;
+                    }
+                    // create a directed edge
                     leadershipStructure.addEdge(
                         new Friendship(),
                         agent,
