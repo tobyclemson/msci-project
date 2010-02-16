@@ -33,7 +33,7 @@ public class Anghel {
             numberOfRows,
             numberOfColumns;
         
-        int[][] resultsTable;
+        double[][] resultsTable;
 
         String[][] runProperties = {
             {"201", "0.1"},
@@ -46,8 +46,8 @@ public class Anghel {
         // set the required number of timesteps and runs and the maximum
         // degree
         numberOfTimeSteps = 100000;
-        numberOfRuns = 17;
-        maximumDegree = 150;
+        numberOfRuns = 20;
+        maximumDegree = 200;
         numberOfRows = maximumDegree + 2;
         numberOfColumns = numberOfRuns + 1;
 
@@ -74,7 +74,7 @@ public class Anghel {
             output = new StringBuilder();
 
             // initialise the results table
-            resultsTable = new int[numberOfRows][numberOfColumns];
+            resultsTable = new double[numberOfRows][numberOfColumns];
 
             // set the column headings
             for(int i = 0; i < numberOfColumns; i++) {
@@ -107,38 +107,59 @@ public class Anghel {
                     }
                     minorityGame.stepForward();
                 }
+                
+                int measurementCount = 0;
 
-                // calculate the in-degree distribution
-
-                // create a directed graph to hold the leadership tree
-                leadershipStructure =
-                    new DirectedSparseGraph<AbstractAgent, Friendship>();
-
-                // add all the agents to the graph
-                for(AbstractAgent agent : minorityGame.getAgents()) {
-                    leadershipStructure.addVertex(agent);
-                }
-
-                // add all the valid  edges to the graph
-                for(AbstractAgent agent : minorityGame.getAgents()) {
-                    // prevent self loops
-                    if(agent.getBestFriend() == agent) {
-                        continue;
+                // average over 1000 leadership structures for this graph and
+                // strategy space
+                for(int timeStep = 0; timeStep < numberOfTimeSteps; timeStep++) {
+                    if(timeStep % 1000 == 0) {
+                        System.out.println(numberOfTimeSteps + timeStep);
                     }
-                    // create a directed edge
-                    leadershipStructure.addEdge(
-                        new Friendship(),
-                        agent,
-                        agent.getBestFriend(),
-                        EdgeType.DIRECTED
-                    );
+
+                    // make a measurement every 100 timesteps
+                    if(timeStep % 100 == 0){
+                        // calculate the in-degree distribution
+
+                        // create a directed graph to hold the leadership tree
+                        leadershipStructure =
+                            new DirectedSparseGraph<AbstractAgent, Friendship>();
+
+                        // add all the agents to the graph
+                        for(AbstractAgent agent : minorityGame.getAgents()) {
+                            leadershipStructure.addVertex(agent);
+                        }
+
+                        // add all the valid  edges to the graph
+                        for(AbstractAgent agent : minorityGame.getAgents()) {
+                            // prevent self loops
+                            if(agent.getBestFriend() == agent) {
+                                continue;
+                            }
+                            // create a directed edge
+                            leadershipStructure.addEdge(
+                                new Friendship(),
+                                agent,
+                                agent.getBestFriend(),
+                                EdgeType.DIRECTED
+                            );
+                        }
+
+                        // populate the row for this run in the results table with the
+                        // in-degree distribution
+                        for(AbstractAgent agent : leadershipStructure.getVertices()) {
+                            int inDegree = leadershipStructure.inDegree(agent);
+                            resultsTable[inDegree + 1][run] += 1;
+                        }
+
+                        measurementCount += 1;
+                    }
+                    minorityGame.stepForward();
                 }
 
-                // populate the row for this run in the results table with the
-                // in-degree distribution
-                for(AbstractAgent agent : leadershipStructure.getVertices()) {
-                    int inDegree = leadershipStructure.inDegree(agent);
-                    resultsTable[inDegree + 1][run] += 1;
+                // normalise
+                for(int inDegreeIndex = 1; inDegreeIndex < numberOfRows; inDegreeIndex++) {
+                    resultsTable[inDegreeIndex][run] /= (double) measurementCount;
                 }
             }
 
