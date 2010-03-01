@@ -1,6 +1,6 @@
 package msci.mg;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import msci.mg.agents.AbstractAgent;
 
@@ -43,11 +43,11 @@ public class MinorityGame {
     }
 
     /**
-     * Returns a List of AbstractAgent instances representing the agents
+     * Returns a Collection of AbstractAgent instances representing the agents
      * associated with the minority game.
      * @return The agents associated with the minority game.
      */
-    public List<AbstractAgent> getAgents() {
+    public Collection<AbstractAgent> getAgents() {
         return community.getAgents();
     }
 

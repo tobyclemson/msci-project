@@ -64,16 +64,19 @@ describe MSci::MG::Community do
   end
   
   describe "#agents" do
-    it "returns the agents in the social network sorted by " + 
-      "identification_number" do
+    it "returns the agents in the social network" do
       agents = Java::JavaUtil::HashSet.new
       11.times { agents.add(package::Agents::RandomAgent.new()) }
 
       Mockito.when(social_network.vertices).then_return(agents)
+
+      returned_agents = community.agents
       
-      community.agents.to_a.should == agents.sort_by do |agent|
-        agent.identification_number
+      agents.each do |agent|
+        returned_agents.should include(agent)
       end
+      
+      returned_agents.size.should == agents.size
     end
   end
   

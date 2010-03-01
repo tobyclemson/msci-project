@@ -37,8 +37,7 @@ describe MSci::MG::Neighbourhood do
   end
   
   describe "#friends" do
-    it "returns the agents in the supplied social network sorted by " +
-      "identification number connected to the root agent but excluding the " + 
+    it "returns the agents in the supplied social network excluding the " + 
       "root agent" do
       neighbours = Java::JavaUtil::HashSet.new
       11.times { neighbours.add(package::Agents::RandomAgent.new()) }
@@ -46,9 +45,13 @@ describe MSci::MG::Neighbourhood do
       Mockito.when(social_network.get_neighbors(root_agent)).
         then_return(neighbours)
       
-      neighbourhood.friends.to_a.should == neighbours.to_a.sort_by do |friend|
-        friend.identification_number
+      friends = neighbourhood.friends
+      
+      neighbours.each do |neighbour|
+        friends.should include(neighbour)
       end
+      
+      friends.size.should == neighbours.size
     end
   end
   

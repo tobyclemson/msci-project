@@ -2,6 +2,7 @@ package msci.mg.agents;
 
 import java.util.List;
 import edu.uci.ics.jung.graph.Graph;
+import java.util.Collection;
 import msci.mg.Choice;
 import msci.mg.ChoiceMemory;
 import msci.mg.Friendship;
@@ -237,10 +238,10 @@ public abstract class AbstractAgent implements Comparable<AbstractAgent> {
     }
 
     /**
-     * Returns a List of Agents that are friends with this agent.
-     * @return a list of this agent's friends.
+     * Returns a Collection of Agents that are friends with this agent.
+     * @return a collection of this agent's friends.
      */
-    public List<AbstractAgent> getFriends() {
+    public Collection<AbstractAgent> getFriends() {
         if(this.neighbourhood == null) {
             throw new IllegalStateException("No neighbourhood has been set.");
         }

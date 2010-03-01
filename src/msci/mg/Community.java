@@ -32,17 +32,11 @@ public class Community {
     }
 
     /**
-     * Returns all agents managed by this community sorted by
-     * identification_number.
-     * @return A sorted list of the agents managed by the community.
+     * Returns all agents managed by this community.
+     * @return A collection of all agents managed by the community.
      */
-    public List<AbstractAgent> getAgents() {
-        List<AbstractAgent> agents =
-            new ArrayList<AbstractAgent>(socialNetwork.getVertices());
-
-        Collections.sort(agents);
-
-        return agents;
+    public Collection<AbstractAgent> getAgents() {
+        return socialNetwork.getVertices();
     }
 
     /**

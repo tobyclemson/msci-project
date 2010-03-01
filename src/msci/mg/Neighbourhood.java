@@ -5,7 +5,7 @@ import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 import edu.uci.ics.jung.graph.Graph;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import msci.mg.agents.AbstractAgent;
 
@@ -101,20 +101,13 @@ public class Neighbourhood {
     }
 
     /**
-     * Returns a list of all of the friends of the root agent that exist in the
-     * supplied social network sorted by identification number. In the default
-     * implementation, a friend is any agent connected by an friendship to the
-     * root agent in the social network.
+     * Returns all of the friends of the root agent that exist in the
+     * supplied social networ. In the default implementation, a friend is any
+     * agent connected by an friendship to the root agent in the social network.
      * @return The root agent's friends.
      */
-    public List<AbstractAgent> getFriends() {
-        List<AbstractAgent> friends = new ArrayList<AbstractAgent>(
-            socialNetwork.getNeighbors(rootAgent)
-        );
-
-        Collections.sort(friends);
-
-        return friends;
+    public Collection<AbstractAgent> getFriends() {
+        return socialNetwork.getNeighbors(rootAgent);
     }
 
     /**

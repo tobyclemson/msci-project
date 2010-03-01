@@ -54,18 +54,6 @@ Given /^I have an experimentalist$/ do
   @experimentalist = Experimentalist.new
 end
 
-Given /^I set the experimentalist to record the attendance of choice '(.)'$/ do |choice|
-  if choice == "A"
-    @choice = MSci::MG::Choice::A
-  elsif choice == "B"
-    @choice = MSci::MG::Choice::B
-  end
-  
-  @experimentalist.add_measurement(:choice_attendance) { |minority_game|
-    minority_game.agents.choice_totals.get(@choice)
-  }
-end
-
 Given /^I set the experimentalist to record the minority choice$/ do
   @experimentalist.add_measurement(:minority_choice) { |minority_game| 
     minority_game.minority_choice
@@ -82,14 +70,14 @@ Given /^I set the experimentalist to record the scores? of (all|one) agents?$/ d
   if how_many == "all"
     @experimentalist.add_measurement(:agent_score) { |minority_game|
       scores = []
-      minority_game.agents.each do |agent|
+      minority_game.agents.sort.each do |agent|
         scores << agent.score
       end
       scores
     }
   elsif how_many == "one"
     @experimentalist.add_measurement(:agent_score) { |minority_game|
-      minority_game.agents.first.score
+      minority_game.agents.sort.first.score
     }
   end
 end
@@ -100,14 +88,14 @@ Given /^I set the experimentalist to record the (choice|prediction)s? of (all|on
   if how_many == "all"
     @experimentalist.add_measurement(measurement_id) { |minority_game| 
       measurements = []
-      minority_game.agents.each do |agent|
+      minority_game.agents.sort.each do |agent|
         measurements << agent.send(measurement_method)
       end
       measurements
     }
   elsif how_many == "one"
     @experimentalist.add_measurement(measurement_id) { |minority_game| 
-      minority_game.agents.first.send(measurement_method)
+      minority_game.agents.sort.first.send(measurement_method)
     }
   end
 end
@@ -115,7 +103,7 @@ end
 Given /^I set the experimentalist to record the predictions of the best friend of all agents$/ do
   @experimentalist.add_measurement(:best_friend_prediction) do |minority_game|
     predictions = []
-    minority_game.agents.each do |agent|
+    minority_game.agents.sort.each do |agent|
       predictions << agent.best_friend.prediction
     end
     predictions
@@ -169,7 +157,7 @@ end
 Given /^I set the experimentalist to record the strategy scores$/ do
   @experimentalist.add_measurement(:strategy_score) { |minority_game| 
     strategy_array = []
-    minority_game.agents.each do |agent|
+    minority_game.agents.sort.each do |agent|
       agent.strategies.each do |strategy|
         mapping = {}
         strategy.map.each do |key, value|
@@ -186,7 +174,7 @@ end
 Given /^I set the experimentalist to record the correct prediction counts of all agents$/ do
   @experimentalist.add_measurement(:agent_correct_prediction_count) do |minority_game|
     correct_prediction_counts = []
-    minority_game.agents.each do |agent|
+    minority_game.agents.sort.each do |agent|
       correct_prediction_counts << agent.correct_prediction_count
     end
     correct_prediction_counts
@@ -199,7 +187,7 @@ Given /^I set the experimentalist to record the agent identification numbers$/ d
   @experimentalist.add_measurement(:agent_identification_number) do |minority_game|
     if first_step
       first_step = false
-      minority_game.agents.collect do |agent|
+      minority_game.agents.sort.collect do |agent|
         agent.identification_number
       end
     end
@@ -464,7 +452,7 @@ Then /^every agent choice except the first should follow the agent in their soci
   agent_identification_numbers = @experimentalist.
     measurement_results(:agent_identification_number)
   
-  agents = @minority_game.agents
+  agents = @minority_game.agents.sort
   
   agent_prediction_scores = Array.new(agents.size, 0)
   
