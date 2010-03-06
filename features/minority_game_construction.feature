@@ -127,10 +127,10 @@ Feature: Versatile minority game construction
     And it should have agents that are instances of <agent_class_name>
     
     Examples:
-      | agent_type   | agent_class_name                                      |
-      | basic        | MSci::MG::Agents::BasicAgent                 |
-      | learning     | MSci::MG::Agents::LearningAgent              |
-      | random       | MSci::MG::Agents::RandomAgent                |
+      | agent_type   | agent_class_name             |
+      | basic        | msci.mg.agents.BasicAgent    |
+      | learning     | msci.mg.agents.LearningAgent |
+      | random       | msci.mg.agents.RandomAgent   |
   
   Scenario Outline: construct a minority game with agents of an invalid type
     Given I have a properties hash

@@ -1,16 +1,19 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::Agents::RandomAgent do
-  let(:package) { MSci::MG }
-  let(:klass) { package::Agents::RandomAgent }
+import msci.mg.agents.AbstractAgent
+import msci.mg.agents.RandomAgent
+import msci.mg.Choice
+import msci.mg.ChoiceMemory
+import msci.mg.StrategyManager
+
+describe RandomAgent do
+  let(:strategy_manager) { Mockito.mock(StrategyManager.java_class) }
+  let(:choice_memory) { Mockito.mock(ChoiceMemory.java_class) }
   
-  let(:strategy_manager) { Mockito.mock(package::StrategyManager.java_class) }
-  let(:choice_memory) { Mockito.mock(package::ChoiceMemory.java_class) }
-  
-  let(:random_agent) { klass.new(strategy_manager, choice_memory) }
+  let(:agent) { RandomAgent.new(strategy_manager, choice_memory) }
   
   it "extends AbstractAgent" do
-    random_agent.should be_a_kind_of(package::Agents::AbstractAgent)
+    agent.should be_a_kind_of(AbstractAgent)
   end
   
   describe "#choose" do
@@ -18,17 +21,17 @@ describe MSci::MG::Agents::RandomAgent do
       choices = []
 
       100.times do
-        random_agent.choose()
-        choices << random_agent.choice
+        agent.choose()
+        choices << agent.choice
       end
 
       choice_a_count = choice_b_count = 0
 
       choices.each do |choice|
         case choice
-        when package::Choice::A
+        when Choice::A
           choice_a_count += 1
-        when package::Choice::B
+        when Choice::B
           choice_b_count += 1
         end
       end
@@ -42,8 +45,8 @@ describe MSci::MG::Agents::RandomAgent do
   describe "#increment_score" do
     it "increases the agents score by 1" do
       expect {
-        random_agent.increment_score
-      }.to change(random_agent, :score).from(0).to(1)
+        agent.increment_score
+      }.to change(agent, :score).from(0).to(1)
     end
   end
   
@@ -51,22 +54,22 @@ describe MSci::MG::Agents::RandomAgent do
     it "increments the score if the minority choice is equal to the " +
       "current choice" do
       expect {
-        random_agent.choose
-        random_agent.update(random_agent.choice)
-      }.to change(random_agent, :score)
+        agent.choose
+        agent.update(agent.choice)
+      }.to change(agent, :score)
     end
 
     it "doesn't increment the score if the minority choice is not equal " + 
       "to the current choice" do
       expect {
-        random_agent.choose
-        minority_choice = if(random_agent.choice == package::Choice::A)
-          package::Choice::B
+        agent.choose
+        minority_choice = if(agent.choice == Choice::A)
+          Choice::B
         else
-          package::Choice::A
+          Choice::A
         end
-        random_agent.update(minority_choice)
-      }.to_not change(random_agent, :score)
+        agent.update(minority_choice)
+      }.to_not change(agent, :score)
     end
   end
 end

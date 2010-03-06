@@ -29,7 +29,6 @@ Dir[
 }
 
 require 'ruby_mappings'
-require 'streams'
 require 'factory_helpers'
 
-Mockito = Java::OrgMockito::Mockito unless defined?(Mockito)
+import org.mockito.Mockito

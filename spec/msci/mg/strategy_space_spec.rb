@@ -1,10 +1,12 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::StrategySpace do
-  let(:package) { MSci::MG }
-  let(:klass) { package::StrategySpace }
-  
-  let(:strategy_space) { klass.new(2) }
+import java.util.ArrayList
+import msci.mg.Choice
+import msci.mg.Strategy
+import msci.mg.StrategySpace
+
+describe StrategySpace do
+  let(:strategy_space) { StrategySpace.new(2) }
   
   describe "constructor" do
     describe "with a key length argument" do
@@ -26,7 +28,7 @@ describe MSci::MG::StrategySpace do
   describe "#generate_strategy" do
     it "returns an instance of Strategy" do
       returned_object = strategy_space.generate_strategy
-      returned_object.should be_a_kind_of(package::Strategy)
+      returned_object.should be_a_kind_of(Strategy)
     end
     
     it "generates a strategy with keys of the length specified in the " + 
@@ -37,18 +39,18 @@ describe MSci::MG::StrategySpace do
       
     it "generates a strategy with a key set corresponding to all possible " +
       "keys of the specified key length" do
-      strategy_space = klass.new(2)
+      strategy_space = StrategySpace.new(2)
       strategy = strategy_space.generate_strategy
 
       key_set = strategy.map.key_set
       
-      a = package::Choice::A
-      b = package::Choice::B
+      a = Choice::A
+      b = Choice::B
       
-      a_a = Java::JavaUtil::ArrayList.new
-      a_b = Java::JavaUtil::ArrayList.new
-      b_a = Java::JavaUtil::ArrayList.new
-      b_b = Java::JavaUtil::ArrayList.new
+      a_a = ArrayList.new
+      a_b = ArrayList.new
+      b_a = ArrayList.new
+      b_b = ArrayList.new
       
       a_a.add(a)
       a_a.add(a)
@@ -68,7 +70,7 @@ describe MSci::MG::StrategySpace do
     end
     
     it "generates a random strategy each time" do
-      strategy_space = klass.new(3)
+      strategy_space = StrategySpace.new(3)
       strategies = (1..256).collect { strategy_space.generate_strategy }
       strategies.uniq.length.should be >= 0.6 * 256
     end

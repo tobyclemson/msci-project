@@ -1,34 +1,43 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
-describe MSci::MG::Agents::NetworkedAgent do
+
+import java.lang.IllegalStateException
+import java.util.ArrayList
+import msci.mg.agents.AbstractAgent
+import msci.mg.agents.NetworkedAgent
+import msci.mg.agents.RandomAgent
+import msci.mg.Choice
+import msci.mg.ChoiceMemory
+import msci.mg.Neighbourhood
+import msci.mg.Strategy
+import msci.mg.StrategyManager
+
+describe NetworkedAgent do
   let(:package) { MSci::MG }
-  let(:klass) { package::Agents::NetworkedAgent }
   
-  let(:array_list) { Java::JavaUtil::ArrayList }
+  let(:strategy_manager) { Mockito.mock(StrategyManager.java_class) }
+  let(:choice_memory) { Mockito.mock(ChoiceMemory.java_class) }
   
-  let(:strategy_manager) { Mockito.mock(package::StrategyManager.java_class) }
-  let(:choice_memory) { Mockito.mock(package::ChoiceMemory.java_class) }
-  
-  let(:neighbourhood) { Mockito.mock(package::Neighbourhood.java_class) }
+  let(:neighbourhood) { Mockito.mock(Neighbourhood.java_class) }
   
   let(:agent) { 
-    object = klass.new(strategy_manager, choice_memory) 
+    object = NetworkedAgent.new(strategy_manager, choice_memory) 
     object.neighbourhood = neighbourhood
     object
   }
   
   it "extends the AbstractAgent class" do
-    agent.should be_a_kind_of(package::Agents::AbstractAgent)
+    agent.should be_a_kind_of(AbstractAgent)
   end
   
   describe "#best_friend" do
     it "throws an IllegalStateException if no choice has been made yet" do
       expect {
         agent.best_friend
-      }.to raise_error(Java::JavaLang::IllegalStateException)
+      }.to raise_error(IllegalStateException)
     end
     
     it "returns the most recently followed agent if a choice has been made" do
-      best_friend = Mockito.mock(package::Agents::RandomAgent.java_class)
+      best_friend = Mockito.mock(RandomAgent.java_class)
       Mockito.when(neighbourhood.most_successful_predictor).
         then_return(best_friend)
         
@@ -39,17 +48,15 @@ describe MSci::MG::Agents::NetworkedAgent do
   end
   
   describe "#prepare" do
-    let(:random_strategy) { Mockito.mock(package::Strategy.java_class) }
-    let(:highest_scoring_strategy) { 
-      Mockito.mock(package::Strategy.java_class) 
-    }
+    let(:random_strategy) { Mockito.mock(Strategy.java_class) }
+    let(:highest_scoring_strategy) { Mockito.mock(Strategy.java_class) }
 
     before(:each) do
       Mockito.when(random_strategy.predict_minority_choice(Mockito.any())).
-        then_return(package::Choice::A)
+        then_return(Choice::A)
       Mockito.when(
         highest_scoring_strategy.predict_minority_choice(Mockito.any())
-      ).then_return(package::Choice::B)
+      ).then_return(Choice::B)
 
       Mockito.when(strategy_manager.get_random_strategy).
         then_return(random_strategy)
@@ -91,13 +98,11 @@ describe MSci::MG::Agents::NetworkedAgent do
   end
   
   describe "#choose" do
-    let(:most_successful_predictor) { 
-      Mockito.mock(package::Agents::AbstractAgent.java_class) 
-    }
+    let(:most_successful_predictor) { Mockito.mock(AbstractAgent.java_class) }
     
     before(:each) do
       Mockito.when(most_successful_predictor.prediction).
-        then_return(package::Choice::B)
+        then_return(Choice::B)
         
       Mockito.when(neighbourhood.most_successful_predictor).
         then_return(most_successful_predictor)
@@ -121,17 +126,15 @@ describe MSci::MG::Agents::NetworkedAgent do
   end
   
   describe "#update" do
-    let(:random_strategy) { Mockito.mock(package::Strategy.java_class) }
-    let(:highest_scoring_strategy) { 
-      Mockito.mock(package::Strategy.java_class) 
-    }
+    let(:random_strategy) { Mockito.mock(Strategy.java_class) }
+    let(:highest_scoring_strategy) { Mockito.mock(Strategy.java_class) }
 
     before(:each) do
       Mockito.when(random_strategy.predict_minority_choice(Mockito.any())).
-        then_return(package::Choice::A)
+        then_return(Choice::A)
       Mockito.when(
         highest_scoring_strategy.predict_minority_choice(Mockito.any())
-      ).then_return(package::Choice::B)
+      ).then_return(Choice::B)
 
       Mockito.when(strategy_manager.get_random_strategy).
         then_return(random_strategy)
@@ -140,16 +143,16 @@ describe MSci::MG::Agents::NetworkedAgent do
     end
     
     it "calls increment_scores on the strategy manager" do
-      past_choices = Mockito.mock(array_list.java_class)
+      past_choices = Mockito.mock(ArrayList.java_class)
       
       Mockito.when(choice_memory.fetch).
         then_return(past_choices)
       
-      agent = klass.new(strategy_manager, choice_memory)
-      agent.update(package::Choice::B)
+      agent = NetworkedAgent.new(strategy_manager, choice_memory)
+      agent.update(Choice::B)
       
       Mockito.verify(strategy_manager).
-        increment_scores(past_choices, package::Choice::B)
+        increment_scores(past_choices, Choice::B)
     end
     
     it "increments the correct prediction count if the minority choice is " + 
@@ -164,18 +167,18 @@ describe MSci::MG::Agents::NetworkedAgent do
       "choice is not equal to this agent's prediction" do
       expect {
         agent.prepare
-        minority_choice = if(agent.prediction == package::Choice::A)
-          package::Choice::B
+        minority_choice = if(agent.prediction == Choice::A)
+          Choice::B
         else
-          package::Choice::A
+          Choice::A
         end
         agent.update(minority_choice)
       }.to_not change(agent, :correct_prediction_count)
     end
     
     it "adds the minority choice to the memory" do
-      agent.update(package::Choice::A)
-      Mockito.verify(choice_memory).add(package::Choice::A)
+      agent.update(Choice::A)
+      Mockito.verify(choice_memory).add(Choice::A)
     end
   end
 end

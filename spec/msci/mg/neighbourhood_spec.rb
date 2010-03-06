@@ -1,46 +1,48 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::Neighbourhood do
-  let(:package) { MSci::MG }
-  let(:klass) { package::Neighbourhood }
+import edu.uci.ics.jung.graph.Graph
+import java.lang.IllegalArgumentException
+import java.lang.Integer
+import java.util.HashSet
+import msci.mg.agents.AbstractAgent
+import msci.mg.agents.RandomAgent
+import msci.mg.Neighbourhood
+
+describe Neighbourhood do
+  let(:social_network) { Mockito.mock(Graph.java_class) }
+  let(:root_agent) { Mockito.mock(AbstractAgent.java_class) }
   
-  let(:graph) { Java::EduUciIcsJungGraph::Graph }
-  let(:agent) { package::Agents::AbstractAgent }
-  
-  let(:social_network) { Mockito.mock(graph.java_class) }
-  let(:root_agent) { Mockito.mock(agent.java_class) }
-  
-  let(:neighbourhood) { klass.new(social_network, root_agent) }
+  let(:neighbourhood) { Neighbourhood.new(social_network, root_agent) }
   
   before(:each) do
     Mockito.when(social_network.contains_vertex(root_agent)).then_return(true)
   end
   
   describe "constructor" do
-    it "throws an IllegalArgumentException if the supplied root agent " + 
-      "doesn't exist in teh supplied graph"do
+    it "throws an IllegalArgumentException if the supplied root AbstractAgent " + 
+      "doesn't exist in teh supplied Graph"do
       Mockito.when(social_network.contains_vertex(root_agent)).
         then_return(false)
         
       expect {
-        neighbourhood = klass.new(social_network, root_agent)
-      }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        neighbourhood = Neighbourhood.new(social_network, root_agent)
+      }.to raise_error(IllegalArgumentException)
     end
-    it "sets the social_network attribute to the supplied graph of agents " + 
+    it "sets the social_network attribute to the supplied Graph of AbstractAgents " + 
       "and friendships" do
       neighbourhood.social_network.should equal(social_network)
     end
     
-    it "sets the root_agent attribute to the supplied agent" do
+    it "sets the root_agent attribute to the supplied AbstractAgent" do
       neighbourhood.root_agent.should equal(root_agent)
     end
   end
   
   describe "#friends" do
-    it "returns the agents in the supplied social network excluding the " + 
-      "root agent" do
-      neighbours = Java::JavaUtil::HashSet.new
-      11.times { neighbours.add(package::Agents::RandomAgent.new()) }
+    it "returns the AbstractAgents in the supplied social network excluding the " + 
+      "root AbstractAgent" do
+      neighbours = HashSet.new
+      11.times { neighbours.add(RandomAgent.new()) }
 
       Mockito.when(social_network.get_neighbors(root_agent)).
         then_return(neighbours)
@@ -56,12 +58,12 @@ describe MSci::MG::Neighbourhood do
   end
   
   describe "#most_successful_predictor" do
-    it "returns the agent in the social network that has the highest " + 
+    it "returns the AbstractAgent in the social network that has the highest " + 
       "correct prediction count" do
-      friend_1 = Mockito.mock(agent.java_class)
-      friend_2 = Mockito.mock(agent.java_class)
+      friend_1 = Mockito.mock(AbstractAgent.java_class)
+      friend_2 = Mockito.mock(AbstractAgent.java_class)
       
-      neighbours = Java::JavaUtil::HashSet.new
+      neighbours = HashSet.new
       neighbours.add(friend_1)
       neighbours.add(friend_2)
       
@@ -69,21 +71,21 @@ describe MSci::MG::Neighbourhood do
         then_return(neighbours)
         
       Mockito.when(root_agent.correct_prediction_count).
-        then_return(Java::JavaLang::Integer.new(3))
+        then_return(Integer.new(3))
       Mockito.when(friend_1.correct_prediction_count).
-        then_return(Java::JavaLang::Integer.new(4))
+        then_return(Integer.new(4))
       Mockito.when(friend_2.correct_prediction_count).
-        then_return(Java::JavaLang::Integer.new(5))
+        then_return(Integer.new(5))
         
       neighbourhood.most_successful_predictor.should equal(friend_2)
     end
     
-    it "returns the root agent if it has a higher score than all of its " +
+    it "returns the root AbstractAgent if it has a higher score than all of its " +
       "friends" do
-      friend_1 = Mockito.mock(agent.java_class)
-      friend_2 = Mockito.mock(agent.java_class)
+      friend_1 = Mockito.mock(AbstractAgent.java_class)
+      friend_2 = Mockito.mock(AbstractAgent.java_class)
 
-      neighbours = Java::JavaUtil::HashSet.new
+      neighbours = HashSet.new
       neighbours.add(friend_1)
       neighbours.add(friend_2)
 
@@ -91,22 +93,22 @@ describe MSci::MG::Neighbourhood do
         then_return(neighbours)
 
       Mockito.when(root_agent.correct_prediction_count).
-        then_return(Java::JavaLang::Integer.new(10))
+        then_return(Integer.new(10))
       Mockito.when(friend_1.correct_prediction_count).
-        then_return(Java::JavaLang::Integer.new(4))
+        then_return(Integer.new(4))
       Mockito.when(friend_2.correct_prediction_count).
-        then_return(Java::JavaLang::Integer.new(5))
+        then_return(Integer.new(5))
 
       neighbourhood.most_successful_predictor.should equal(root_agent)
     end
     
     it "returns one of the most successful predictors at random when two " + 
       "have the same correct prediction count" do
-        friend_1 = Mockito.mock(agent.java_class)
-        friend_2 = Mockito.mock(agent.java_class)
-        friend_3 = Mockito.mock(agent.java_class)
+        friend_1 = Mockito.mock(AbstractAgent.java_class)
+        friend_2 = Mockito.mock(AbstractAgent.java_class)
+        friend_3 = Mockito.mock(AbstractAgent.java_class)
 
-        neighbours = Java::JavaUtil::HashSet.new
+        neighbours = HashSet.new
         neighbours.add(friend_1)
         neighbours.add(friend_2)
         neighbours.add(friend_3)
@@ -115,13 +117,13 @@ describe MSci::MG::Neighbourhood do
           then_return(neighbours)
 
         Mockito.when(root_agent.correct_prediction_count).
-          then_return(Java::JavaLang::Integer.new(10))
+          then_return(Integer.new(10))
         Mockito.when(friend_1.correct_prediction_count).
-          then_return(Java::JavaLang::Integer.new(10))
+          then_return(Integer.new(10))
         Mockito.when(friend_2.correct_prediction_count).
-          then_return(Java::JavaLang::Integer.new(5))
+          then_return(Integer.new(5))
         Mockito.when(friend_3.correct_prediction_count).
-          then_return(Java::JavaLang::Integer.new(2))
+          then_return(Integer.new(2))
 
         root_agent_count = 0
         friend_1_count = 0
@@ -141,13 +143,13 @@ describe MSci::MG::Neighbourhood do
         (root_agent_count + friend_1_count).should == 100
     end
     
-    it "returns each agent in the network with equal probability when they " + 
+    it "returns each AbstractAgent in the network with equal probability when they " + 
       "all have the same correct prediction count" do
-        friend_1 = Mockito.mock(agent.java_class)
-        friend_2 = Mockito.mock(agent.java_class)
-        friend_3 = Mockito.mock(agent.java_class)
+        friend_1 = Mockito.mock(AbstractAgent.java_class)
+        friend_2 = Mockito.mock(AbstractAgent.java_class)
+        friend_3 = Mockito.mock(AbstractAgent.java_class)
 
-        neighbours = Java::JavaUtil::HashSet.new
+        neighbours = HashSet.new
         neighbours.add(friend_1)
         neighbours.add(friend_2)
         neighbours.add(friend_3)
@@ -156,13 +158,13 @@ describe MSci::MG::Neighbourhood do
           then_return(neighbours)
 
         Mockito.when(root_agent.correct_prediction_count).
-          then_return(Java::JavaLang::Integer.new(10))
+          then_return(Integer.new(10))
         Mockito.when(friend_1.correct_prediction_count).
-          then_return(Java::JavaLang::Integer.new(10))
+          then_return(Integer.new(10))
         Mockito.when(friend_2.correct_prediction_count).
-          then_return(Java::JavaLang::Integer.new(10))
+          then_return(Integer.new(10))
         Mockito.when(friend_3.correct_prediction_count).
-          then_return(Java::JavaLang::Integer.new(10))
+          then_return(Integer.new(10))
 
         root_agent_count = 0
         friend_1_count = 0

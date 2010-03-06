@@ -1,56 +1,26 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::Community do
-  let(:package) { MSci::MG }
-  let(:klass) { package::Community }
+import edu.uci.ics.jung.graph.Graph
+import java.lang.Integer
+import java.util.ArrayList
+import java.util.Collection
+import java.util.HashSet
+import msci.mg.agents.AbstractAgent
+import msci.mg.agents.RandomAgent
+import msci.mg.Choice
+import msci.mg.Community
+
+describe Community do
+  let(:agents) { Mockito.mock(ArrayList.java_class) }
+  let(:social_network) { Mockito.mock(Graph.java_class) }
   
-  let(:integer) { Java::JavaLang::Integer }
-  let(:array_list) { Java::JavaUtil::ArrayList }
-  
-  let(:agents) { Mockito.mock(array_list.java_class) }
-  let(:social_network) { Mockito.mock(Jung::Graph::Graph.java_class) }
-  
-  let(:community) { klass.new(social_network) }
-  
-  describe "public interface" do
-    it "has an agents instance method" do
-      community.should respond_to(:agents)
-    end
-    
-    it "has a friendships instance method" do
-      community.should respond_to(:friendships)
-    end
-    
-    it "has a social_network instance method" do
-      community.should respond_to(:social_network)
-    end
-    
-    it "has a choice_totals instance method" do
-      community.should respond_to(:choice_totals)
-    end
-    
-    it "has a prepare_agents instance method" do
-      community.should respond_to(:prepare_agents)
-    end
-    
-    it "has a make_choices instance method" do
-      community.should respond_to(:make_choices)
-    end
-    
-    it "has a update_agents instance method" do
-      community.should respond_to(:update_agents)
-    end
-    
-    it "has a number_of_agents instance method" do
-      community.should respond_to(:number_of_agents)
-    end
-  end
+  let(:community) { Community.new(social_network) }
   
   describe "constructor" do
     describe "with a Graph of Agents and Friendships as an argument" do
       it "sets the social network attribute to the supplied network of the " + 
         "community" do
-        new_community = klass.new(social_network)
+        new_community = Community.new(social_network)
         new_community.social_network.should == social_network
       end
     end
@@ -58,15 +28,15 @@ describe MSci::MG::Community do
 
   describe "#number_of_agents" do
     it "returns the number of agents in the social network" do
-      Mockito.when(social_network.vertex_count).then_return(integer.new(3))
+      Mockito.when(social_network.vertex_count).then_return(Integer.new(3))
       community.number_of_agents.should == 3
     end
   end
   
   describe "#agents" do
     it "returns the agents in the social network" do
-      agents = Java::JavaUtil::HashSet.new
-      11.times { agents.add(package::Agents::RandomAgent.new()) }
+      agents = HashSet.new
+      11.times { agents.add(RandomAgent.new()) }
 
       Mockito.when(social_network.vertices).then_return(agents)
 
@@ -93,27 +63,24 @@ describe MSci::MG::Community do
 
   describe "#choice_totals" do
     it "counts the number of agents that have made each choice" do
-      choice_a_agent = Mockito.mock(package::Agents::AbstractAgent.java_class)
-      choice_b_agent = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      choice_a_agent = Mockito.mock(AbstractAgent.java_class)
+      choice_b_agent = Mockito.mock(AbstractAgent.java_class)
       
-      Mockito.when(choice_a_agent.choice).thenReturn(package::Choice::A)
-      Mockito.when(choice_b_agent.choice).thenReturn(package::Choice::B)
+      Mockito.when(choice_a_agent.choice).thenReturn(Choice::A)
+      Mockito.when(choice_b_agent.choice).thenReturn(Choice::B)
       
-      agent_list = Java::JavaUtil::ArrayList.new
+      agent_list = ArrayList.new
       
       3.times { agent_list.add(choice_a_agent) }
       5.times { agent_list.add(choice_b_agent) }
       
       Mockito.when(social_network.vertices).then_return(agent_list)
       
-      community = klass.new(social_network)
+      community = Community.new(social_network)
       
       totals = community.choice_totals
       
-      {
-        package::Choice::A => 3, 
-        package::Choice::B => 5
-      }.each do |choice, total|
+      {Choice::A => 3, Choice::B => 5}.each do |choice, total|
         totals.get(choice).should == total
       end
     end
@@ -121,11 +88,11 @@ describe MSci::MG::Community do
   
   describe "#prepare_agents" do
     it "calls prepare on each agent" do
-      mock_agent_1 = Mockito.mock(package::Agents::AbstractAgent.java_class)
-      mock_agent_2 = Mockito.mock(package::Agents::AbstractAgent.java_class)
-      mock_agent_3 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_1 = Mockito.mock(AbstractAgent.java_class)
+      mock_agent_2 = Mockito.mock(AbstractAgent.java_class)
+      mock_agent_3 = Mockito.mock(AbstractAgent.java_class)
       
-      agent_list = array_list.new
+      agent_list = ArrayList.new
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         agent_list.add(agent)
@@ -133,7 +100,7 @@ describe MSci::MG::Community do
       
       Mockito.when(social_network.vertices).then_return(agent_list)
       
-      community = klass.new(social_network)
+      community = Community.new(social_network)
       
       community.prepare_agents
       
@@ -145,11 +112,11 @@ describe MSci::MG::Community do
 
   describe "#make_choices" do
     it "calls choose on each agent" do
-      mock_agent_1 = Mockito.mock(package::Agents::AbstractAgent.java_class)
-      mock_agent_2 = Mockito.mock(package::Agents::AbstractAgent.java_class)
-      mock_agent_3 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_1 = Mockito.mock(AbstractAgent.java_class)
+      mock_agent_2 = Mockito.mock(AbstractAgent.java_class)
+      mock_agent_3 = Mockito.mock(AbstractAgent.java_class)
       
-      agent_list = array_list.new
+      agent_list = ArrayList.new
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         agent_list.add(agent)
@@ -157,7 +124,7 @@ describe MSci::MG::Community do
       
       Mockito.when(social_network.vertices).then_return(agent_list)
       
-      community = klass.new(social_network)
+      community = Community.new(social_network)
       
       community.make_choices
       
@@ -169,11 +136,11 @@ describe MSci::MG::Community do
   
   describe "#update_agents" do
     it "calls update on each agent" do
-      mock_agent_1 = Mockito.mock(package::Agents::AbstractAgent.java_class)
-      mock_agent_2 = Mockito.mock(package::Agents::AbstractAgent.java_class)
-      mock_agent_3 = Mockito.mock(package::Agents::AbstractAgent.java_class)
+      mock_agent_1 = Mockito.mock(AbstractAgent.java_class)
+      mock_agent_2 = Mockito.mock(AbstractAgent.java_class)
+      mock_agent_3 = Mockito.mock(AbstractAgent.java_class)
       
-      agent_list = array_list.new
+      agent_list = ArrayList.new
 
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
         agent_list.add(agent)
@@ -181,12 +148,12 @@ describe MSci::MG::Community do
       
       Mockito.when(social_network.vertices).then_return(agent_list)
       
-      community = klass.new(social_network)
+      community = Community.new(social_network)
       
-      community.update_agents(package::Choice::A)
+      community.update_agents(Choice::A)
       
       [mock_agent_1, mock_agent_2, mock_agent_3].each do |agent|
-        Mockito.verify(agent).update(package::Choice::A)
+        Mockito.verify(agent).update(Choice::A)
       end
     end
   end

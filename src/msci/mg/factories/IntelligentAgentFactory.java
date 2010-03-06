@@ -103,4 +103,15 @@ public abstract class IntelligentAgentFactory extends AgentFactory {
         this.numberOfStrategiesFactory = numberOfStrategiesFactory;
     }
 
+    /**
+     * Sets the initial choice memory to the supplied choice list.
+     * @param initialChoiceMemory A list of choices representing the initial
+     * choice memory each agent should be populated with.
+     */
+    public void setInitialChoiceMemory(
+        List<Choice> initialChoiceMemory
+    ) {
+        this.initialChoiceMemory = initialChoiceMemory;
+    }
+
 }

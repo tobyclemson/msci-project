@@ -1,15 +1,17 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::Agents::LearningAgent do
-  let(:package) { MSci::MG }
-  let(:klass) { package::Agents::LearningAgent }
+import msci.mg.agents.AbstractAgent
+import msci.mg.agents.LearningAgent
+import msci.mg.ChoiceMemory
+import msci.mg.StrategyManager
+
+describe LearningAgent do
+  let(:strategy_manager) { Mockito.mock(StrategyManager.java_class) }
+  let(:choice_memory) { Mockito.mock(ChoiceMemory.java_class) }
   
-  let(:strategy_manager) { Mockito.mock(package::StrategyManager.java_class) }
-  let(:choice_memory) { Mockito.mock(package::ChoiceMemory.java_class) }
-  
-  let(:learning_agent) { klass.new(strategy_manager, choice_memory) }
+  let(:agent) { LearningAgent.new(strategy_manager, choice_memory) }
   
   it "extends the AbstractAgent class" do
-    learning_agent.should be_a_kind_of(package::Agents::AbstractAgent)
+    agent.should be_a_kind_of(AbstractAgent)
   end
 end

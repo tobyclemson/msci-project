@@ -1,18 +1,19 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::ChoiceListPermutator do
-  let(:package) { MSci::MG }
-  let(:klass) { package::ChoiceListPermutator }
-  
+import java.util.ArrayList
+import msci.mg.Choice
+import msci.mg.ChoiceListPermutator
+
+describe ChoiceListPermutator do
   describe ".generate_all" do
     it "returns a set of all possible permutations of lists of the choices " +
       "Choice.A and Choice.B of the specified length" do
-      returned_permutations = klass.generate_all(3)
+      returned_permutations = ChoiceListPermutator.generate_all(3)
       
-      a = package::Choice::A
-      b = package::Choice::B
+      a = Choice::A
+      b = Choice::B
       
-      arraylist_klass = Java::JavaUtil::ArrayList
+      arraylist_ChoiceListPermutator = ArrayList
       a_a_a = a_a_b = a_b_a = a_b_b = b_a_a = b_a_b = b_b_a = b_b_b = nil
       
       [
@@ -21,7 +22,7 @@ describe MSci::MG::ChoiceListPermutator do
         [:b, :b, :a], [:b, :b, :b]
       ].each do |permutation|
         name = permutation.join("_")
-        eval("#{name} = arraylist_klass.new")
+        eval("#{name} = arraylist_ChoiceListPermutator.new")
         permutation.each do |choice|
           eval("#{name}.add(#{choice})")
         end
@@ -38,8 +39,8 @@ describe MSci::MG::ChoiceListPermutator do
     
     it "returns a reference to the same lists if permutations of the same " +
       "length are requested" do
-      first_call_results = klass.generate_all(2)
-      second_call_results = klass.generate_all(2)
+      first_call_results = ChoiceListPermutator.generate_all(2)
+      second_call_results = ChoiceListPermutator.generate_all(2)
       
       first_call_results.each do |first_call_permutation|
         second_call_results.each do |second_call_permutation|

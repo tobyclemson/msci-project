@@ -29,10 +29,9 @@ Dir[
 }
 
 require 'ruby_mappings'
-require 'streams'
 require 'factory_helpers'
 require 'experimentalist'
 
 World(FactoryHelpers)
 
-Mockito = Java::OrgMockito::Mockito
+import org.mockito.Mockito

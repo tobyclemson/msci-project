@@ -2,50 +2,43 @@ require File.join(
   File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb'
 )
 
-describe MSci::MG::Factories::EmptySocialNetworkFactory do
-  let(:package) { MSci::MG::Factories }
-  let(:klass) { package::EmptySocialNetworkFactory}
+import msci.mg.agents.AbstractAgent
+import msci.mg.factories.AgentFactory
+import msci.mg.factories.EmptySocialNetworkFactory
+import msci.mg.factories.FriendshipFactory
+import msci.mg.factories.SocialNetworkFactory
+import msci.mg.Friendship
+
+describe EmptySocialNetworkFactory do
+  ConcreteAgentFactory = Class.new(AgentFactory) do
+    def create
+      return Mockito.mock(AbstractAgent.java_class)
+    end
+  end
+  ConcreteFriendshipFactory = Class.new(FriendshipFactory) do
+    def create
+      return Mockito.mock(Friendship.java_class)
+    end
+  end
   
-  let(:factory_interface) { Java::OrgApacheCommonsCollections15::Factory }
+  let(:agent_factory) { ConcreteAgentFactory.new }
+  let(:friendship_factory) { ConcreteFriendshipFactory.new }
   
-  let(:agent_factory) { Mockito.mock(factory_interface.java_class) }
-  let(:friendship_factory) { Mockito.mock(factory_interface.java_class) }
   let(:number_of_agents) { 101 }
   
   let(:factory) { 
-    klass.new(agent_factory, friendship_factory, number_of_agents) 
+    EmptySocialNetworkFactory.new(
+      agent_factory, 
+      friendship_factory, 
+      number_of_agents
+    )
   }
   
   it "extends the SocialNetworkFactory class" do
-    factory.should be_a_kind_of(package::SocialNetworkFactory)
+    factory.should be_a_kind_of(SocialNetworkFactory)
   end
   
-  describe "#create" do
-    let(:agent_factory) {
-      agent_factory_klass = Class.new(package::AgentFactory) do
-        def create
-          return Mockito.mock(
-            MSci::MG::Agents::AbstractAgent.java_class
-          )
-        end
-      end
-      agent_factory_klass.new
-    }
-    let(:friendship_factory) {
-      friendship_factory_klass = Class.new(package::FriendshipFactory) do
-        def create
-          return Mockito.mock(
-            MSci::MG::Friendship.java_class
-          )
-        end
-      end
-      friendship_factory_klass.new
-    }
-    
-    before(:each) do
-      factory = klass.new(agent_factory, friendship_factory, number_of_agents)
-    end
-    
+  describe "#create" do    
     it "generates a social network containing the specified number of " + 
       "agents" do
       social_network = factory.create

@@ -1,47 +1,24 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::StrategyManager do
+import java.lang.Integer
+import java.util.ArrayList
+import java.util.List
+import msci.mg.Choice
+import msci.mg.Strategy
+import msci.mg.StrategyManager
+
+describe StrategyManager do
   let(:package) { MSci::MG }
-  let(:klass) { package::StrategyManager }
-  
-  let(:integer) { Java::JavaLang::Integer }
-  let(:array_list) { Java::JavaUtil::ArrayList }
   
   let(:strategies) { 
-    mock = Mockito.mock(Java::JavaUtil::ArrayList.java_class) 
-    strategy = Mockito.mock(package::Strategy.java_class)
+    mock = Mockito.mock(ArrayList.java_class) 
+    strategy = Mockito.mock(Strategy.java_class)
     Mockito.when(mock.get(Mockito.any)).
       then_return(strategy)
     mock
   }
   
-  let(:strategy_manager) { klass.new(strategies) }
-  
-  describe "public interface" do
-    it "has a random_strategy instance method" do
-      strategy_manager.should respond_to(:random_strategy)
-    end
-    
-    it "has a highest_scoring_strategy instance method" do
-      strategy_manager.should respond_to(:highest_scoring_strategy)
-    end
-    
-    it "has an increment_scores instance method" do
-      strategy_manager.should respond_to(:increment_scores)
-    end
-    
-    it "has a number_of_strategies instance method" do
-      strategy_manager.should respond_to(:number_of_strategies)
-    end
-    
-    it "has a strategy_key_length instance method" do
-      strategy_manager.should respond_to(:strategy_key_length)
-    end
-    
-    it "has a strategies instance method" do
-      strategy_manager.should respond_to(:strategies)
-    end
-  end
+  let(:strategy_manager) { StrategyManager.new(strategies) }
   
   describe "constructor" do
     describe "with a List of Strategy objects" do
@@ -53,7 +30,7 @@ describe MSci::MG::StrategyManager do
 
   describe "#number_of_strategies" do
     it "returns the number of strategies managed by the strategy manager" do
-      Mockito.when(strategies.size).then_return(integer.new(3))
+      Mockito.when(strategies.size).then_return(Integer.new(3))
       strategy_manager.number_of_strategies.should == 3
     end
   end
@@ -61,9 +38,9 @@ describe MSci::MG::StrategyManager do
   describe "#strategy_key_length" do
     it "returns the length of the keys of the strategies passed in to the " +
       "constructor" do
-        strategy = Mockito.mock(package::Strategy.java_class)
+        strategy = Mockito.mock(Strategy.java_class)
         
-        Mockito.when(strategy.get_key_length).then_return(integer.new(3))
+        Mockito.when(strategy.get_key_length).then_return(Integer.new(3))
         Mockito.when(strategies.get(Mockito.any())).then_return(strategy)
         
         strategy_manager.strategy_key_length.should == 3
@@ -71,17 +48,17 @@ describe MSci::MG::StrategyManager do
   end
 
   describe "#random_strategy" do
-    let(:strategy_1) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_2) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_3) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_1) { Mockito.mock(Strategy.java_class) }
+    let(:strategy_2) { Mockito.mock(Strategy.java_class) }
+    let(:strategy_3) { Mockito.mock(Strategy.java_class) }
     let(:strategy_manager) {
-      strategies = Java::JavaUtil::ArrayList.new
+      strategies = ArrayList.new
       
       [strategy_1, strategy_2, strategy_3].each do |mock_strategy|
         strategies.add(mock_strategy)
       end
       
-      klass.new(strategies)
+      StrategyManager.new(strategies)
     }
     
     it "returns strategies randomly with uniform distribution" do
@@ -102,45 +79,36 @@ describe MSci::MG::StrategyManager do
   end
 
   describe "#highest_scoring_strategy" do
-    let(:strategy_1) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_2) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_3) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_4) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_1) { Mockito.mock(Strategy.java_class) }
+    let(:strategy_2) { Mockito.mock(Strategy.java_class) }
+    let(:strategy_3) { Mockito.mock(Strategy.java_class) }
+    let(:strategy_4) { Mockito.mock(Strategy.java_class) }
     let(:strategy_manager) {
-      strategies = Java::JavaUtil::ArrayList.new
+      strategies = ArrayList.new
       
       [strategy_1, strategy_2, strategy_3, strategy_4].each do |mock_strategy|
         strategies.add(mock_strategy)
       end
       
-      klass.new(strategies)
+      StrategyManager.new(strategies)
     }
     
     it "returns the highest scoring strategy if there is only one with " + 
       "that score" do
-      Mockito.when(strategy_1.score).
-        then_return(Java::JavaLang::Integer.new(5))
-      Mockito.when(strategy_2.score).
-        then_return(Java::JavaLang::Integer.new(2))
-      Mockito.when(strategy_3.score).
-        then_return(Java::JavaLang::Integer.new(7))
-      Mockito.when(strategy_4.score).
-        then_return(Java::JavaLang::Integer.new(2))
+      Mockito.when(strategy_1.score).then_return(Integer.new(5))
+      Mockito.when(strategy_2.score).then_return(Integer.new(2))
+      Mockito.when(strategy_3.score).then_return(Integer.new(7))
+      Mockito.when(strategy_4.score).then_return(Integer.new(2))
         
-      strategy_manager.
-        highest_scoring_strategy.should == strategy_3
+      strategy_manager.highest_scoring_strategy.should == strategy_3
     end
     
     it "returns one of the highest scoring strategies at random if there " +
       "is more than one with that score" do
-      Mockito.when(strategy_1.score).
-        then_return(Java::JavaLang::Integer.new(7))
-      Mockito.when(strategy_2.score).
-        then_return(Java::JavaLang::Integer.new(2))
-      Mockito.when(strategy_3.score).
-        then_return(Java::JavaLang::Integer.new(7))
-      Mockito.when(strategy_4.score).
-        then_return(Java::JavaLang::Integer.new(7))
+      Mockito.when(strategy_1.score).then_return(Integer.new(7))
+      Mockito.when(strategy_2.score).then_return(Integer.new(2))
+      Mockito.when(strategy_3.score).then_return(Integer.new(7))
+      Mockito.when(strategy_4.score).then_return(Integer.new(7))
         
       count_1 = count_2 = count_3 = count_4 = 0;
 
@@ -174,34 +142,32 @@ describe MSci::MG::StrategyManager do
   end
 
   describe "#increment_scores" do
-    let(:strategy_1) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_2) { Mockito.mock(package::Strategy.java_class) }
-    let(:strategy_3) { Mockito.mock(package::Strategy.java_class) }
+    let(:strategy_1) { Mockito.mock(Strategy.java_class) }
+    let(:strategy_2) { Mockito.mock(Strategy.java_class) }
+    let(:strategy_3) { Mockito.mock(Strategy.java_class) }
     let(:strategy_manager) {
-      strategies = Java::JavaUtil::ArrayList.new
+      strategies = ArrayList.new
       
       [strategy_1, strategy_2, strategy_3].each do |mock_strategy|
         strategies.add(mock_strategy)
       end
       
-      klass.new(strategies)
+      StrategyManager.new(strategies)
     }
     let(:past_choices) { Mockito.mock(Java::JavaUtil::List.java_class) }
         
     before(:each) do
       Mockito.when(strategy_1.predict_minority_choice(past_choices)).
-        then_return(package::Choice::A)
+        then_return(Choice::A)
       Mockito.when(strategy_2.predict_minority_choice(past_choices)).
-        then_return(package::Choice::A)
+        then_return(Choice::A)
       Mockito.when(strategy_3.predict_minority_choice(past_choices)).
-        then_return(package::Choice::B)
+        then_return(Choice::B)
     end
     
     it "calls increment_score on strategies that give the supplied " +
       "choice for the supplied choice history" do
-      strategy_manager.increment_scores(
-        past_choices, package::Choice::A
-      )
+      strategy_manager.increment_scores(past_choices, Choice::A)
       
       Mockito.verify(strategy_1).increment_score
       Mockito.verify(strategy_2).increment_score
@@ -209,10 +175,7 @@ describe MSci::MG::StrategyManager do
     
     it "doesn't call increment_score on strategies that don't give the " +
       "supplied choice for the supplied choice history" do
-      strategy_manager.increment_scores(
-        past_choices, package::Choice::A
-      )
-
+      strategy_manager.increment_scores(past_choices, Choice::A)
       Mockito.verify(strategy_3, Mockito.never).increment_score
     end
   end

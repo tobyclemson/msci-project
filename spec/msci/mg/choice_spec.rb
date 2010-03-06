@@ -1,9 +1,9 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::Choice do
-  let(:package) { MSci::MG }
-  
+import msci.mg.Choice
+
+describe Choice do
   it "has only the enumerated constants A and B" do
-    package::Choice.constants.should eql(["A", "B"])
+    Choice.constants.should eql(["A", "B"])
   end
 end

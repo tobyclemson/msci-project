@@ -1,3 +1,8 @@
+import java.util.ArrayList
+import msci.mg.Choice
+import msci.mg.factories.MinorityGameFactory
+import msci.mg.MinorityGame
+
 # Properties hash related steps
 Given /^I have a properties hash$/ do
   @properties = properties_hash
@@ -10,8 +15,7 @@ end
 # Minority game construction steps
 When /^I construct a minority game with the properties hash$/ do
   begin
-    @minority_game =
-      MSci::MG::Factories::MinorityGameFactory.construct(@properties)
+    @minority_game = MinorityGameFactory.construct(@properties)
   rescue Exception => exception
     @exception = exception
   end
@@ -219,17 +223,17 @@ Then /^the minority choice at each time step should be correct with respect to t
     choice_b_count = 0
     
     agent_choices.each do |choice|
-      if(choice == MSci::MG::Choice::A)
+      if(choice == Choice::A)
         choice_a_count += 1
-      elsif(choice == MSci::MG::Choice::B)
+      elsif(choice == Choice::B)
         choice_b_count += 1
       end
     end
     
     minority_choice = if(choice_a_count < choice_b_count)
-      MSci::MG::Choice::A
+      Choice::A
     else
-      MSci::MG::Choice::B
+      Choice::B
     end
     
     minority_choice.should == all_minority_choices[step]
@@ -245,9 +249,9 @@ Then /^the minority size at each time step should be correct with respect to the
     choice_b_count = 0
     
     agent_choices.each do |choice|
-      if(choice == MSci::MG::Choice::A)
+      if(choice == Choice::A)
         choice_a_count += 1
-      elsif(choice == MSci::MG::Choice::B)
+      elsif(choice == Choice::B)
         choice_b_count += 1
       end
     end
@@ -296,9 +300,9 @@ Then /^each choice should have been made approximately an equal number of times$
   
   @experimentalist.measurement_results(:agent_choice).each do |choice|
     case choice
-    when MSci::MG::Choice::A
+    when Choice::A
       choice_a_count += 1
-    when MSci::MG::Choice::B
+    when Choice::B
       choice_b_count += 1
     end
   end
@@ -535,9 +539,7 @@ end
 # Minority game verification steps
 Then /^I should have a minority game$/ do
   if(@minority_game)
-    @minority_game.should be_a_kind_of(
-      MSci::MG::MinorityGame
-    )
+    @minority_game.should be_a_kind_of(MinorityGame)
   else
     raise @exception
   end
@@ -581,7 +583,7 @@ Then /^it should have equal proportions of agents with memories of length betwee
 end
 
 Then /^it should have agents that are instances of (.*)$/ do |agent_class_name|
-  klass = agent_class_name.constantize
+  klass = eval(agent_class_name)
   @minority_game.agents.each do |agent|
     agent.should be_a_kind_of(klass)
   end
@@ -642,7 +644,7 @@ Then /^each agent in the community should be friends with (approximately )?(all|
     friends = social_network.get_neighbors(agent)
     case count
       when 'all'
-        remaining_agents = Java::JavaUtil::ArrayList.new(agents)
+        remaining_agents = ArrayList.new(agents)
         remaining_agents.remove(agent)
         friends.size.should == agents.size - 1
         friends.contains_all(remaining_agents).should be_true

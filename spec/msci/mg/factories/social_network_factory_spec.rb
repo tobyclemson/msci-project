@@ -2,22 +2,24 @@ require File.join(
   File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb'
 )
 
-describe MSci::MG::Factories::SocialNetworkFactory do
-  let(:package) { MSci::MG::Factories }
-  let(:klass) { 
-    Class.new(package::SocialNetworkFactory) do
-      def create; end
-    end
-  }
+import msci.mg.factories.SocialNetworkFactory
+import org.apache.commons.collections15.Factory
+
+describe SocialNetworkFactory do
+  ConcreteSocialNetworkFactory = Class.new(SocialNetworkFactory) do
+    def create; end
+  end
   
-  let(:factory_interface) { Java::OrgApacheCommonsCollections15::Factory }
-  
-  let(:agent_factory) { Mockito.mock(factory_interface.java_class) }
-  let(:friendship_factory) { Mockito.mock(factory_interface.java_class) }
+  let(:agent_factory) { Mockito.mock(Factory.java_class) }
+  let(:friendship_factory) { Mockito.mock(Factory.java_class) }
   let(:number_of_agents) { 101 }
   
   let(:factory) { 
-    klass.new(agent_factory, friendship_factory, number_of_agents) 
+    ConcreteSocialNetworkFactory.new(
+      agent_factory, 
+      friendship_factory, 
+      number_of_agents
+    ) 
   }
   
   describe "constructor" do
@@ -37,7 +39,7 @@ describe MSci::MG::Factories::SocialNetworkFactory do
   describe "setters" do
     describe "#agent_factory=" do
       it "sets the agent_factory attribute to the supplied factory" do
-        new_agent_factory = Mockito.mock(factory_interface.java_class)
+        new_agent_factory = Mockito.mock(Factory.java_class)
         factory.agent_factory = new_agent_factory
         factory.agent_factory.should == new_agent_factory
       end
@@ -45,7 +47,7 @@ describe MSci::MG::Factories::SocialNetworkFactory do
     
     describe "#friendship_factory=" do
       it "sets the friendship_factory attribute to the supplied factory" do
-        new_friendship_factory = Mockito.mock(factory_interface.java_class)
+        new_friendship_factory = Mockito.mock(Factory.java_class)
         factory.friendship_factory = new_friendship_factory
         factory.friendship_factory.should == new_friendship_factory
       end

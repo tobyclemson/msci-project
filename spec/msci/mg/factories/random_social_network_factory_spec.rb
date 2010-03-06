@@ -2,25 +2,43 @@ require File.join(
   File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb'
 )
 
-describe MSci::MG::Factories::RandomSocialNetworkFactory do
-  let(:package) { MSci::MG::Factories }
-  let(:klass) { package::RandomSocialNetworkFactory }
+import java.lang.IllegalArgumentException
+import msci.mg.agents.AbstractAgent
+import msci.mg.factories.AgentFactory
+import msci.mg.factories.FriendshipFactory
+import msci.mg.factories.RandomSocialNetworkFactory
+import msci.mg.factories.SocialNetworkFactory
+import msci.mg.Friendship
+import org.apache.commons.collections15.Factory
+
+describe RandomSocialNetworkFactory do
+  ConcreteAgentFactory = Class.new(AgentFactory) do
+    def create
+      return Mockito.mock(AbstractAgent.java_class)
+    end
+  end
+  ConcreteFriendshipFactory = Class.new(FriendshipFactory) do
+    def create
+      return Mockito.mock(Friendship.java_class)
+    end
+  end
   
-  let(:factory_interface) { Java::OrgApacheCommonsCollections15::Factory }
-  
-  let(:agent_factory) { Mockito.mock(factory_interface.java_class) }
-  let(:friendship_factory) { Mockito.mock(factory_interface.java_class) }
+  let(:agent_factory) { ConcreteAgentFactory.new }
+  let(:friendship_factory) { ConcreteFriendshipFactory.new }
   let(:number_of_agents) { 101 }
   let(:link_probability) { 0.1 }
   
   let(:factory) { 
-    klass.new(
-      agent_factory, friendship_factory, number_of_agents, link_probability
+    RandomSocialNetworkFactory.new(
+      agent_factory, 
+      friendship_factory, 
+      number_of_agents, 
+      link_probability
     ) 
   }
   
   it "extends the SocialNetworkFactory class" do
-    factory.should be_a_kind_of(package::SocialNetworkFactory)
+    factory.should be_a_kind_of(SocialNetworkFactory)
   end
   
   describe "constructor" do
@@ -33,13 +51,13 @@ describe MSci::MG::Factories::RandomSocialNetworkFactory do
       link_probability = -0.5
       
       expect {
-        factory = klass.new(
+        factory = RandomSocialNetworkFactory.new(
           agent_factory, 
           friendship_factory, 
           number_of_agents, 
           link_probability
         )
-      }.to raise_error(Java::JavaLang::IllegalArgumentException)
+      }.to raise_error(IllegalArgumentException)
     end
     
     it "throws an IllegalArgumentException if the supplied " +
@@ -47,13 +65,13 @@ describe MSci::MG::Factories::RandomSocialNetworkFactory do
         link_probability = 1.5
 
         expect {
-          factory = klass.new(
+          factory = RandomSocialNetworkFactory.new(
             agent_factory, 
             friendship_factory, 
             number_of_agents, 
             link_probability
           )
-        }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        }.to raise_error(IllegalArgumentException)
     end
   end
   
@@ -71,7 +89,7 @@ describe MSci::MG::Factories::RandomSocialNetworkFactory do
 
         expect {
           factory.link_probability = new_link_probability
-        }.to raise_error(Java::JavaLang::IllegalArgumentException)
+        }.to raise_error(IllegalArgumentException)
       end
 
       it "throws an IllegalArgumentException if the supplied " +
@@ -80,33 +98,12 @@ describe MSci::MG::Factories::RandomSocialNetworkFactory do
 
           expect {
             factory.link_probability = new_link_probability
-          }.to raise_error(Java::JavaLang::IllegalArgumentException)
+          }.to raise_error(IllegalArgumentException)
       end
     end
   end
 
-  describe "#create" do
-    let(:agent_factory) {
-      agent_factory_klass = Class.new(package::AgentFactory) do
-        def create
-          return Mockito.mock(
-            MSci::MG::Agents::AbstractAgent.java_class
-          )
-        end
-      end
-      agent_factory_klass.new
-    }
-    let(:friendship_factory) {
-      friendship_factory_klass = Class.new(package::FriendshipFactory) do
-        def create
-          return Mockito.mock(
-            MSci::MG::Friendship.java_class
-          )
-        end
-      end
-      friendship_factory_klass.new
-    }
-    
+  describe "#create" do    
     it "generates a social network containing the specified number of " + 
       "agents" do
       social_network = factory.create

@@ -41,7 +41,7 @@ Feature: agents have friends whose opinion influences their decision making
     When I set the 'agent-type' property to 'networked'
     And I construct a minority game with the properties hash
     Then I should have a minority game
-    And it should have agents that are instances of MSci::MG::Agents::NetworkedAgent
+    And it should have agents that are instances of msci.mg.agents.NetworkedAgent
 
   Scenario: the strategy scores are correct at each time step
     Given I have a minority game with networked agents with a memory size of 2

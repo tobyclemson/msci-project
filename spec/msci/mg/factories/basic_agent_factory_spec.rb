@@ -2,30 +2,26 @@ require File.join(
   File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb'
 )
 
-describe MSci::MG::Factories::BasicAgentFactory do
-  let(:package) { MSci::MG::Factories }
-  let(:klass) { package::BasicAgentFactory }
-  
-  let(:factory_interface) {
-    Java::OrgApacheCommonsCollections15::Factory
-  }
-  
-  let(:memory_capacity_factory) { 
-    Mockito.mock(factory_interface.java_class) 
-  }
-  let(:number_of_strategies_factory) {
-    Mockito.mock(factory_interface.java_class)
-  }
+import msci.mg.factories.BasicAgentFactory
+import msci.mg.factories.IntelligentAgentFactory
+import java.lang.Integer
+import java.util.ArrayList
+import msci.mg.Choice
+import org.apache.commons.collections15.Factory
+
+describe BasicAgentFactory do
+  let(:memory_capacity_factory) { Mockito.mock(Factory.java_class) }
+  let(:number_of_strategies_factory) { Mockito.mock(Factory.java_class) }
   let(:initial_choice_memory) {
-    list = Java::JavaUtil::ArrayList.new
-    list.add(MSci::MG::Choice::A)
-    list.add(MSci::MG::Choice::B)
-    list.add(MSci::MG::Choice::B)
+    list = ArrayList.new
+    list.add(Choice::A)
+    list.add(Choice::B)
+    list.add(Choice::B)
     list
   }
   
   let(:factory) { 
-    klass.new(
+    BasicAgentFactory.new(
       memory_capacity_factory, 
       number_of_strategies_factory,
       initial_choice_memory
@@ -33,7 +29,7 @@ describe MSci::MG::Factories::BasicAgentFactory do
   }
   
   it "extends the IntelligentAgentFactory class" do
-    factory.should be_a_kind_of(package::IntelligentAgentFactory)
+    factory.should be_a_kind_of(IntelligentAgentFactory)
   end
   
   describe "#create" do
@@ -41,10 +37,10 @@ describe MSci::MG::Factories::BasicAgentFactory do
     
     before(:each) do
       Mockito.when(memory_capacity_factory.create).then_return(
-        Java::JavaLang::Integer.new(3)
+        Integer.new(3)
       )
       Mockito.when(number_of_strategies_factory.create).then_return(
-        Java::JavaLang::Integer.new(2)
+        Integer.new(2)
       )
     end
     

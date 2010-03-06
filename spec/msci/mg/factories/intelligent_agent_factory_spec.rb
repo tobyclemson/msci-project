@@ -2,30 +2,22 @@ require File.join(
   File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb'
 )
 
-describe MSci::MG::Factories::IntelligentAgentFactory do
-  let(:package) { MSci::MG::Factories }
-  let(:klass) {
-    Class.new(package::IntelligentAgentFactory) do
-      def create; end
-    end
-  }
+import java.util.List
+import msci.mg.factories.AgentFactory
+import msci.mg.factories.IntelligentAgentFactory
+import org.apache.commons.collections15.Factory
+
+describe IntelligentAgentFactory do
+  ConcreteIntelligentAgentFactory = Class.new(IntelligentAgentFactory) do
+    def create; end
+  end
   
-  let(:factory_interface) {
-    Java::OrgApacheCommonsCollections15::Factory
-  }
-  
-  let(:memory_capacity_factory) { 
-    Mockito.mock(factory_interface.java_class) 
-  }
-  let(:number_of_strategies_factory) {
-    Mockito.mock(factory_interface.java_class)
-  }
-  let(:initial_choice_memory) {
-    Mockito.mock(Java::JavaUtil::List.java_class)
-  }
+  let(:memory_capacity_factory) { Mockito.mock(Factory.java_class) }
+  let(:number_of_strategies_factory) { Mockito.mock(Factory.java_class) }
+  let(:initial_choice_memory) { Mockito.mock(List.java_class) }
   
   let(:factory) { 
-    klass.new(
+    ConcreteIntelligentAgentFactory.new(
       memory_capacity_factory, 
       number_of_strategies_factory,
       initial_choice_memory
@@ -33,7 +25,7 @@ describe MSci::MG::Factories::IntelligentAgentFactory do
   }
   
   it "extends the AgentFactory class" do
-    factory.should be_a_kind_of(package::AgentFactory)
+    factory.should be_a_kind_of(AgentFactory)
   end
   
   describe "constructor" do
@@ -56,9 +48,7 @@ describe MSci::MG::Factories::IntelligentAgentFactory do
     describe "#memory_capacity_factory=" do
       it "sets the memory_capacity_factory attribute to the supplied " + 
         "factory" do
-        new_memory_capacity_factory = Mockito.mock(
-          factory_interface.java_class
-        )
+        new_memory_capacity_factory = Mockito.mock(Factory.java_class)
         factory.memory_capacity_factory = new_memory_capacity_factory
         factory.memory_capacity_factory.should == new_memory_capacity_factory
       end
@@ -66,9 +56,7 @@ describe MSci::MG::Factories::IntelligentAgentFactory do
     
     describe "#number_of_strategies_factory=" do
       it "sets the number_of_strategies attribute to the supplied value" do
-        new_number_of_strategies_factory = Mockito.mock(
-          factory_interface.java_class
-        )
+        new_number_of_strategies_factory = Mockito.mock(Factory.java_class)
         factory.number_of_strategies_factory = 
           new_number_of_strategies_factory
         factory.number_of_strategies_factory.should == 
@@ -78,7 +66,9 @@ describe MSci::MG::Factories::IntelligentAgentFactory do
     
     describe "#initial_choice_memory=" do
       it "sets the initial_choice_memory attribute to the supplied value" do
-        
+        new_initial_choice_memory = Mockito.mock(List.java_class)
+        factory.initial_choice_memory = new_initial_choice_memory
+        factory.initial_choice_memory.should == new_initial_choice_memory
       end
     end
   end

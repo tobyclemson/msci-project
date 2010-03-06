@@ -1,35 +1,21 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper.rb')
 
-describe MSci::MG::ChoiceMemory do
-  let(:package) { MSci::MG }
-  let(:klass) { package::ChoiceMemory }
-  
+import java.lang.IllegalArgumentException
+import java.util.ArrayList
+import msci.mg.Choice
+import msci.mg.ChoiceMemory
+
+describe ChoiceMemory do
   let(:memory_capacity) { 3 }
   let(:initial_choices) {
-    list = Java::JavaUtil::ArrayList.new
-    list.add(package::Choice::A)
-    list.add(package::Choice::B)
-    list.add(package::Choice::B)
+    list = ArrayList.new
+    list.add(Choice::A)
+    list.add(Choice::B)
+    list.add(Choice::B)
     list
   }
   
-  let(:choice_memory) { 
-    klass.new(memory_capacity, initial_choices) 
-  }
-  
-  describe "public interface" do
-    it "has a capacity instance method" do
-      choice_memory.should respond_to(:capacity)
-    end
-    
-    it "has an add instance method" do
-      choice_memory.should respond_to(:add)
-    end
-    
-    it "has a fetch instance method" do
-      choice_memory.should respond_to(:fetch)
-    end
-  end
+  let(:choice_memory) { ChoiceMemory.new(memory_capacity, initial_choices) }
   
   describe "constructor" do
     describe "with an integer representing the memory capacity and a list " + 
@@ -47,36 +33,35 @@ describe MSci::MG::ChoiceMemory do
       it "sets the initial memory contents to the elements with highest " + 
         "index if the size of the supplied list of choices is greater than " +
         "the required capacity" do
-        list = Java::JavaUtil::ArrayList.new
-        list.add(package::Choice::A)
-        list.add(package::Choice::B)
-        list.add(package::Choice::B)
-        list.add(package::Choice::B)
+        list = ArrayList.new
+        list.add(Choice::A)
+        list.add(Choice::B)
+        list.add(Choice::B)
+        list.add(Choice::B)
         
-        choice_memory = klass.new(3, list)
+        choice_memory = ChoiceMemory.new(3, list)
         
-        choice_memory.fetch.to_a.should == 
-          [package::Choice::B, package::Choice::B, package::Choice::B]
+        choice_memory.fetch.to_a.should == [Choice::B, Choice::B, Choice::B]
       end
       
       it "throws an IllegalArgumentException if the supplied list of " + 
         "initial choices contains fewer choices than the specified " + 
         "capacity" do
-        initial_choices = Java::JavaUtil::ArrayList.new
-        initial_choices.add(package::Choice::A)
+        initial_choices = ArrayList.new
+        initial_choices.add(Choice::A)
         
         memory_capacity = 4
         
         expect {
-          klass.new(memory_capacity, initial_choices)
-        }.to raise_error(Java::JavaLang::IllegalArgumentException)
+          ChoiceMemory.new(memory_capacity, initial_choices)
+        }.to raise_error(IllegalArgumentException)
       end
     end
   end
   
   describe "#add and #fetch" do
-    let(:a) { package::Choice::A }
-    let(:b) { package::Choice::B }
+    let(:a) { Choice::A }
+    let(:b) { Choice::B }
     
     it "adds the supplied choice to the memory" do
       [a, a, b, a, b, b, b, b, a, b].each do |choice|
@@ -90,7 +75,7 @@ describe MSci::MG::ChoiceMemory do
     it "retrieves the most recent choices added to the memory with number " + 
       "equal to the capacity" do
       [[a,b,a], [a,a,a], [b,a,a], [b,b,a]].each do |memory|
-        choice_list = Java::JavaUtil::ArrayList.new
+        choice_list = ArrayList.new
         
         memory.each do |choice|
           choice_memory.add(choice)
