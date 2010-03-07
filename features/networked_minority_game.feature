@@ -7,6 +7,7 @@ Feature: agents have friends whose opinion influences their decision making
   Scenario: construct a minority game with a community of disconnected agents
     Given I have a properties hash
     When I set the 'network-type' property to 'empty'
+    And I set the 'agent-type' property to 'networked'
     And I construct a minority game with the properties hash
     Then I should have a minority game
     And the associated community should contain no friendships
@@ -16,6 +17,7 @@ Feature: agents have friends whose opinion influences their decision making
   Scenario: construct a minority game with a completely connected community
     Given I have a properties hash
     When I set the 'network-type' property to 'complete'
+    And I set the 'agent-type' property to 'networked'
     And I construct a minority game with the properties hash
     Then I should have a minority game
     And each agent in the community should be friends with all others
@@ -24,6 +26,7 @@ Feature: agents have friends whose opinion influences their decision making
   Scenario Outline: construct a minority game with an Erdos-Renyi type random graph as the social network
     Given I have a properties hash
     When I set the 'network-type' property to 'random'
+    And I set the 'agent-type' property to 'networked'
     And I set the 'link-probability' property to '<link_probability>'
     And I set the 'number-of-agents' property to '<number_of_agents>'
     And I construct a minority game with the properties hash

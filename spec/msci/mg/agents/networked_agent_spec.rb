@@ -37,7 +37,7 @@ describe NetworkedAgent do
     end
     
     it "returns the most recently followed agent if a choice has been made" do
-      best_friend = Mockito.mock(RandomAgent.java_class)
+      best_friend = Mockito.mock(NetworkedAgent.java_class)
       Mockito.when(neighbourhood.most_successful_predictor).
         then_return(best_friend)
         
@@ -98,7 +98,9 @@ describe NetworkedAgent do
   end
   
   describe "#choose" do
-    let(:most_successful_predictor) { Mockito.mock(AbstractAgent.java_class) }
+    let(:most_successful_predictor) { 
+      Mockito.mock(NetworkedAgent.java_class) 
+    }
     
     before(:each) do
       Mockito.when(most_successful_predictor.prediction).

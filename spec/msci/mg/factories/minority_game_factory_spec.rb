@@ -410,6 +410,7 @@ describe MinorityGameFactory do
       
       it "sets each agent's social network to the corresponding subgraph " +
         "of the complete social network" do
+        properties.set_property("agent-type", "networked")
         properties.set_property("network-type", "complete")
         properties.set_property("number-of-agents", "11")
         

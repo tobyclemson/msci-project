@@ -14,7 +14,8 @@ import msci.mg.ChoiceHistory;
 import msci.mg.Community;
 import msci.mg.Friendship;
 import msci.mg.Neighbourhood;
-import msci.mg.agents.AbstractAgent;
+import msci.mg.Agent;
+import msci.mg.agents.NetworkedAgent;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.FactoryUtils;
 
@@ -211,22 +212,28 @@ public class MinorityGameFactory {
         }
 
         // construct the social network
-        Graph<AbstractAgent,Friendship> socialNetwork =
+        Graph<Agent,Friendship> socialNetwork =
             socialNetworkFactory.create();
 
         // update each agent's social network to reflect the friendships in the
         // complete social network
-        for(AbstractAgent agent : socialNetwork.getVertices()) {
+        for(Agent agent : socialNetwork.getVertices()) {
+            if(!(agent instanceof NetworkedAgent)) {
+                continue;
+            }
+
+            NetworkedAgent networkedAgent = (NetworkedAgent) agent;
+
             // create an empty graph representing the agents network
-            Graph<AbstractAgent, Friendship> localSocialNetwork =
-                new SparseGraph<AbstractAgent, Friendship>();
+            Graph<Agent, Friendship> localSocialNetwork =
+                new SparseGraph<Agent, Friendship>();
 
             // add the agent to the local social network
             localSocialNetwork.addVertex(agent);
 
             // add all agents and friendships connected to the agent to the
             // graph
-            for(AbstractAgent friend : socialNetwork.getNeighbors(agent)) {
+            for(Agent friend : socialNetwork.getNeighbors(agent)) {
                 localSocialNetwork.addVertex(friend);
                 localSocialNetwork.addEdge(
                     socialNetwork.findEdge(agent, friend), agent, friend
@@ -240,7 +247,7 @@ public class MinorityGameFactory {
             );
 
             // set the agent's neighbourhood
-            agent.setNeighbourhood(neighbourhood);
+            networkedAgent.setNeighbourhood(neighbourhood);
         }
 
         // create a Community instance using the generated list of agents.

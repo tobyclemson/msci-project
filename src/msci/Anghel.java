@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.util.Properties;
 import msci.mg.Friendship;
 import msci.mg.MinorityGame;
-import msci.mg.agents.AbstractAgent;
+import msci.mg.Agent;
+import msci.mg.agents.NetworkedAgent;
 import msci.mg.factories.MinorityGameFactory;
 
 /**
@@ -25,7 +26,7 @@ public class Anghel {
         StringBuilder output;
         FileWriter outputFile;
 
-        DirectedGraph<AbstractAgent, Friendship> leadershipStructure;
+        DirectedGraph<Agent, Friendship> leadershipStructure;
 
         int numberOfTimeSteps,
             numberOfRuns,
@@ -123,31 +124,38 @@ public class Anghel {
 
                         // create a directed graph to hold the leadership tree
                         leadershipStructure =
-                            new DirectedSparseGraph<AbstractAgent, Friendship>();
+                            new DirectedSparseGraph<Agent, Friendship>();
 
                         // add all the agents to the graph
-                        for(AbstractAgent agent : minorityGame.getAgents()) {
+                        for(Agent agent : minorityGame.getAgents()) {
                             leadershipStructure.addVertex(agent);
                         }
 
                         // add all the valid  edges to the graph
-                        for(AbstractAgent agent : minorityGame.getAgents()) {
+                        for(Agent agent : minorityGame.getAgents()) {
+                            if(!(agent instanceof NetworkedAgent)) {
+                                continue;
+                            }
+
+                            NetworkedAgent networkedAgent =
+                                (NetworkedAgent) agent;
+
                             // prevent self loops
-                            if(agent.getBestFriend() == agent) {
+                            if(networkedAgent.getBestFriend() == agent) {
                                 continue;
                             }
                             // create a directed edge
                             leadershipStructure.addEdge(
                                 new Friendship(),
-                                agent,
-                                agent.getBestFriend(),
+                                networkedAgent,
+                                networkedAgent.getBestFriend(),
                                 EdgeType.DIRECTED
                             );
                         }
 
                         // populate the row for this run in the results table with the
                         // in-degree distribution
-                        for(AbstractAgent agent : leadershipStructure.getVertices()) {
+                        for(Agent agent : leadershipStructure.getVertices()) {
                             int inDegree = leadershipStructure.inDegree(agent);
                             resultsTable[inDegree + 1][run] += 1;
                         }

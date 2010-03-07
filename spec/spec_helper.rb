@@ -12,6 +12,7 @@ $LOAD_PATH.unshift File.expand_path(
 require 'rubygems'
 require 'java'
 require 'spec'
+require 'active_support/all'
 require 'tools'
 
 Tools.append_to_load_path('dist')

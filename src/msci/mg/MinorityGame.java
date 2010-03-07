@@ -2,7 +2,6 @@ package msci.mg;
 
 import java.util.Collection;
 import java.util.Map;
-import msci.mg.agents.AbstractAgent;
 
 /**
  * The MinorityGame class represents a minority game which can step forward in
@@ -13,8 +12,8 @@ import msci.mg.agents.AbstractAgent;
 public class MinorityGame {
 
     /**
-     * A Community instance containing AbstractAgent instances representing the
-     * agents associated with the minority game. This is returned by the
+     * A Community instance containing Agent instances representing the agents
+     * associated with the minority game. This is returned by the
      * {@link #getCommunity} method.
      */
     protected Community community;
@@ -47,7 +46,7 @@ public class MinorityGame {
      * associated with the minority game.
      * @return The agents associated with the minority game.
      */
-    public Collection<AbstractAgent> getAgents() {
+    public Collection<Agent> getAgents() {
         return community.getAgents();
     }
 

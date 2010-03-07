@@ -7,13 +7,13 @@ import edu.uci.ics.jung.graph.Graph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import msci.mg.agents.AbstractAgent;
+import msci.mg.agents.NetworkedAgent;
 
 /**
- * The Neighbourhood class contains a graph of agents and friendships as well
- * as a reference to a root agent that must be present in the graph of agents,
- * extending the graph with behaviour related to the root agent's neighbourhood.
- * @author tobyclemson
+ * The {@code Neighbourhood} class represents the local neighbourhood of a
+ * supplied agent (called the root agent) in a supplied social network.
+ *
+ * @author Toby Clemson
  */
 public class Neighbourhood {
 
@@ -43,33 +43,21 @@ public class Neighbourhood {
         randomNumberGenerator = new Uniform(new MersenneTwister(randomSeed));
     }
 
-    /**
-     * The social network in which the root agent associated with this
-     * neighbourhood resides. The neighbourhood represents a sub graph of this
-     * social network containing only the agents connected to the root agent by
-     * and edge. This is returned by the {@link #getSocialNetwork} method.
-     */
-    private Graph<AbstractAgent, Friendship> socialNetwork;
+    private Graph<Agent, Friendship> socialNetwork;
+    private Agent rootAgent;
 
     /**
-     * The root agent associated with this neighbourhood, i.e., the agent on
-     * which the neighbourhood is centred. This is returned by the {@link
-     * #getRootAgent} method.
-     */
-    private AbstractAgent rootAgent;
-
-    /**
-     * Constructs a Neighbourhood instance representing a sub graph of the
-     * supplied social network centered on the root agent. If the root agent
-     * is not present in the social network, an IllegalArgumentError is thrown.
-     * @param socialNetwork The social network that this neighbourhood is a
-     * sub network of.
-     * @param rootAgent The agent in the social network to center this
-     * neighbourhood on.
+     * Sets the social network to the supplied graph and the root agent to the
+     * supplied agent. If the root agent is not present in the supplied social
+     * network, an {@code IllegalArgumentException} is thrown.
+     *
+     * @param socialNetwork The social network in which the agent resides.
+     * @param rootAgent The agent in the social network on which to center this
+     * neighbourhood.
      */
     public Neighbourhood(
-        Graph<AbstractAgent, Friendship> socialNetwork,
-        AbstractAgent rootAgent
+        Graph<Agent, Friendship> socialNetwork,
+        Agent rootAgent
     ) {
         if(!socialNetwork.containsVertex(rootAgent)){
             throw new IllegalArgumentException(
@@ -81,32 +69,15 @@ public class Neighbourhood {
         this.rootAgent = rootAgent;
     }
 
-    /**
-     * Returns the social network of agents and friendships associated with
-     * this neighbourhood.
-     * @return The social network associated with this nieghbourhood.
-     */
-    public Graph<AbstractAgent, Friendship> getSocialNetwork() {
+    public Graph<Agent, Friendship> getSocialNetwork() {
         return socialNetwork;
     }
 
-    /**
-     * Returns the root agent associated with this neighbourhood, i.e., the
-     * agent that this neighbourhood is centered on in the supplied social
-     * network.
-     * @return This nieghbourhood's root agent.
-     */
-    public AbstractAgent getRootAgent() {
+    public Agent getRootAgent() {
         return rootAgent;
     }
 
-    /**
-     * Returns all of the friends of the root agent that exist in the
-     * supplied social networ. In the default implementation, a friend is any
-     * agent connected by an friendship to the root agent in the social network.
-     * @return The root agent's friends.
-     */
-    public Collection<AbstractAgent> getFriends() {
+    public Collection<Agent> getFriends() {
         return socialNetwork.getNeighbors(rootAgent);
     }
 
@@ -115,30 +86,43 @@ public class Neighbourhood {
      * predicted the correct minority choice the most times. If more than one
      * agent has the same correct prediction count, one of them is returned at
      * random.
-     * @return The agent in this neighbourhood that has predicted the minority
-     * choice correctly most often.
      */
-    public AbstractAgent getMostSuccessfulPredictor() {
+    public Agent getMostSuccessfulPredictor() {
         // calculate a list of all predictors with the highest correct
         // prediction count
-        List<AbstractAgent> mostSuccessfulPredictors =
-            new ArrayList<AbstractAgent>();
+        List<Agent> mostSuccessfulPredictors =
+            new ArrayList<Agent>();
+
+        NetworkedAgent networkedRootAgent;
+
+        if(!(rootAgent instanceof NetworkedAgent)) {
+            return rootAgent;
+        } else {
+            networkedRootAgent = (NetworkedAgent) rootAgent;
+        }
 
         mostSuccessfulPredictors.add(rootAgent);
         int currentHighestCorrectPredictionCount =
-            rootAgent.getCorrectPredictionCount();
+            networkedRootAgent.getCorrectPredictionCount();
 
-        for(AbstractAgent potentialPredictor : getFriends()) {
+        for(Agent potentialPredictor : getFriends()) {
+            if(!(potentialPredictor instanceof NetworkedAgent)) {
+                continue;
+            }
+
+            NetworkedAgent networkedPotentialPredictor =
+                (NetworkedAgent) potentialPredictor;
+
             if(
-                potentialPredictor.getCorrectPredictionCount() >
+                networkedPotentialPredictor.getCorrectPredictionCount() >
                 currentHighestCorrectPredictionCount
             ) {
                 mostSuccessfulPredictors.clear();
                 mostSuccessfulPredictors.add(potentialPredictor);
                 currentHighestCorrectPredictionCount =
-                    potentialPredictor.getCorrectPredictionCount();
+                    networkedPotentialPredictor.getCorrectPredictionCount();
             } else if(
-                potentialPredictor.getCorrectPredictionCount() ==
+                networkedPotentialPredictor.getCorrectPredictionCount() ==
                 currentHighestCorrectPredictionCount
             ) {
                 mostSuccessfulPredictors.add(potentialPredictor);
@@ -154,12 +138,10 @@ public class Neighbourhood {
     /**
      * Returns a random integer in the range [0,arraySize[ representing a
      * random array index.
-     * @param arraySize The number of elements in the array for which the index
-     * is required.
-     * @return An integer in the range [0,arraySize[
+     * @param arraySize The number of elements in the collection for which the
+     * index is required.
      */
     private int getRandomIndex(int arraySize) {
         return (int) (randomNumberGenerator.nextDouble() * arraySize);
     }
-
 }

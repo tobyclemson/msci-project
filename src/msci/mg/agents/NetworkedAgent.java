@@ -1,5 +1,6 @@
 package msci.mg.agents;
 
+import msci.mg.Agent;
 import msci.mg.Choice;
 import msci.mg.ChoiceMemory;
 import msci.mg.Strategy;
@@ -39,7 +40,7 @@ public class NetworkedAgent extends AbstractAgent {
      * @return This agent's best friend.
      */
     @Override
-    public AbstractAgent getBestFriend() {
+    public Agent getBestFriend() {
         if(bestFriend == null) {
             throw new IllegalStateException(
                 "No choice has been made so this agent does not have a best " +
@@ -79,11 +80,18 @@ public class NetworkedAgent extends AbstractAgent {
      */
     @Override
     public void choose() {
-        AbstractAgent newBestFriend =
+        Agent newBestFriend =
             neighbourhood.getMostSuccessfulPredictor();
 
-        this.choice = newBestFriend.getPrediction();
-        this.bestFriend = newBestFriend;
+        if(!(newBestFriend instanceof NetworkedAgent)) {
+            this.choice = this.prediction;
+            this.bestFriend = this;
+        } else {
+            NetworkedAgent networkedNewBestFriend =
+                (NetworkedAgent) newBestFriend;
+            this.choice = networkedNewBestFriend.getPrediction();
+            this.bestFriend = newBestFriend;
+        }
     }
 
     /**

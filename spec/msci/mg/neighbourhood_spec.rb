@@ -4,13 +4,13 @@ import edu.uci.ics.jung.graph.Graph
 import java.lang.IllegalArgumentException
 import java.lang.Integer
 import java.util.HashSet
-import msci.mg.agents.AbstractAgent
+import msci.mg.agents.NetworkedAgent
 import msci.mg.agents.RandomAgent
 import msci.mg.Neighbourhood
 
 describe Neighbourhood do
   let(:social_network) { Mockito.mock(Graph.java_class) }
-  let(:root_agent) { Mockito.mock(AbstractAgent.java_class) }
+  let(:root_agent) { Mockito.mock(NetworkedAgent.java_class) }
   
   let(:neighbourhood) { Neighbourhood.new(social_network, root_agent) }
   
@@ -58,10 +58,10 @@ describe Neighbourhood do
   end
   
   describe "#most_successful_predictor" do
-    it "returns the AbstractAgent in the social network that has the highest " + 
+    it "returns the agent in the social network that has the highest " + 
       "correct prediction count" do
-      friend_1 = Mockito.mock(AbstractAgent.java_class)
-      friend_2 = Mockito.mock(AbstractAgent.java_class)
+      friend_1 = Mockito.mock(NetworkedAgent.java_class)
+      friend_2 = Mockito.mock(NetworkedAgent.java_class)
       
       neighbours = HashSet.new
       neighbours.add(friend_1)
@@ -80,10 +80,10 @@ describe Neighbourhood do
       neighbourhood.most_successful_predictor.should equal(friend_2)
     end
     
-    it "returns the root AbstractAgent if it has a higher score than all of its " +
+    it "returns the root agent if it has a higher score than all of its " +
       "friends" do
-      friend_1 = Mockito.mock(AbstractAgent.java_class)
-      friend_2 = Mockito.mock(AbstractAgent.java_class)
+      friend_1 = Mockito.mock(NetworkedAgent.java_class)
+      friend_2 = Mockito.mock(NetworkedAgent.java_class)
 
       neighbours = HashSet.new
       neighbours.add(friend_1)
@@ -102,11 +102,11 @@ describe Neighbourhood do
       neighbourhood.most_successful_predictor.should equal(root_agent)
     end
     
-    it "returns one of the most successful predictors at random when two " + 
-      "have the same correct prediction count" do
-        friend_1 = Mockito.mock(AbstractAgent.java_class)
-        friend_2 = Mockito.mock(AbstractAgent.java_class)
-        friend_3 = Mockito.mock(AbstractAgent.java_class)
+    it "returns one of the most successful predictors at random when more " + 
+      "than one has the same correct prediction count" do
+        friend_1 = Mockito.mock(NetworkedAgent.java_class)
+        friend_2 = Mockito.mock(NetworkedAgent.java_class)
+        friend_3 = Mockito.mock(NetworkedAgent.java_class)
 
         neighbours = HashSet.new
         neighbours.add(friend_1)
@@ -143,11 +143,11 @@ describe Neighbourhood do
         (root_agent_count + friend_1_count).should == 100
     end
     
-    it "returns each AbstractAgent in the network with equal probability when they " + 
+    it "returns each agent in the network with equal probability when they " + 
       "all have the same correct prediction count" do
-        friend_1 = Mockito.mock(AbstractAgent.java_class)
-        friend_2 = Mockito.mock(AbstractAgent.java_class)
-        friend_3 = Mockito.mock(AbstractAgent.java_class)
+        friend_1 = Mockito.mock(NetworkedAgent.java_class)
+        friend_2 = Mockito.mock(NetworkedAgent.java_class)
+        friend_3 = Mockito.mock(NetworkedAgent.java_class)
 
         neighbours = HashSet.new
         neighbours.add(friend_1)
@@ -193,7 +193,7 @@ describe Neighbourhood do
           frequency.should be_between(15, 35)
         end
                  
-        counts.inject(0) { |memo, obj| memo + obj }.should == 100
+        counts.sum.should == 100
     end
   end
 end

@@ -1,15 +1,14 @@
 package msci.mg.factories;
 
-import msci.mg.agents.AbstractAgent;
+import msci.mg.Agent;
 import org.apache.commons.collections15.Factory;
 
 /**
  * The AgentFactory interface defines the method create() which should
- * build and return a derivative of AbstractAgent.
- * @author tobyclemson
+ * build and return an object implementing the {@code Agent} interface.
+ *
+ * @author Toby Clemson
  */
-public abstract class AgentFactory implements Factory<AbstractAgent>{
-
-    public abstract AbstractAgent create();
-
+public abstract class AgentFactory implements Factory<Agent>{
+    public abstract Agent create();
 }
