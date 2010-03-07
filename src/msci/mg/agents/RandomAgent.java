@@ -3,8 +3,7 @@ package msci.mg.agents;
 import cern.jet.random.engine.*;
 import cern.jet.random.*;
 import msci.mg.Choice;
-import msci.mg.ChoiceMemory;
-import msci.mg.StrategyManager;
+import msci.mg.UnintelligentAgent;
 
 /**
  * The RandomAgent class represents a completely unintelligent agent which
@@ -12,7 +11,7 @@ import msci.mg.StrategyManager;
  * associated with it.
  * @author tobyclemson
  */
-public class RandomAgent extends AbstractAgent {
+public class RandomAgent extends AbstractAgent implements UnintelligentAgent {
 
     /**
      * An AbstractDistribution, containing a random number generator that
@@ -44,22 +43,6 @@ public class RandomAgent extends AbstractAgent {
      * Constructs an instance of RandomAgent setting the strategy manager and
      * memory attributes to the supplied StrategyManager and ChoiceMemroy
      * instances.
-     * @param strategyManager A StrategyManager instance that is not actually
-     * used by the agent.
-     * @param choiceMemory A ChoiceMemory instance that is not actually used by
-     * the agent.
-     */
-    public RandomAgent(
-        StrategyManager strategyManager,
-        ChoiceMemory choiceMemory
-    ) {
-        super(strategyManager, choiceMemory);
-    }
-
-    /**
-     * Constructs an instance of RandomAgent with the strategy manager and
-     * memory attributes set to null.
-     * TODO: sort this out during next refactor.
      */
     public RandomAgent() {
         super();

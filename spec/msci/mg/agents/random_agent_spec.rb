@@ -2,18 +2,20 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
 import msci.mg.agents.AbstractAgent
 import msci.mg.agents.RandomAgent
+import msci.mg.UnintelligentAgent
 import msci.mg.Choice
 import msci.mg.ChoiceMemory
 import msci.mg.StrategyManager
 
 describe RandomAgent do
-  let(:strategy_manager) { Mockito.mock(StrategyManager.java_class) }
-  let(:choice_memory) { Mockito.mock(ChoiceMemory.java_class) }
-  
-  let(:agent) { RandomAgent.new(strategy_manager, choice_memory) }
+  let(:agent) { RandomAgent.new }
   
   it "extends AbstractAgent" do
     agent.should be_a_kind_of(AbstractAgent)
+  end
+  
+  it "implements the UnintelligentAgent interface" do
+    agent.should be_a_kind_of(UnintelligentAgent)
   end
   
   describe "#choose" do

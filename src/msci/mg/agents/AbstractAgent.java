@@ -1,16 +1,12 @@
 package msci.mg.agents;
 
 import msci.mg.Agent;
-import java.util.List;
 import edu.uci.ics.jung.graph.Graph;
 import java.util.Collection;
 import java.util.UUID;
 import msci.mg.Choice;
-import msci.mg.ChoiceMemory;
 import msci.mg.Friendship;
 import msci.mg.Neighbourhood;
-import msci.mg.Strategy;
-import msci.mg.StrategyManager;
 
 /**
  * The {@code AbstractAgent} class implements the basic functionality of an
@@ -22,57 +18,15 @@ import msci.mg.StrategyManager;
  * @author Toby Clemson
  */
 public abstract class AbstractAgent implements Agent {
-    protected StrategyManager strategyManager;
     protected UUID identificationNumber;
     protected int score = 0;
     protected int correctPredictionCount = 0;
-    protected ChoiceMemory memory;
     protected Neighbourhood neighbourhood;
     protected Agent bestFriend;
     protected Choice prediction = null;
     protected Choice choice = null;
 
-    /**
-     * Constructs an instance of {@code AbstractAgent} setting the strategy
-     * manager and memory attributes to the supplied {@code StrategyManager} and
-     * {@code ChoiceMemory} instances.
-     *
-     * @param strategyManager A {@code StrategyManager} instance containing 
-     * this agent's strategies.
-     * @param choiceMemory A {@code ChoiceMemory} instance representing this 
-     * agent's memory of past minority choices.
-     */
-    public AbstractAgent(
-        StrategyManager strategyManager,
-        ChoiceMemory choiceMemory
-    ){
-        int strategyKeyLength = strategyManager.getStrategyKeyLength();
-        int memoryCapacity = choiceMemory.getCapacity();
-
-        if(strategyKeyLength != memoryCapacity) {
-            throw new IllegalArgumentException(
-                "The Strategy key length for the supplied StrategyManager " +
-                "does not match the capacity of the supplied ChoiceMemory."
-            );
-        }
-
-        this.strategyManager = strategyManager;
-        this.memory = choiceMemory;
-
-        this.identificationNumber = UUID.randomUUID();
-    }
-
-    /**
-     * Constructs an instance of {@code AbstractAgent} setting the strategy
-     * manager and memory attributes to {@code null}. It is intended that this
-     * will become unnecessary after the next refactor.
-     *
-     * TODO: sort out the interface to this class!
-     */
-    public AbstractAgent() {
-        this.strategyManager = null;
-        this.memory = null;
-
+    public AbstractAgent(){
         this.identificationNumber = UUID.randomUUID();
     }
 
@@ -85,14 +39,6 @@ public abstract class AbstractAgent implements Agent {
      */
     public UUID getIdentificationNumber() {
         return this.identificationNumber;
-    }
-
-    public List<Strategy> getStrategies() {
-        return strategyManager.getStrategies();
-    }
-
-    public StrategyManager getStrategyManager() {
-        return this.strategyManager;
     }
 
     public int getScore() {
@@ -128,10 +74,6 @@ public abstract class AbstractAgent implements Agent {
             );
         }
         return prediction;
-    }
-
-    public ChoiceMemory getMemory() {
-        return memory;
     }
 
     public Neighbourhood getNeighbourhood() {

@@ -28,32 +28,6 @@ import org.apache.commons.collections15.FactoryUtils;
 public class MinorityGameFactory {
 
     /**
-     * An AbstractDistribution, containing a random number generator that
-     * implements the RandomGenerator interface, which returns random numbers
-     * according to a particular distribution. This is used to populate
-     * strategies with random predictions. By default it is initialised with a
-     * Uniform distribution backed by a MersenneTwister random number engine
-     * initialised with a random integer seed.
-     */
-    private static AbstractDistribution randomNumberGenerator;
-
-    // initialise the random number generator
-    static {
-        /*
-         * generate an integer at random spanning the entire range of possible
-         * integers as a seed
-         */
-        int randomSeed = (int) ((Math.random() - 0.5) * 2 * Integer.MAX_VALUE);
-
-        /*
-         * construct a uniform distribution backed by a MersenneTwister random
-         * number generator using the random seed and set the static random
-         * number generator to the constructed object.
-         */
-        randomNumberGenerator = new Uniform(new MersenneTwister(randomSeed));
-    }
-
-    /**
      * Constructs a minority game with the specified parameters.
      * <p>
      * The supplied Properties object must contain the following properties:

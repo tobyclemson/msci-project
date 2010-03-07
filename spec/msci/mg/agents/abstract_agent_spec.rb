@@ -5,6 +5,7 @@ import java.lang.IllegalStateException
 import java.lang.Integer
 import java.util.ArrayList
 import msci.mg.agents.AbstractAgent
+import msci.mg.Agent
 import msci.mg.Choice
 import msci.mg.ChoiceMemory
 import msci.mg.Neighbourhood
@@ -22,46 +23,22 @@ describe AbstractAgent do
       self.prediction = Choice::A
     end
   end
-
-  let(:strategy_manager) { Mockito.mock(StrategyManager.java_class) }
-  let(:choice_memory) { Mockito.mock(ChoiceMemory.java_class) }
   
   let(:neighbourhood) { Mockito.mock(Neighbourhood.java_class)}
   
-  let(:agent) { AgentImplementation.new(strategy_manager, choice_memory) }
+  let(:agent) { AgentImplementation.new }
+  
+  it "implements the Agent interface" do
+    agent.should be_a_kind_of(Agent)
+  end
   
   describe "constructor" do
-    describe "with strategy manager and memory arguments" do
-      it "sets the strategy_manager attribute to the supplied strategy " + 
-        "manager" do
-        agent.strategy_manager.should == strategy_manager
+    it "sets the id attribute to a unique Integer" do
+      agent_ids = (1..10).collect do
+        AgentImplementation.new.identification_number
       end
-      
-      it "set the memory attribute to the supplied choice memory" do
-        agent.memory.should == choice_memory
-      end
-      
-      it "throws an IllegalArgumentException if the strategy key lengths " + 
-        "are not equal to the memory capacity" do
-        Mockito.when(strategy_manager.strategy_key_length).
-          then_return(Integer.new(3))
-        Mockito.when(choice_memory.capacity).
-          then_return(Integer.new(2))
-        
-        expect {
-          AgentImplementation.new(strategy_manager, choice_memory)
-        }.to raise_error
-      end
-      
-      it "sets the id attribute to a unique Integer" do
-        agent_ids = (1..10).collect do
-          AgentImplementation.new(
-            strategy_manager, choice_memory
-          ).identification_number
-        end
-        
-        agent_ids.map(&:to_string).uniq.size.should == 10
-      end
+
+      agent_ids.map(&:to_string).uniq.size.should == 10
     end
   end
   
@@ -128,8 +105,8 @@ describe AbstractAgent do
     it "returns a positive integer if the identification number of the " +
       "calling agent is greater than the identification number of the " + 
       "supplied agent" do
-      agent_1 = AgentImplementation.new(strategy_manager, choice_memory)
-      agent_2 = AgentImplementation.new(strategy_manager, choice_memory)
+      agent_1 = AgentImplementation.new
+      agent_2 = AgentImplementation.new
 
       agent_1_id = agent_1.identification_number
       agent_2_id = agent_2.identification_number
@@ -148,15 +125,15 @@ describe AbstractAgent do
     it "returns zero if the identification_number attribute of the " + 
       "supplied agent is equal to this agent's identification_number " +
       "attribute" do
-      agent = AgentImplementation.new(strategy_manager, choice_memory)
+      agent = AgentImplementation.new
       agent.compare_to(agent).should == 0
     end
 
     it "returns a negative integer if the identification number of the " +
       "calling agent is less than the identification number of the " + 
       "supplied agent" do
-      agent_1 = AgentImplementation.new(strategy_manager, choice_memory)
-      agent_2 = AgentImplementation.new(strategy_manager, choice_memory)
+      agent_1 = AgentImplementation.new
+      agent_2 = AgentImplementation.new
 
       agent_1_id = agent_1.identification_number
       agent_2_id = agent_2.identification_number
@@ -170,17 +147,6 @@ describe AbstractAgent do
       end
       
       smaller_agent.compare_to(larger_agent).should be < 0
-    end
-  end
-
-  describe "#strategies" do
-    it "returns the list of strategies stored in the strategy manager" do
-      mock_strategies = Mockito.mock(ArrayList.java_class)
-
-      Mockito.when(strategy_manager.get_strategies).
-        then_return(mock_strategies)
-
-      agent.strategies.should == strategy_manager.strategies
     end
   end
 

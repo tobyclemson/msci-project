@@ -1,5 +1,6 @@
 package msci.mg.agents;
 
+import java.util.List;
 import msci.mg.Agent;
 import msci.mg.Choice;
 import msci.mg.ChoiceMemory;
@@ -16,7 +17,7 @@ import msci.mg.StrategyManager;
  * suggestions and past success.
  * @author tobyclemson
  */
-public class NetworkedAgent extends AbstractAgent {
+public class NetworkedAgent extends AbstractIntelligentAgent {
 
     /**
      * Constructs an instance of BasicAgent setting the strategy manager and
@@ -97,6 +98,7 @@ public class NetworkedAgent extends AbstractAgent {
     /**
      * Updates the agent's local information with respect to the current
      * minority choice.
+     * 
      * @param minorityChoice The current minority choice.
      */
     @Override
@@ -112,5 +114,4 @@ public class NetworkedAgent extends AbstractAgent {
         strategyManager.incrementScores(memory.fetch(), minorityChoice);
         memory.add(minorityChoice);
     }
-
 }

@@ -1,6 +1,8 @@
 package msci.mg.agents;
 
+import java.util.List;
 import msci.mg.ChoiceMemory;
+import msci.mg.Strategy;
 import msci.mg.StrategyManager;
 
 /**
@@ -13,8 +15,7 @@ import msci.mg.StrategyManager;
  * steps.
  * @author tobyclemson
  */
-public class LearningAgent extends AbstractAgent {
-
+public class LearningAgent extends AbstractIntelligentAgent {
     /**
      * Constructs an instance of LearningAgent setting the strategy manager and
      * memory attributes to the supplied StrategyManager and ChoiceMemroy

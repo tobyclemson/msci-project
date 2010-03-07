@@ -8,9 +8,9 @@ describe RandomAgentFactory do
   let(:factory) { RandomAgentFactory.new }
   
   describe "#create" do
-    it "returns an agent with no memory set " do
-      agent = factory.create
-      agent.memory.should be_nil
+    it "returns different RandomAgent instances each time it is called" do
+      agents = (1..100).collect { factory.create }
+      agents.uniq.size.should == 100
     end
   end
 end
