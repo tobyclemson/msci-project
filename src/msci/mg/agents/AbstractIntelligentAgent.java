@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package msci.mg.agents;
 
 import java.util.List;
@@ -11,6 +6,9 @@ import msci.mg.Strategy;
 import msci.mg.StrategyManager;
 
 /**
+ * The {@code AbstractIntelligentAgent} class provides a partial implementation
+ * of the {@code IntelligentAgent} interface easing the burden of implementing
+ * an intelligent agent.
  *
  * @author Toby Clemson
  */
@@ -22,9 +20,11 @@ public abstract class AbstractIntelligentAgent
     protected ChoiceMemory memory;
 
     /**
-     * Constructs an instance of {@code AbstractAgent} setting the strategy
-     * manager and memory attributes to the supplied {@code StrategyManager} and
-     * {@code ChoiceMemory} instances.
+     * Constructs an {@code AbstractNetworkedAgent} setting the strategy
+     * manager and memory attributes to the supplied {@code StrategyManager}
+     * and {@code ChoiceMemory} instances. If the supplied strategy manager
+     * contains strategies with a key length not equal to the memory capacity,
+     * an {@code IllegalArgumentException} is thrown.
      *
      * @param strategyManager A {@code StrategyManager} instance containing
      * this agent's strategies.

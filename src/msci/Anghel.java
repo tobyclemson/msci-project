@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.Properties;
 import msci.mg.Friendship;
 import msci.mg.MinorityGame;
-import msci.mg.Agent;
-import msci.mg.agents.NetworkedAgent;
+import msci.mg.agents.Agent;
+import msci.mg.agents.BasicNetworkedAgent;
 import msci.mg.factories.MinorityGameFactory;
 
 /**
@@ -133,12 +133,12 @@ public class Anghel {
 
                         // add all the valid  edges to the graph
                         for(Agent agent : minorityGame.getAgents()) {
-                            if(!(agent instanceof NetworkedAgent)) {
+                            if(!(agent instanceof BasicNetworkedAgent)) {
                                 continue;
                             }
 
-                            NetworkedAgent networkedAgent =
-                                (NetworkedAgent) agent;
+                            BasicNetworkedAgent networkedAgent =
+                                (BasicNetworkedAgent) agent;
 
                             // prevent self loops
                             if(networkedAgent.getBestFriend() == agent) {

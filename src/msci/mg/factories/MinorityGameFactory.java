@@ -14,8 +14,8 @@ import msci.mg.ChoiceHistory;
 import msci.mg.Community;
 import msci.mg.Friendship;
 import msci.mg.Neighbourhood;
-import msci.mg.Agent;
-import msci.mg.agents.NetworkedAgent;
+import msci.mg.agents.Agent;
+import msci.mg.agents.BasicNetworkedAgent;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.FactoryUtils;
 
@@ -192,11 +192,11 @@ public class MinorityGameFactory {
         // update each agent's social network to reflect the friendships in the
         // complete social network
         for(Agent agent : socialNetwork.getVertices()) {
-            if(!(agent instanceof NetworkedAgent)) {
+            if(!(agent instanceof BasicNetworkedAgent)) {
                 continue;
             }
 
-            NetworkedAgent networkedAgent = (NetworkedAgent) agent;
+            BasicNetworkedAgent networkedAgent = (BasicNetworkedAgent) agent;
 
             // create an empty graph representing the agents network
             Graph<Agent, Friendship> localSocialNetwork =

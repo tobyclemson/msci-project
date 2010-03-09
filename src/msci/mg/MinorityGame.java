@@ -1,5 +1,6 @@
 package msci.mg;
 
+import msci.mg.agents.Agent;
 import java.util.Collection;
 import java.util.Map;
 

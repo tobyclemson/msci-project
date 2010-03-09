@@ -1,4 +1,4 @@
-package msci.mg;
+package msci.mg.agents;
 
 /**
  * The {@code UnintelligentAgent} is a tagging interface for agents that make

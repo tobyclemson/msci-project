@@ -1,12 +1,7 @@
 package msci.mg.agents;
 
-import msci.mg.Agent;
-import edu.uci.ics.jung.graph.Graph;
-import java.util.Collection;
 import java.util.UUID;
 import msci.mg.Choice;
-import msci.mg.Friendship;
-import msci.mg.Neighbourhood;
 
 /**
  * The {@code AbstractAgent} class implements the basic functionality of an
@@ -20,18 +15,14 @@ import msci.mg.Neighbourhood;
 public abstract class AbstractAgent implements Agent {
     protected UUID identificationNumber;
     protected int score = 0;
-    protected int correctPredictionCount = 0;
-    protected Neighbourhood neighbourhood;
-    protected Agent bestFriend;
-    protected Choice prediction = null;
     protected Choice choice = null;
 
+    /**
+     * Constructs an {@code AbstractAgent} by initialising the identification
+     * number to a random {@code UUID}
+     */
     public AbstractAgent(){
         this.identificationNumber = UUID.randomUUID();
-    }
-
-    public void setNeighbourhood(Neighbourhood neighbourhood) {
-        this.neighbourhood = neighbourhood;
     }
 
     /**
@@ -43,10 +34,6 @@ public abstract class AbstractAgent implements Agent {
 
     public int getScore() {
         return score;
-    }
-
-    public int getCorrectPredictionCount() {
-        return correctPredictionCount;
     }
 
     /**
@@ -61,54 +48,6 @@ public abstract class AbstractAgent implements Agent {
             );
         }
         return choice;
-    }
-
-    /**
-     * If no prediction has been made yet, this mehthod throws an
-     * {@code IllegalStateException}.
-     */
-    public Choice getPrediction() {
-        if(prediction == null) {
-            throw new IllegalStateException(
-                "No prediction has been made yet"
-            );
-        }
-        return prediction;
-    }
-
-    public Neighbourhood getNeighbourhood() {
-        return neighbourhood;
-    }
-
-    public Collection<? extends Agent> getFriends() {
-        if(this.neighbourhood == null) {
-            throw new IllegalStateException("No neighbourhood has been set.");
-        }
-
-        return this.neighbourhood.getFriends();
-    }
-
-    /**
-     * An agent's best friend is defined as the agent whose prediction the
-     * agent most recently followed. In the default implementation, since
-     * agents have no knowledge of each other, a reference to this agent is
-     * returned since this agent always follows its own predictions.
-     */
-    public Agent getBestFriend() {
-        return this;
-    }
-
-    /**
-     * This method requires that a {@code Neighbourhood} instance has been set
-     * for this agent. If no neighbourhood has been set, an
-     * {@code IllegalStateException} is thrown.
-     */
-    public Graph<? extends Agent, Friendship> getSocialNetwork() {
-        if(this.neighbourhood == null) {
-            throw new IllegalStateException("No neighbourhood has been set.");
-        }
-
-        return neighbourhood.getSocialNetwork();
     }
 
     /**
@@ -136,21 +75,13 @@ public abstract class AbstractAgent implements Agent {
     }
 
     /**
-     * The default implementation adds 1 to the correct prediction count.
-     */
-    public void incrementCorrectPredictionCount() {
-        correctPredictionCount += 1;
-    }
-
-    /**
      * The default implementation does nothing.
      */
     public void prepare() {}
 
     /**
      * Updates this agent given that the correct choice was as supplied. In the
-     * default implementation, the agent's score is incremented and the
-     * correct choice is added to its memory.
+     * default implementation, the agent's score is incremented.
      */
     public void update(Choice correctChoice) {
         if(choice == correctChoice) {

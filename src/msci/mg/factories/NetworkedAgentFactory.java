@@ -2,7 +2,7 @@ package msci.mg.factories;
 
 import msci.mg.Choice;
 import msci.mg.ChoiceMemory;
-import msci.mg.agents.NetworkedAgent;
+import msci.mg.agents.BasicNetworkedAgent;
 import msci.mg.Strategy;
 import msci.mg.StrategyManager;
 import msci.mg.StrategySpace;
@@ -49,7 +49,7 @@ public class NetworkedAgentFactory extends IntelligentAgentFactory{
      * supplied memory capacity and strategy count factories.
      */
     @Override
-    public NetworkedAgent create() {
+    public BasicNetworkedAgent create() {
         // fetch the agent requirements
         int requiredMemoryCapacity = getMemoryCapacityFactory().create();
         int requiredNumberOfStrategies =
@@ -76,7 +76,7 @@ public class NetworkedAgentFactory extends IntelligentAgentFactory{
 
         // create and return a BasicAgent using the StrategyManager and
         // ChoiceMemory instances
-        return new NetworkedAgent(strategyManager, choiceMemory);
+        return new BasicNetworkedAgent(strategyManager, choiceMemory);
     }
 
 }

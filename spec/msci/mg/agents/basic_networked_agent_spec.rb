@@ -1,50 +1,28 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
-import java.lang.IllegalStateException
 import java.util.ArrayList
-import msci.mg.agents.AbstractAgent
-import msci.mg.agents.NetworkedAgent
-import msci.mg.agents.RandomAgent
+import msci.mg.agents.AbstractNetworkedAgent
+import msci.mg.agents.BasicNetworkedAgent
 import msci.mg.Choice
 import msci.mg.ChoiceMemory
 import msci.mg.Neighbourhood
 import msci.mg.Strategy
 import msci.mg.StrategyManager
 
-describe NetworkedAgent do
-  let(:package) { MSci::MG }
-  
+describe BasicNetworkedAgent do
   let(:strategy_manager) { Mockito.mock(StrategyManager.java_class) }
   let(:choice_memory) { Mockito.mock(ChoiceMemory.java_class) }
   
   let(:neighbourhood) { Mockito.mock(Neighbourhood.java_class) }
   
   let(:agent) { 
-    object = NetworkedAgent.new(strategy_manager, choice_memory) 
+    object = BasicNetworkedAgent.new(strategy_manager, choice_memory) 
     object.neighbourhood = neighbourhood
     object
   }
   
-  it "extends the AbstractAgent class" do
-    agent.should be_a_kind_of(AbstractAgent)
-  end
-  
-  describe "#best_friend" do
-    it "throws an IllegalStateException if no choice has been made yet" do
-      expect {
-        agent.best_friend
-      }.to raise_error(IllegalStateException)
-    end
-    
-    it "returns the most recently followed agent if a choice has been made" do
-      best_friend = Mockito.mock(NetworkedAgent.java_class)
-      Mockito.when(neighbourhood.most_successful_predictor).
-        then_return(best_friend)
-        
-      agent.choose
-      
-      agent.best_friend.should equal(best_friend)
-    end
+  it "extends the AbstractNetworkedAgent class" do
+    agent.should be_a_kind_of(AbstractNetworkedAgent)
   end
   
   describe "#prepare" do
@@ -99,7 +77,7 @@ describe NetworkedAgent do
   
   describe "#choose" do
     let(:most_successful_predictor) { 
-      Mockito.mock(NetworkedAgent.java_class) 
+      Mockito.mock(BasicNetworkedAgent.java_class) 
     }
     
     before(:each) do
@@ -150,7 +128,7 @@ describe NetworkedAgent do
       Mockito.when(choice_memory.fetch).
         then_return(past_choices)
       
-      agent = NetworkedAgent.new(strategy_manager, choice_memory)
+      agent = BasicNetworkedAgent.new(strategy_manager, choice_memory)
       agent.update(Choice::B)
       
       Mockito.verify(strategy_manager).

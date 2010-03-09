@@ -1,5 +1,6 @@
 package msci.mg;
 
+import msci.mg.agents.Agent;
 import cern.jet.random.AbstractDistribution;
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
@@ -7,7 +8,7 @@ import edu.uci.ics.jung.graph.Graph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import msci.mg.agents.NetworkedAgent;
+import msci.mg.agents.BasicNetworkedAgent;
 
 /**
  * The {@code Neighbourhood} class represents the local neighbourhood of a
@@ -93,12 +94,12 @@ public class Neighbourhood {
         List<Agent> mostSuccessfulPredictors =
             new ArrayList<Agent>();
 
-        NetworkedAgent networkedRootAgent;
+        BasicNetworkedAgent networkedRootAgent;
 
-        if(!(rootAgent instanceof NetworkedAgent)) {
+        if(!(rootAgent instanceof BasicNetworkedAgent)) {
             return rootAgent;
         } else {
-            networkedRootAgent = (NetworkedAgent) rootAgent;
+            networkedRootAgent = (BasicNetworkedAgent) rootAgent;
         }
 
         mostSuccessfulPredictors.add(rootAgent);
@@ -106,12 +107,12 @@ public class Neighbourhood {
             networkedRootAgent.getCorrectPredictionCount();
 
         for(Agent potentialPredictor : getFriends()) {
-            if(!(potentialPredictor instanceof NetworkedAgent)) {
+            if(!(potentialPredictor instanceof BasicNetworkedAgent)) {
                 continue;
             }
 
-            NetworkedAgent networkedPotentialPredictor =
-                (NetworkedAgent) potentialPredictor;
+            BasicNetworkedAgent networkedPotentialPredictor =
+                (BasicNetworkedAgent) potentialPredictor;
 
             if(
                 networkedPotentialPredictor.getCorrectPredictionCount() >

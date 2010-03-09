@@ -2,7 +2,9 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
 import java.lang.Integer
 import java.util.ArrayList
+import msci.mg.agents.AbstractAgent
 import msci.mg.agents.AbstractIntelligentAgent
+import msci.mg.agents.IntelligentAgent
 import msci.mg.StrategyManager
 import msci.mg.ChoiceMemory
 import msci.mg.Choice
@@ -21,6 +23,14 @@ describe AbstractIntelligentAgent do
   let(:agent) { 
     ConcreteIntelligentAgent.new(strategy_manager, choice_memory) 
   }
+  
+  it "extends AbstractAgent" do
+    agent.should be_a_kind_of(AbstractAgent)
+  end
+  
+  it "implements IntelligentAgent" do
+    agent.should be_a_kind_of(IntelligentAgent)
+  end
   
   describe "constructor" do
     describe "with strategy manager and memory arguments" do

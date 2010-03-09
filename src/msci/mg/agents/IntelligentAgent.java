@@ -1,7 +1,6 @@
 package msci.mg.agents;
 
 import java.util.List;
-import msci.mg.Agent;
 import msci.mg.ChoiceMemory;
 import msci.mg.Strategy;
 import msci.mg.StrategyManager;
@@ -13,11 +12,7 @@ import msci.mg.StrategyManager;
  * @author Toby Clemson
  */
 public interface IntelligentAgent extends Agent {
-
     ChoiceMemory getMemory();
-
     List<Strategy> getStrategies();
-
     StrategyManager getStrategyManager();
-
 }

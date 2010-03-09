@@ -4,13 +4,13 @@ import edu.uci.ics.jung.graph.Graph
 import java.lang.IllegalArgumentException
 import java.lang.Integer
 import java.util.HashSet
-import msci.mg.agents.NetworkedAgent
+import msci.mg.agents.BasicNetworkedAgent
 import msci.mg.agents.RandomAgent
 import msci.mg.Neighbourhood
 
 describe Neighbourhood do
   let(:social_network) { Mockito.mock(Graph.java_class) }
-  let(:root_agent) { Mockito.mock(NetworkedAgent.java_class) }
+  let(:root_agent) { Mockito.mock(BasicNetworkedAgent.java_class) }
   
   let(:neighbourhood) { Neighbourhood.new(social_network, root_agent) }
   
@@ -60,8 +60,8 @@ describe Neighbourhood do
   describe "#most_successful_predictor" do
     it "returns the agent in the social network that has the highest " + 
       "correct prediction count" do
-      friend_1 = Mockito.mock(NetworkedAgent.java_class)
-      friend_2 = Mockito.mock(NetworkedAgent.java_class)
+      friend_1 = Mockito.mock(BasicNetworkedAgent.java_class)
+      friend_2 = Mockito.mock(BasicNetworkedAgent.java_class)
       
       neighbours = HashSet.new
       neighbours.add(friend_1)
@@ -82,8 +82,8 @@ describe Neighbourhood do
     
     it "returns the root agent if it has a higher score than all of its " +
       "friends" do
-      friend_1 = Mockito.mock(NetworkedAgent.java_class)
-      friend_2 = Mockito.mock(NetworkedAgent.java_class)
+      friend_1 = Mockito.mock(BasicNetworkedAgent.java_class)
+      friend_2 = Mockito.mock(BasicNetworkedAgent.java_class)
 
       neighbours = HashSet.new
       neighbours.add(friend_1)
@@ -104,9 +104,9 @@ describe Neighbourhood do
     
     it "returns one of the most successful predictors at random when more " + 
       "than one has the same correct prediction count" do
-        friend_1 = Mockito.mock(NetworkedAgent.java_class)
-        friend_2 = Mockito.mock(NetworkedAgent.java_class)
-        friend_3 = Mockito.mock(NetworkedAgent.java_class)
+        friend_1 = Mockito.mock(BasicNetworkedAgent.java_class)
+        friend_2 = Mockito.mock(BasicNetworkedAgent.java_class)
+        friend_3 = Mockito.mock(BasicNetworkedAgent.java_class)
 
         neighbours = HashSet.new
         neighbours.add(friend_1)
@@ -145,9 +145,9 @@ describe Neighbourhood do
     
     it "returns each agent in the network with equal probability when they " + 
       "all have the same correct prediction count" do
-        friend_1 = Mockito.mock(NetworkedAgent.java_class)
-        friend_2 = Mockito.mock(NetworkedAgent.java_class)
-        friend_3 = Mockito.mock(NetworkedAgent.java_class)
+        friend_1 = Mockito.mock(BasicNetworkedAgent.java_class)
+        friend_2 = Mockito.mock(BasicNetworkedAgent.java_class)
+        friend_3 = Mockito.mock(BasicNetworkedAgent.java_class)
 
         neighbours = HashSet.new
         neighbours.add(friend_1)

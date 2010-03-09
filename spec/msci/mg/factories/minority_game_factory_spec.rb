@@ -7,7 +7,7 @@ require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 import java.lang.IllegalArgumentException
 import msci.mg.agents.BasicAgent
 import msci.mg.agents.LearningAgent
-import msci.mg.agents.NetworkedAgent
+import msci.mg.agents.BasicNetworkedAgent
 import msci.mg.agents.RandomAgent
 import msci.mg.factories.MinorityGameFactory
 
@@ -374,12 +374,12 @@ describe MinorityGameFactory do
         end
       end
       
-      it "initialises the agents attribute with NetworkedAgent instances " + 
+      it "initialises the agents attribute with BasicNetworkedAgent instances " + 
         "when the 'agent-type' property is set to 'networked'" do
         properties.set_property("agent-type", "networked")
         instance = MinorityGameFactory.construct(properties)
         instance.agents.each do |agent|
-          agent.should be_a_kind_of(NetworkedAgent)
+          agent.should be_a_kind_of(BasicNetworkedAgent)
         end
       end
       

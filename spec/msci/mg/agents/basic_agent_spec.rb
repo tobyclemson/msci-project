@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_helper.rb')
 
 import java.util.ArrayList
-import msci.mg.agents.AbstractAgent
+import msci.mg.agents.AbstractIntelligentAgent
 import msci.mg.agents.BasicAgent
 import msci.mg.Choice
 import msci.mg.ChoiceMemory
@@ -9,15 +9,13 @@ import msci.mg.Strategy
 import msci.mg.StrategyManager
 
 describe BasicAgent do
-  let(:package) { MSci::MG }
-  
   let(:strategy_manager) { Mockito.mock(StrategyManager.java_class) }
   let(:choice_memory) { Mockito.mock(ChoiceMemory.java_class) }
   
   let(:agent) { BasicAgent.new(strategy_manager, choice_memory) }
   
-  it "extends the AbstractAgent class" do
-    agent.should be_a_kind_of(AbstractAgent)
+  it "extends the AbstractIntelligentAgent class" do
+    agent.should be_a_kind_of(AbstractIntelligentAgent)
   end
   
   describe "#choose" do
@@ -67,14 +65,6 @@ describe BasicAgent do
             choice_memory.fetch
           )
       end
-    end
-  end
-
-  describe "#increment_score" do
-    it "increases the agents score by 1" do
-      expect {
-        agent.increment_score
-      }.to change(agent, :score).from(0).to(1)
     end
   end
 

@@ -1,28 +1,28 @@
 package msci.mg.agents;
 
-import java.util.List;
 import msci.mg.Choice;
 import msci.mg.ChoiceMemory;
 import msci.mg.Strategy;
 import msci.mg.StrategyManager;
 
 /**
- * The BasicAgent class represents the simplest type of agent to be used in the
- * minority game simulation. It cannot evolve its strategies and chooses a
- * strategy to use at each turn using only the global choice history with the
- * chosen strategy being that with the highest score over all of the preceding
- * time steps.
- * @author tobyclemson
+ * The {@code BasicAgent} class represents an agent that makes a choice at each
+ * turn by using one of a number of strategies associated with it which map
+ * a fixed size list of past correct choices to a prediction for the next
+ * correct choice.
+ *
+ * @author Toby Clemson
  */
 public class BasicAgent extends AbstractIntelligentAgent {
     /**
-     * Constructs an instance of BasicAgent setting the strategy manager and
-     * memory attributes to the supplied StrategyManager and ChoiceMemory
-     * instances.
-     * @param strategyManager A StrategyManager instance representing this
-     * agent's strategies.
-     * @param choiceMemory A ChoiceMemory instance representing this agent's
-     * memory of past minority choices.
+     * Constructs a {@code BasicAgent} setting the strategy manager and
+     * memory attributes to the supplied {@code StrategyManager} and
+     * {@code ChoiceMemory} instances.
+     *
+     * @param strategyManager A {@code StrategyManager} instance representing
+     * this agent's strategies.
+     * @param choiceMemory A {@code ChoiceMemory} instance representing this
+     * agent's memory of past minority choices.
      */
     public BasicAgent(
         StrategyManager strategyManager,
@@ -32,39 +32,29 @@ public class BasicAgent extends AbstractIntelligentAgent {
     }
 
     /**
-     * Calculates this agent's choice based on its strategies and sets the
-     * choice attribute to the resulting choice, either Choice.A or
-     * Choice.B.
+     * Chooses using global information of the past correct choices.
      */
     public void choose() {
-        // declare required variables
         Strategy chosenStrategy;
 
-        // if no choice exists, get a strategy at random, otherwise fetch
-        // the highest scoring strategy
         if(choice == null) {
             chosenStrategy = strategyManager.getRandomStrategy();
         }
         else {
             chosenStrategy = strategyManager.getHighestScoringStrategy();
         }
-
-        // use the chosen strategy to calculate the choice
+        
         choice = chosenStrategy.predictMinorityChoice(memory.fetch());
     }
 
     /**
-     * Updates the agent's local information with respect to the current 
-     * minority choice.
-     * @param minorityChoice The current minority choice.
+     * @param correctChoice The correct choice for the current turn.
      */
-    @Override
-    public void update(
-        Choice minorityChoice
+    @Override public void update(
+        Choice correctChoice
     ) {
-        super.update(minorityChoice);
-        strategyManager.incrementScores(memory.fetch(), minorityChoice);
-        memory.add(minorityChoice);
+        super.update(correctChoice);
+        strategyManager.incrementScores(memory.fetch(), correctChoice);
+        memory.add(correctChoice);
     }
-
 }
