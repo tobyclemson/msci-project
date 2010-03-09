@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN" "http://my.netscape.com/publish/formats/rss-0.91.dtd">
+<rss version="0.91"><channel><title>POI Changes</title><link>http://poi.apache.org//changes.html</link><description>POI Changes</description><language>en-us</language><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48332 - fixed XSSFSheet autoSizeColumn() to tolerate empty RichTextString</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48332 - fixed ColumnInfoRecord to tolerate missing reserved field</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              47701 - fixed RecordFormatException when reading list subrecords (LbsDataSubRecord)</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+               memory usage optimization in XSSF - avoid creating parentless xml beans</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              47188 - avoid corruption of workbook when adding cell comments </description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48106 - improved work with cell comments in XSSF</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              Add support for creating SummaryInformation and DocumentSummaryInformation properties
+                   on POIDocuments that don't have them, via POIDocument.createInformationProperties()</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48180 - be more forgiving of short chart records, which skip some unused fields</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48274 - fix erronious wrapping of byte colours in HSSFPalette.findSimilarColor</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48269 - fix fetching of error codes from XSSF formula cells</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48229 - fixed javadoc for  HSSFSheet.setColumnWidth and XSSFSheet setColumnWidth </description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              47757 - fixed XLSX2CSV to avoid exception when processing cells with multiple "t" elements</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              48195 - short-circuit evaluation of IF() and CHOOSE()</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              48161 - support for text extraction from PPT master slides</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              47970 - added a method to set arabic mode in HSSFSheet</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48134 - release system resources when using Picture.resize()</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48087 - avoid NPE in XSSFChartSheet  when calling methods of the superclass</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48038 - handle reading HWPF stylesheets from non zero offsets</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              When running the "compile-ooxml-xsds" ant task, also generate the source jar for the OOXML Schemas</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              45672 - improve handling by MissingRecordAwareHSSFListener of records that cover multiple cells (MulBlankRecord and MulRKRecord)</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48096 - relaxed validation check in RecalcIdRecord</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48085 - improved error checking in BlockAllocationTableReader to trap unreasonable field values</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              47924 - fixed logic for matching cells and comments in HSSFCell.getCellComment()</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              47942 - added implementation of protection features to XLSX and DOCX files</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48070 - preserve leading and trailing white spaces in XSSFRichTextString</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              48044 - added implementation for CountBlank function</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              48036 - added IntersectionEval to allow evaluation of the intersection formula operator</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              47999 - avoid un-needed call to the JVM Garbage Collector when working on OOXML OPC Packages</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              47922 - added example HSMF application that converts a .msg file to text and extracts attachments</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              47903 - added Ant target to compile scratchpad examples</description></item><item><title> add</title><link>http://poi.apache.org//changes.html</link><description> add
+              by 
+              POI-DEVELOPERS
+              :
+              47839 - improved API for OOXML custom properties</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              47862 - fixed XSSFSheet.setColumnWidth to handle columns included in a column span</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              47804 - fixed XSSFSheet.setColumnHidden to handle columns included in a column span</description></item><item><title> fix</title><link>http://poi.apache.org//changes.html</link><description> fix
+              by 
+              POI-DEVELOPERS
+              :
+              47889 - fixed XSSFCell.getStringCellValue() to properly handle cached formula results</description></item></channel></rss>
