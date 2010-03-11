@@ -1,8 +1,5 @@
 package msci.mg.factories;
 
-import cern.jet.random.AbstractDistribution;
-import cern.jet.random.Uniform;
-import cern.jet.random.engine.MersenneTwister;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
 import java.util.Properties;
@@ -20,17 +17,19 @@ import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.FactoryUtils;
 
 /**
- * The MinorityGameFactory class constructs a minority game with the required
- * parameters as specified in the Properties object passed to the static
- * construct method.
- * @author tobyclemson
+ * The {@code MinorityGameFactory} class constructs a minority game with the
+ * required parameters as specified in the {@code Properties} object passed to
+ * the static {@link #construct()} method.
+ *
+ * @author Toby Clemson
  */
 public class MinorityGameFactory {
 
     /**
      * Constructs a minority game with the specified parameters.
      * <p>
-     * The supplied Properties object must contain the following properties:
+     * The supplied {@code Properties} object must contain the following
+     * properties:
      *
      * <ul>
      *  <li>"agent-memory-size": the number of past minority choices each agent
@@ -43,15 +42,15 @@ public class MinorityGameFactory {
      *      for each agent in the game as a string, e.g., "2".
      * </ul>
      * <p>
-     * If the Properties object passed to the method does not contain any one
-     * of these properties or the value supplied for any of these properties is
-     * not valid, then an IllegalArgumentException is thrown.
+     * If the {@code Properties} object passed to the method does not contain
+     * any one of these properties or the value supplied for any of these
+     * properties is not valid, then an {@code IllegalArgumentException} is
+     * thrown.
      *
-     * @param properties A Properties object containing the parameters of the
-     * minority game to construct.
-     * @return An instance of a subclass of MinorityGame initialised
+     * @param properties A {@code Properties} object containing the parameters 
+     * of the minority game to construct.
+     * @return An instance of a subclass of {@code MinorityGame} initialised
      * as requested.
-     * @throws IllegalArgumentException
      */
     public static MinorityGame construct(Properties properties) {
         // check the supplied properties are satisfactory, if not, throw an
@@ -61,7 +60,8 @@ public class MinorityGameFactory {
         // declare required variables
         int numberOfAgents,
             numberOfStrategiesPerAgent,
-            maximumAgentMemorySize = 0;
+            maximumAgentMemorySize = 0,
+            averageNumberOfFriends = 0;
         double  linkProbability = 0.0;
         String  agentType,
                 networkType,
@@ -143,6 +143,12 @@ public class MinorityGameFactory {
             );
         }
 
+        if(properties.containsKey("average-number-of-friends")) {
+            averageNumberOfFriends = Integer.parseInt(
+                properties.getProperty("average-number-of-friends")
+            );
+        }
+
         // build the correct agent factory based on the agent type property
         if(agentType.equals("basic")) {
             agentFactory = new BasicAgentFactory(
@@ -178,6 +184,13 @@ public class MinorityGameFactory {
         } else if(networkType.equals("random")) {
             socialNetworkFactory = new RandomSocialNetworkFactory(
                 agentFactory, friendshipFactory, numberOfAgents, linkProbability
+            );
+        } else if(networkType.equals("scale-free")) {
+            socialNetworkFactory = new ScaleFreeSocialNetworkFactory(
+                agentFactory,
+                friendshipFactory,
+                numberOfAgents,
+                averageNumberOfFriends
             );
         } else {
             socialNetworkFactory = new EmptySocialNetworkFactory(
@@ -266,6 +279,7 @@ public class MinorityGameFactory {
         acceptedNetworkTypes.add("empty");
         acceptedNetworkTypes.add("complete");
         acceptedNetworkTypes.add("random");
+        acceptedNetworkTypes.add("scale-free");
 
         if(properties.containsKey("network-type")) {
             assertPropertyInSet(
@@ -274,6 +288,12 @@ public class MinorityGameFactory {
             if(properties.getProperty("network-type").equals("random")){
                 assertPropertyExists(properties, "link-probability");
                 assertPropertyIsProbability(properties, "link-probability");
+            }
+            if(properties.getProperty("network-type").equals("scale-free")){
+                assertPropertyExists(properties, "average-number-of-friends");
+                assertPropertyIsInteger(
+                    properties, "average-number-of-friends"
+                );
             }
         }
     }

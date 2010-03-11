@@ -65,16 +65,17 @@ public class RandomSocialNetworkFactory extends SocialNetworkFactory {
 
     @Override
     public Graph<Agent, Friendship> create() {
-        GraphGenerator<Agent, Friendship> erdosReyniGraphGenerator =
-            new ErdosRenyiGenerator<Agent, Friendship>(
-                getGraphFactory(),
-                getAgentFactory(),
-                getFriendshipFactory(),
-                getNumberOfAgents(),
-                getLinkProbability()
-            );
+        return getSocialNetworkGenerator().create();
+    }
 
-        return erdosReyniGraphGenerator.create();
+    private GraphGenerator<Agent,Friendship> getSocialNetworkGenerator() {
+        return new ErdosRenyiGenerator<Agent, Friendship>(
+            getGraphFactory(),
+            getAgentFactory(),
+            getFriendshipFactory(),
+            getNumberOfAgents(),
+            getLinkProbability()
+        );
     }
 
     private Factory<UndirectedGraph<Agent, Friendship>> getGraphFactory() {

@@ -661,10 +661,44 @@ Then /^each agent in the community should be friends with (approximately )?(all|
   end
 end
 
+Then /^the (maximum|minimum|average) degree of the community should be (greater than|less than|equal|approximately) (.*)$/ do |type, equality, value|
+  social_network = @minority_game.community.social_network
+  agents = social_network.vertices
+  
+  result = nil
+  
+  agents.each_with_index do |agent, index|
+    degree = social_network.degree(agent)
+    
+    case type
+    when "maximum"
+      result = degree if result == nil || degree > result
+    when "minimum"
+      result = degree if result == nil || degree < result
+    when "average"
+      result = 0 if result == nil
+      result += degree
+      result /= agents.size.to_f if index == (agents.size - 1)
+    end
+  end
+  
+  value = value.to_f
+  
+  case equality
+  when "greater than"
+    result.should be > value
+  when "less than"
+    result.should be < value
+  when "equal"
+    result.should == value
+  when "approximately"
+    result.should be_between(value * 0.75, value * 1.25)
+  end
+end
+
 # Miscellaneous steps
 Then /^a (.*) should be thrown$/ do |exception|
   lambda {
     raise @exception.cause
   }.should raise_error(eval(exception))
-    
 end

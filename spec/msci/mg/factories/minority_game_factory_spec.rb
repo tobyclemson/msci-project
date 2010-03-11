@@ -63,6 +63,19 @@ describe MinorityGameFactory do
           }.to_not raise_error
         end
         
+        it "allow 'scale-free' to be specified for the 'network-type' " + 
+          "property" do
+          properties.set_property("network-type", "scale-free")
+
+          # if the network type is random, a number of friends to attach must 
+          # be supplied
+          properties.set_property("average-number-of-friends", "5")
+
+          expect {
+            MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
         it "allows 'basic' to be specified for the 'agent-type' property" do
           properties.set_property("agent-type", "basic")
           
@@ -231,6 +244,20 @@ describe MinorityGameFactory do
         end
         
         it "throws an IllegalArgumentException if the options object " +
+          "contains 'scale-free' for the 'network-type' property but " + 
+          "doesn't contain a value for the 'average-number-of-friends' " + 
+          "property" do
+          properties.set_property("network-type", "scale-free")
+          if properties.contains_key("average-number-of-friends")
+            properties.remove("average-number-of-friends")
+          end
+          
+          expect {
+            MinorityGameFactory.construct(properties)
+          }.to raise_error(IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
           "contains a non-decimal value for the 'link-probability' " + 
           "property" do
           properties.set_property("link-probability", "non-decimal")
@@ -266,6 +293,20 @@ describe MinorityGameFactory do
           # the link-probability property is only required for a network type
           # of random
           properties.set_property("network-type", "random")
+          
+          expect {
+            MinorityGameFactory.construct(properties)
+          }.to raise_error(IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains a non integer value for the " + 
+          "'average-number-of-friends' property" do
+          properties.set_property("average-number-of-friends", "blahblah")
+          
+          # the link-probability property is only required for a network type
+          # of random
+          properties.set_property("network-type", "scale-free")
           
           expect {
             MinorityGameFactory.construct(properties)
@@ -399,9 +440,28 @@ describe MinorityGameFactory do
         instance.community.should have(0).friendships
       end
       
+      it "initialises the social network to a network with average degree " +
+        "of approximately the same value as the " + 
+        "'average-number-of-friends' property when the 'network-type' " + 
+        "property is set to 'scale-free'" do
+        properties.set_property("network-type", "scale-free")
+        properties.set_property("average-number-of-friends", "10")
+        properties.set_property("number-of-agents", "301")
+        
+        instance = MinorityGameFactory.construct(properties)
+        social_network = instance.community.social_network
+        
+        average_degree = 
+          (2 * social_network.edge_count.to_f) / social_network.vertex_count
+
+        puts average_degree
+
+        average_degree.should be_close(10, 0.2)
+      end
+      
       it "initialises the social network to a network with N(N-1)/2 " + 
         "friendships if there are N agents when the 'network-type' " + 
-        "property is set" do
+        "property is set to 'complete'" do
         properties.set_property("network-type", "complete")
         properties.set_property("number-of-agents", "11")
         instance = MinorityGameFactory.construct(properties)
@@ -409,7 +469,8 @@ describe MinorityGameFactory do
       end
       
       it "sets each agent's social network to the corresponding subgraph " +
-        "of the complete social network" do
+        "of the complete social network when the 'agent-type' property is " +
+        "set to 'networked'" do
         properties.set_property("agent-type", "networked")
         properties.set_property("network-type", "complete")
         properties.set_property("number-of-agents", "11")

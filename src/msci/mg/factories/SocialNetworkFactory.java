@@ -82,7 +82,4 @@ public abstract class SocialNetworkFactory
     public void setNumberOfAgents(int numberOfAgents) {
         this.numberOfAgents = numberOfAgents;
     }
-
-    public abstract Graph<Agent, Friendship> create();
-
 }
