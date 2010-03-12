@@ -21,21 +21,21 @@ import org.apache.poi.ss.util.CellReference;
 public class InfluenceAndChoiceAttendance {
     private static int propertySetIndex;
     private static final String[][] propertySets = {
-            {"101", "10"}//,
-//            {"201", "40"},
-//            {"401", "80"},
-//            {"601", "60"},
-//            {"601", "120"},
-//            {"1001", "0.1"}
+            {"201", "20"},
+            {"201", "40"},
+            {"401", "80"},
+            {"601", "60"},
+            {"601", "120"},
+            {"1001", "0.1"}
         };
 
-    private static final int numberOfSettleTimeSteps = 1000;
-    private static final int numberOfSettleMeasurements = 1000;
-    private static final int numberOfChoiceAttendanceMeasurements = 1000;
-    private static final int numberOfLeadershipStructureMeasurements = 100;
-    private static final int leadershipStructureMeasurementInterval = 10;
-    private static final int maximumDegreeToMeasure = 101;
-    private static final int numberOfRuns = 10;
+    private static final int numberOfSettleTimeSteps = 100000;
+    private static final int numberOfSettleMeasurements = 10000;
+    private static final int numberOfChoiceAttendanceMeasurements = 50000;
+    private static final int numberOfLeadershipStructureMeasurements = 1000;
+    private static final int leadershipStructureMeasurementInterval = 100;
+    private static final int maximumDegreeToMeasure = 500;
+    private static final int numberOfRuns = 20;
 
     private static final String resultsRoot =
         "/Users/tobyclemson/Documents/Degree Work/4th Year/MSci Project" +
@@ -191,6 +191,15 @@ public class InfluenceAndChoiceAttendance {
     ) {
         Sheet sheet = workbook.createSheet(sheetName);
 
+        CellStyle bottomBorderCellStyle = getBottomBorderCellStyle(workbook);
+        CellStyle leftBorderCellStyle = getLeftBorderCellStyle(workbook);
+        CellStyle bottomLeftBorderCellStyle =
+            getBottomLeftBorderCellStyle(workbook);
+        CellStyle bottomRightBorderCellStyle =
+            getBottomRightBorderCellStyle(workbook);
+        CellStyle rightBorderCellStyle =
+            getRightBorderCellStyle(workbook);
+
         Row verticalHeaderRow = sheet.createRow(0);
 
         CellStyle timeLabelCellStyle = getVerticalLabelCellStyle(workbook);
@@ -231,7 +240,7 @@ public class InfluenceAndChoiceAttendance {
         Row runLabelRow = sheet.createRow(1);
         Cell runLabelCell = runLabelRow.createCell(0);
         runLabelCell.setCellValue("run:");
-        runLabelCell.setCellStyle(getBottomBorderCellStyle(workbook));
+        runLabelCell.setCellStyle(bottomBorderCellStyle);
 
         Row meanRow = sheet.createRow(2);
         Cell meanRowLabel = meanRow.createCell(0);
@@ -244,41 +253,41 @@ public class InfluenceAndChoiceAttendance {
         Row varianceRow = sheet.createRow(4);
         Cell varianceRowLabel = varianceRow.createCell(0);
         varianceRowLabel.setCellValue("variance:");
-        varianceRowLabel.setCellStyle(getBottomBorderCellStyle(workbook));
+        varianceRowLabel.setCellStyle(bottomBorderCellStyle);
 
         runLabelRow.createCell(1).setCellStyle(
-            getBottomRightBorderCellStyle(workbook)
+            bottomRightBorderCellStyle
         );
         meanRow.createCell(1).setCellStyle(
-            getRightBorderCellStyle(workbook)
+            rightBorderCellStyle
         );
         standardDeviationRow.createCell(1).setCellStyle(
-            getRightBorderCellStyle(workbook)
+            rightBorderCellStyle
         );
         varianceRow.createCell(1).setCellStyle(
-            getBottomRightBorderCellStyle(workbook)
+            bottomRightBorderCellStyle
         );
 
         for(int i = 0; i < 5; i++) {
             int columnIndex = numberOfRuns + 2 + i;
             runLabelRow.
                 createCell(columnIndex).
-                setCellStyle(getBottomLeftBorderCellStyle(workbook));
+                setCellStyle(bottomLeftBorderCellStyle);
             meanRow.
                 createCell(columnIndex).
-                setCellStyle(getLeftBorderCellStyle(workbook));
+                setCellStyle(leftBorderCellStyle);
             standardDeviationRow.
                 createCell(columnIndex).
-                setCellStyle(getLeftBorderCellStyle(workbook));
+                setCellStyle(leftBorderCellStyle);
             varianceRow.
                 createCell(columnIndex).
-                setCellStyle(getBottomLeftBorderCellStyle(workbook));
+                setCellStyle(bottomLeftBorderCellStyle);
         }
 
         for(int r = 1; r <= numberOfRuns; r++) {
             Cell runHeaderCell = runLabelRow.createCell(r+1);
             runHeaderCell.setCellValue(r);
-            runHeaderCell.setCellStyle(getBottomBorderCellStyle(workbook));
+            runHeaderCell.setCellStyle(bottomBorderCellStyle);
 
             CellRangeAddress rangeForFormula =
                 new CellRangeAddress(5, numberOfRows + 4, r+1, r+1);
@@ -297,7 +306,7 @@ public class InfluenceAndChoiceAttendance {
             variance.setCellFormula(
                 "VAR(" + rangeForFormula.formatAsString() + ")"
             );
-            variance.setCellStyle(getBottomBorderCellStyle(workbook));
+            variance.setCellStyle(bottomBorderCellStyle);
         }
 
         for(int t = 1; t <= numberOfRows; t++) {
@@ -305,7 +314,7 @@ public class InfluenceAndChoiceAttendance {
 
             Cell timeLabelCell = attendanceRow.createCell(1);
             timeLabelCell.setCellValue(t);
-            timeLabelCell.setCellStyle(getRightBorderCellStyle(workbook));
+            timeLabelCell.setCellStyle(rightBorderCellStyle);
 
             CellRangeAddress rangeForFormulae = new CellRangeAddress(
                 t+4, t+4, 2, numberOfRuns+1
@@ -315,34 +324,32 @@ public class InfluenceAndChoiceAttendance {
             runAverage.setCellFormula(
                 "AVERAGE(" + rangeForFormulae.formatAsString() + ")"
             );
-            runAverage.setCellStyle(getLeftBorderCellStyle(workbook));
+            runAverage.setCellStyle(leftBorderCellStyle);
 
             Cell runStandardDeviation =
                 attendanceRow.createCell(numberOfRuns+3);
             runStandardDeviation.setCellFormula(
                 "STDEV(" + rangeForFormulae.formatAsString() + ")"
             );
-            runStandardDeviation.setCellStyle(
-                getLeftBorderCellStyle(workbook)
-            );
+            runStandardDeviation.setCellStyle(leftBorderCellStyle);
 
             Cell runVariance = attendanceRow.createCell(numberOfRuns+4);
             runVariance.setCellFormula(
                 "VAR(" + rangeForFormulae.formatAsString() + ")"
             );
-            runVariance.setCellStyle(getLeftBorderCellStyle(workbook));
+            runVariance.setCellStyle(leftBorderCellStyle);
 
             Cell runSkewness = attendanceRow.createCell(numberOfRuns+5);
             runSkewness.setCellFormula(
                 "SKEW(" + rangeForFormulae.formatAsString() + ")"
             );
-            runSkewness.setCellStyle(getLeftBorderCellStyle(workbook));
+            runSkewness.setCellStyle(leftBorderCellStyle);
 
             Cell runKurtosis = attendanceRow.createCell(numberOfRuns+6);
             runKurtosis.setCellFormula(
                 "KURT(" + rangeForFormulae.formatAsString() + ")"
             );
-            runKurtosis.setCellStyle(getLeftBorderCellStyle(workbook));
+            runKurtosis.setCellStyle(leftBorderCellStyle);
         }
 
         sheet.createFreezePane(numberOfRuns+2, 5);
@@ -355,6 +362,15 @@ public class InfluenceAndChoiceAttendance {
     ) {
         Sheet sheet = workbook.createSheet(sheetName);
 
+        CellStyle bottomBorderCellStyle = getBottomBorderCellStyle(workbook);
+        CellStyle leftBorderCellStyle = getLeftBorderCellStyle(workbook);
+        CellStyle bottomLeftBorderCellStyle =
+            getBottomLeftBorderCellStyle(workbook);
+        CellStyle bottomRightBorderCellStyle =
+            getBottomRightBorderCellStyle(workbook);
+        CellStyle rightBorderCellStyle =
+            getRightBorderCellStyle(workbook);
+
         Row verticalHeadersRow = sheet.createRow(0);
 
         CellStyle timeLabelCellStyle = getVerticalLabelCellStyle(workbook);
@@ -365,7 +381,6 @@ public class InfluenceAndChoiceAttendance {
         timeLabel.setCellStyle(timeLabelCellStyle);
 
         CellStyle verticalLabelCellStyle = getVerticalLabelCellStyle(workbook);
-        verticalLabelCellStyle.setBorderRight(CellStyle.BORDER_NONE);
         verticalLabelCellStyle.setBorderLeft(CellStyle.BORDER_MEDIUM);
 
         Cell degreeCountAverageLabel =
@@ -384,23 +399,21 @@ public class InfluenceAndChoiceAttendance {
 
         Cell runLabel = runLabelRow.createCell(0);
         runLabel.setCellValue("run:");
-        runLabel.setCellStyle(getBottomBorderCellStyle(workbook));
+        runLabel.setCellStyle(bottomBorderCellStyle);
 
-        runLabelRow.createCell(1).setCellStyle(
-            getBottomRightBorderCellStyle(workbook)
-        );
+        runLabelRow.createCell(1).setCellStyle(bottomRightBorderCellStyle);
 
         runLabelRow.createCell(numberOfRuns+2).setCellStyle(
-            getBottomLeftBorderCellStyle(workbook)
+            bottomLeftBorderCellStyle
         );
         runLabelRow.createCell(numberOfRuns+3).setCellStyle(
-            getBottomLeftBorderCellStyle(workbook)
+            bottomLeftBorderCellStyle
         );
 
         for(int r = 1; r <= numberOfRuns; r++) {
             Cell runHeaderCell = runLabelRow.createCell(r+1);
             runHeaderCell.setCellValue(r);
-            runHeaderCell.setCellStyle(getBottomBorderCellStyle(workbook));
+            runHeaderCell.setCellStyle(bottomBorderCellStyle);
         }
 
         for(int n = 0; n <= maximumDegreeToMeasure; n++) {
@@ -408,9 +421,7 @@ public class InfluenceAndChoiceAttendance {
 
             Cell attendanceHeaderCell = attendanceRow.createCell(1);
             attendanceHeaderCell.setCellValue(n);
-            attendanceHeaderCell.setCellStyle(
-                getRightBorderCellStyle(workbook)
-            );
+            attendanceHeaderCell.setCellStyle(rightBorderCellStyle);
             
             CellRangeAddress degreeRange = 
                 new CellRangeAddress(n+2, n+2, 2, numberOfRuns+1);
@@ -419,7 +430,7 @@ public class InfluenceAndChoiceAttendance {
             degreeCountAverage.setCellFormula(
                 "AVERAGE(" + degreeRange.formatAsString() + ")"
             );
-            degreeCountAverage.setCellStyle(getLeftBorderCellStyle(workbook));
+            degreeCountAverage.setCellStyle(leftBorderCellStyle);
 
             CellReference followerCountReference =
                 new CellReference(n+2, numberOfRuns+2);
@@ -433,7 +444,7 @@ public class InfluenceAndChoiceAttendance {
                 normalisationCountReference.formatAsString()
             );
             normalisedDegreeCountAverage.setCellStyle(
-                getLeftBorderCellStyle(workbook)
+                leftBorderCellStyle
             );
         }
 
@@ -445,8 +456,8 @@ public class InfluenceAndChoiceAttendance {
     private static int getNumberOfMeasurementTimesteps() {
         return Math.max(
             numberOfChoiceAttendanceMeasurements,
-            numberOfLeadershipStructureMeasurements *
-            leadershipStructureMeasurementInterval
+            (numberOfLeadershipStructureMeasurements *
+            leadershipStructureMeasurementInterval)
         );
     }
 
@@ -474,7 +485,7 @@ public class InfluenceAndChoiceAttendance {
     }
 
     private static boolean correctIntervalSinceLastMeasurement (int t) {
-        return t % leadershipStructureMeasurementInterval == 0;
+        return (t % leadershipStructureMeasurementInterval == 0);
     }
 
     private static boolean stillCollectingLeadershipStructureData(
@@ -603,7 +614,7 @@ public class InfluenceAndChoiceAttendance {
     private static CellStyle getVerticalLabelCellStyle(Workbook workbook) {
         CellStyle verticalLabelCellStyle = workbook.createCellStyle();
         
-        verticalLabelCellStyle.setRotation((short) -90);
+        verticalLabelCellStyle.setRotation((short) (-90));
         verticalLabelCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
         verticalLabelCellStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
 
