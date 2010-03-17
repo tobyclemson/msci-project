@@ -3,9 +3,10 @@ package msci.mg.factories;
 import msci.mg.agents.RandomAgent;
 
 /**
- * The RandomAgentFactory creates random choice agents with no memory or
+ * The {@code RandomAgentFactory} creates random choice agents with no memory or
  * strategies set.
- * @author tobyclemson
+ *
+ * @author Toby Clemson
  */
 public class RandomAgentFactory extends AgentFactory{
     /**

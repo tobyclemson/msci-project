@@ -553,6 +553,10 @@ Then /^it should have (.*) agents$/ do |num|
   @minority_game.should have(num.to_i).agents
 end
 
+Then /^it should have (.*) friendships$/ do |num|
+  @minority_game.community.should have(num.to_i).friendships
+end
+
 Then /^it should have agents with (.*) strategies$/ do |num|
   @minority_game.agents.first.strategies.size.should == num.to_i
 end

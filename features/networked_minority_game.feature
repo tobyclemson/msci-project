@@ -23,39 +23,6 @@ Feature: agents have friends whose opinion influences their decision making
     And each agent in the community should be friends with all others
     And each agent's social network should consist of that agent connected to all other agents
 
-  Scenario Outline: construct a minority game with an Erdos-Renyi type random graph as the social network
-    Given I have a properties hash
-    When I set the 'network-type' property to 'random'
-    And I set the 'agent-type' property to 'networked'
-    And I set the 'link-probability' property to '<link_probability>'
-    And I set the 'number-of-agents' property to '<number_of_agents>'
-    And I construct a minority game with the properties hash
-    Then I should have a minority game
-    And each agent in the community should be friends with approximately <friend_count> others
-
-    Examples: 
-      | link_probability | number_of_agents | friend_count |
-      | 0.1              | 201              | 20           |
-      | 0.5              | 501              | 250          |
-      | 0.9              | 101              | 90           |
-      
-  Scenario Outline: construct a minority game with a Barabasi-Albert type scale-free graph as the social network
-    Given I have a properties hash
-    When I set the 'network-type' property to 'scale-free'
-    And I set the 'agent-type' property to 'networked'
-    And I set the 'average-number-of-friends' property to '<average_number_of_friends>'
-    And I set the 'number-of-agents' property to '<number_of_agents>'
-    And I construct a minority game with the properties hash
-    Then I should have a minority game
-    And the maximum degree of the community should be greater than <maximum_degree>
-    And the average degree of the community should be approximately <average_degree>
-    
-    Examples:
-      | average_number_of_friends | number_of_agents | maximum_degree | average_degree |
-      | 20                        | 201              | 50             | 20             |
-      | 40                        | 201              | 80             | 40             |
-      | 12                        | 501              | 60             | 12             |
-
   Scenario: construct a minority game with networked agents
     Given I have a properties hash
     When I set the 'agent-type' property to 'networked'

@@ -63,7 +63,7 @@ describe MinorityGameFactory do
           }.to_not raise_error
         end
         
-        it "allow 'scale-free' to be specified for the 'network-type' " + 
+        it "allows 'scale-free' to be specified for the 'network-type' " + 
           "property" do
           properties.set_property("network-type", "scale-free")
 
@@ -74,6 +74,19 @@ describe MinorityGameFactory do
           expect {
             MinorityGameFactory.construct(properties)
           }.to_not raise_error
+        end
+        
+        it "allows 'regular-ring' to be specified for the 'network-type' " +
+          "property" do
+            properties.set_property("network-type", "regular-ring")
+
+            # if the network type is regular-ring, a number of friends to 
+            # attach in each direction must be supplied
+            properties.set_property("number-of-friends-in-each-direction", "5")
+
+            expect {
+              MinorityGameFactory.construct(properties)
+            }.to_not raise_error
         end
         
         it "allows 'basic' to be specified for the 'agent-type' property" do
@@ -118,6 +131,32 @@ describe MinorityGameFactory do
           # of random
           properties.set_property("network-type", "random")
           
+          expect {
+            MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
+        it "allows an integer to be specified for the " + 
+          "'average-number-of-friends' property" do
+          properties.set_property("average-number-of-friends", "10");
+          
+          # the average number of friends property is only required for a 
+          # network type of scale-free
+          properties.set_property("network-type", "scale-free")
+          
+          expect {
+            MinorityGameFactory.construct(properties)
+          }.to_not raise_error
+        end
+        
+        it "allows an integer to be specified for the " +
+          "'number-of-friends-in-each-direction' property" do
+          properties.set_property("number-of-friends-in-each-direction", "15");
+
+          # the number of friends in each direction property is only required 
+          # for a network type of regular-ring
+          properties.set_property("network-type", "regular-ring")
+
           expect {
             MinorityGameFactory.construct(properties)
           }.to_not raise_error
@@ -251,6 +290,50 @@ describe MinorityGameFactory do
           if properties.contains_key("average-number-of-friends")
             properties.remove("average-number-of-friends")
           end
+          
+          expect {
+            MinorityGameFactory.construct(properties)
+          }.to raise_error(IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains a non integer for the 'average-number-of-friends' " +
+          "property" do
+          properties.set_property("average-number-of-friends", "non-integer")
+          
+          # only the scale free network type requires the average number of 
+          # friends property
+          properties.set_property("network-type", "scale-free")
+          
+          expect {
+            MinorityGameFactory.construct(properties)
+          }.to raise_error(IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains 'regular-ring' for the 'network-type' property but " + 
+          "doesn't contain a value for the 
+          'number-of-friends-in-each-direction' property" do
+          properties.set_property("network-type", "regular-ring")
+          if properties.contains_key("number-of-friends-in-each-direction")
+            properties.remove("number-of-friends-in-each-direction")
+          end
+          
+          expect {
+            MinorityGameFactory.construct(properties)
+          }.to raise_error(IllegalArgumentException)
+        end
+        
+        it "throws an IllegalArgumentException if the options object " +
+          "contains a non-integer for the " + 
+          "'number-of-friends-in-each-direction' property" do
+          properties.set_property(
+            "number-of-friends-in-each-direction", "10.63"
+          )
+          
+          # only the regular-ring network type requires the number of friends 
+          # in each drection property
+          properties.set_property("network-type", "regular-ring")
           
           expect {
             MinorityGameFactory.construct(properties)
@@ -415,8 +498,8 @@ describe MinorityGameFactory do
         end
       end
       
-      it "initialises the agents attribute with BasicNetworkedAgent instances " + 
-        "when the 'agent-type' property is set to 'networked'" do
+      it "initialises the agents attribute with BasicNetworkedAgent " + 
+        "instances when the 'agent-type' property is set to 'networked'" do
         properties.set_property("agent-type", "networked")
         instance = MinorityGameFactory.construct(properties)
         instance.agents.each do |agent|
@@ -454,9 +537,96 @@ describe MinorityGameFactory do
         average_degree = 
           (2 * social_network.edge_count.to_f) / social_network.vertex_count
 
-        puts average_degree
-
         average_degree.should be_close(10, 0.2)
+      end
+      
+      it "initialises the social network to a network with a total number " + 
+        "of friendships equal to the required number of friends in each " + 
+        "direction multiplied by the number of agents when the " + 
+        "'network-type' property is set to 'regular-ring'" do
+        number_of_friends_in_each_direction = 15
+        number_of_agents = 101  
+        
+        properties.set_property("network-type", "regular-ring")
+        properties.set_property(
+          "number-of-friends-in-each-direction", 
+          "#{number_of_friends_in_each_direction}"
+        )
+        properties.set_property("number-of-agents", "#{number_of_agents}")
+        
+        instance = MinorityGameFactory.construct(properties)
+        community = instance.community
+        
+        required_number_of_friendships = 
+          number_of_friends_in_each_direction * number_of_agents
+        
+        community.should have(required_number_of_friendships).friendships
+      end
+      
+      it "initialises the social network to a network where each agent " +
+        "has a number of friends equal to exactly twice the required " + 
+        "number of friends in each direction" do
+        number_of_friends_in_each_direction = 15
+
+        properties.set_property("agent-type", "networked")
+        properties.set_property("network-type", "regular-ring")
+        properties.set_property(
+          "number-of-friends-in-each-direction", 
+          "#{number_of_friends_in_each_direction}"
+        )
+
+        instance = MinorityGameFactory.construct(properties)
+        agents = instance.agents
+
+        required_number_of_friends = 
+          2 * number_of_friends_in_each_direction
+
+        agents.each do |agent|
+          agent.should have(required_number_of_friends).friends
+        end
+      end
+      
+      it "initialises the social network to one where each agent has " + 
+        "friends with the correct number of friends in common for a " + 
+        "ring graph" do
+        number_of_friends_in_each_direction = 15
+
+        properties.set_property("agent-type", "networked")
+        properties.set_property("network-type", "regular-ring")
+        properties.set_property(
+          "number-of-friends-in-each-direction", 
+          "#{number_of_friends_in_each_direction}"
+        )
+
+        instance = MinorityGameFactory.construct(properties)
+        agents = instance.agents
+        social_network = instance.community.social_network
+        
+        upper_number_in_common = 2 * (number_of_friends_in_each_direction - 1)
+        lower_number_in_common = number_of_friends_in_each_direction - 1
+
+        agents.each do |agent|
+          agents_with_number_in_common = 
+            (lower_number_in_common..upper_number_in_common).
+              inject({}) do |m, n|
+                m[n] = 0
+                m
+              end
+
+          friends = social_network.get_neighbors(agent)
+          friends.each do |friend|
+            friends_friends = social_network.get_neighbors(friend)
+            friends_in_common = friends.to_a & friends_friends.to_a
+
+            if agents_with_number_in_common.has_key?(friends_in_common.size)
+              agents_with_number_in_common[friends_in_common.size] += 1
+            end
+          end
+
+          agents_with_number_in_common.each do |common_friends, number_of_agents|
+            number_of_agents.should == 2
+          end
+        end
       end
       
       it "initialises the social network to a network with N(N-1)/2 " + 

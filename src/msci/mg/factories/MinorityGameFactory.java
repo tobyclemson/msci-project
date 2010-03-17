@@ -61,7 +61,8 @@ public class MinorityGameFactory {
         int numberOfAgents,
             numberOfStrategiesPerAgent,
             maximumAgentMemorySize = 0,
-            averageNumberOfFriends = 0;
+            averageNumberOfFriends = 0,
+            numberOfFriendsInEachDirection = 0;
         double  linkProbability = 0.0;
         String  agentType,
                 networkType,
@@ -149,6 +150,12 @@ public class MinorityGameFactory {
             );
         }
 
+        if(properties.containsKey("number-of-friends-in-each-direction")) {
+            numberOfFriendsInEachDirection = Integer.parseInt(
+                properties.getProperty("number-of-friends-in-each-direction")
+            );
+        }
+
         // build the correct agent factory based on the agent type property
         if(agentType.equals("basic")) {
             agentFactory = new BasicAgentFactory(
@@ -191,6 +198,13 @@ public class MinorityGameFactory {
                 friendshipFactory,
                 numberOfAgents,
                 averageNumberOfFriends
+            );
+        } else if(networkType.equals("regular-ring")) {
+            socialNetworkFactory = new RegularRingSocialNetworkFactory(
+                agentFactory,
+                friendshipFactory,
+                numberOfAgents,
+                numberOfFriendsInEachDirection
             );
         } else {
             socialNetworkFactory = new EmptySocialNetworkFactory(
@@ -280,19 +294,28 @@ public class MinorityGameFactory {
         acceptedNetworkTypes.add("complete");
         acceptedNetworkTypes.add("random");
         acceptedNetworkTypes.add("scale-free");
+        acceptedNetworkTypes.add("regular-ring");
 
         if(properties.containsKey("network-type")) {
             assertPropertyInSet(
                 properties, "network-type", acceptedNetworkTypes
             );
-            if(properties.getProperty("network-type").equals("random")){
+            if(properties.getProperty("network-type").equals("random")) {
                 assertPropertyExists(properties, "link-probability");
                 assertPropertyIsProbability(properties, "link-probability");
             }
-            if(properties.getProperty("network-type").equals("scale-free")){
+            if(properties.getProperty("network-type").equals("scale-free")) {
                 assertPropertyExists(properties, "average-number-of-friends");
                 assertPropertyIsInteger(
                     properties, "average-number-of-friends"
+                );
+            }
+            if(properties.getProperty("network-type").equals("regular-ring")) {
+                assertPropertyExists(
+                    properties, "number-of-friends-in-each-direction"
+                );
+                assertPropertyIsInteger(
+                    properties, "number-of-friends-in-each-direction"
                 );
             }
         }
