@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Colt">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/vendor/colt-1.2.0/lib" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://$PROJECT_DIR$/vendor/colt-1.2.0/doc" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/vendor/colt-1.2.0/src" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/vendor/colt-1.2.0/lib" recursive="false" />
+  </library>
+</component>

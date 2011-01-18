@@ -1,0 +1,24 @@
+<component name="libraryTable">
+  <library name="JUNG">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/vendor/jung-2.0.1/lib" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://$PROJECT_DIR$/vendor/jung-2.0.1/doc" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/vendor/jung-2.0.1/doc" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-samples-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-jai-samples-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-graph-impl-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-api-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-jai-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-io-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-3d-demos-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-3d-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-algorithms-2.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/vendor/jung-2.0.1/src/jung-visualization-2.0.1-sources.jar!/" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/vendor/jung-2.0.1/lib" recursive="false" />
+  </library>
+</component>

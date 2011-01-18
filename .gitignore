@@ -1,5 +1,4 @@
 dist/
 build/
-nbproject/private/
+out/
 .DS_Store
-vendor/nblibraries-private.properties

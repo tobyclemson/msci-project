@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="POI">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/lib" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/doc" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/scratchpad/src" />
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/java" />
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/examples/src" />
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/contrib/src" />
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/testcases" />
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/scratchpad/testcases" />
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/ooxml/testcases" />
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/ooxml/java" />
+      <root url="file://$PROJECT_DIR$/vendor/poi-3.6/src/contrib/poi-ruby/java" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/vendor/poi-3.6/lib" recursive="false" />
+  </library>
+</component>
