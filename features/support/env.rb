@@ -11,13 +11,13 @@ $LOAD_PATH.unshift File.expand_path(
 
 require 'rubygems'
 require 'java'
-require 'activesupport'
+require 'active_support/all'
 require 'tools'
 
-Tools.append_to_load_path('dist')
+Tools.append_to_load_path('dist', 'lib')
 Tools.append_to_load_path('vendor')
 
-require 'msci-project-code.jar'
+require 'minority-game.jar'
 require 'mockito-1.8.2/mockito-all-1.8.2.jar'
 
 Dir[

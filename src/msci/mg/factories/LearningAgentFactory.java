@@ -41,9 +41,8 @@ public class LearningAgentFactory extends IntelligentAgentFactory{
     }
 
     /**
-     * Creates a learning agent with the specified memory capacity and number of
+     * @return A learning agent with the specified memory capacity and number of
      * strategies.
-     * @return
      */
     @Override
     public LearningAgent create() {

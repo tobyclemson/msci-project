@@ -19,7 +19,7 @@ import org.apache.commons.collections15.FactoryUtils;
 /**
  * The {@code MinorityGameFactory} class constructs a minority game with the
  * required parameters as specified in the {@code Properties} object passed to
- * the static {@link #construct()} method.
+ * the static method.
  *
  * @author Toby Clemson
  */
