@@ -63,11 +63,11 @@ describe Community do
 
   describe "#choice_totals" do
     it "counts the number of agents that have made each choice" do
-      choice_a_agent = Mockito.mock(AbstractAgent.java_class)
-      choice_b_agent = Mockito.mock(AbstractAgent.java_class)
+      choice_a_agent = Mockito.mock(RandomAgent.java_class)
+      choice_b_agent = Mockito.mock(RandomAgent.java_class)
       
-      Mockito.when(choice_a_agent.choice).thenReturn(Choice::A)
-      Mockito.when(choice_b_agent.choice).thenReturn(Choice::B)
+      Mockito.when(choice_a_agent.getChoice()).thenReturn(Choice::A)
+      Mockito.when(choice_b_agent.getChoice()).thenReturn(Choice::B)
       
       agent_list = ArrayList.new
       

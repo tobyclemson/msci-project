@@ -16,7 +16,7 @@ module Tools
     
     unless (
       $LOAD_PATH.include?(extra_load_path) || 
-      $LOAD_PATH.include?(File.join(File.dirname(__FILE__), '..'))
+      $LOAD_PATH.include?(File.expand_path(extra_load_path))
     )
       $LOAD_PATH.unshift extra_load_path
       added = true

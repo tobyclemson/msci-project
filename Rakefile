@@ -1,16 +1,13 @@
 require 'rake'
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 require 'cucumber/rake/task'
 
-Spec::Rake::SpecTask.new do |t|
-  t.spec_opts = File.read("spec/spec.opts").gsub("\n", ' ').split(/\s+/)
-end
-
+RSpec::Core::RakeTask.new
 Cucumber::Rake::Task.new
   
 desc "Build codebase"
 task :build do
-  system("ant clean jar -q")
+  system("ant -q")
 end
 
 desc "Build codebase and run specs"

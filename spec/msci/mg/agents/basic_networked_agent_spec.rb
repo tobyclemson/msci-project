@@ -81,27 +81,27 @@ describe BasicNetworkedAgent do
     }
     
     before(:each) do
-      Mockito.when(most_successful_predictor.prediction).
+      Mockito.when(most_successful_predictor.getPrediction()).
         then_return(Choice::B)
         
-      Mockito.when(neighbourhood.most_successful_predictor).
+      Mockito.when(neighbourhood.getMostSuccessfulPredictor()).
         then_return(most_successful_predictor)
     end
     
     it "retrieves the most successful predictor from the neighbourhood" do
       agent.choose
-      Mockito.verify(neighbourhood).most_successful_predictor
+      Mockito.verify(neighbourhood).getMostSuccessfulPredictor()
     end
     
     it "makes a choice based on that agent's prediction" do
       agent.choose
-      agent.choice.should == most_successful_predictor.prediction
+      agent.getChoice().should == most_successful_predictor.getPrediction()
     end
     
     it "sets the best_friend attribute to the agent that this agent " + 
       "followed" do
       agent.choose
-      agent.best_friend.should == most_successful_predictor
+      agent.getBestFriend().should == most_successful_predictor
     end
   end
   

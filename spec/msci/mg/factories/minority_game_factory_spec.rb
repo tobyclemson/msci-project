@@ -537,7 +537,7 @@ describe MinorityGameFactory do
         average_degree = 
           (2 * social_network.edge_count.to_f) / social_network.vertex_count
 
-        average_degree.should be_close(10, 0.2)
+        average_degree.should be_within(0.2).of(10)
       end
       
       it "initialises the social network to a network with a total number " + 

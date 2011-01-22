@@ -77,7 +77,7 @@ describe ScaleFreeSocialNetworkFactory do
       average_degree = 
         (2.0 * social_network.edge_count) / social_network.vertex_count
          
-      average_degree.should be_close(average_number_of_friends, 0.2)
+      average_degree.should be_within(0.2).of(average_number_of_friends)
     end
     
     it "generates a social network with a maximum degree about 3 times the " +
