@@ -12,12 +12,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 
-/**
- * Runs the networked minority game collecting both choice attendance data and
- * influence network data outputting it to an Excel document.
- *
- * @author Toby Clemson
- */
 public class InfluenceAndChoiceAttendance {
     private static int propertySetIndex;
     private static final String[][] propertySets = {
@@ -51,9 +45,7 @@ public class InfluenceAndChoiceAttendance {
         return propertySetIndex < propertySets.length;
     }
 
-    private static void processNextPropertySet()
-        throws FileNotFoundException, IOException
-    {
+    private static void processNextPropertySet() throws IOException {
         Properties propertySet = popPropertySet();
         Workbook workbook = generateResultsForPropertySet(propertySet);
 
@@ -69,9 +61,7 @@ public class InfluenceAndChoiceAttendance {
         return propertySet;
     }
 
-    private static Workbook generateResultsForPropertySet(
-        Properties propertySet
-    ) {
+    private static Workbook generateResultsForPropertySet(Properties propertySet) {
         double[][] settleMeasurements =
             new double[numberOfRuns][numberOfSettleMeasurements];
         double[][] choiceAttendanceMeasurements =
@@ -102,11 +92,7 @@ public class InfluenceAndChoiceAttendance {
                         minorityGame
                     );
                 }
-                if(
-                    shouldCollectLeadershipStructureThisTimeStep(
-                        t, leadershipStructureMeasurementCount
-                    )
-                ) {
+                if(shouldCollectLeadershipStructureThisTimeStep(t, leadershipStructureMeasurementCount)) {
                     DirectedGraph<Agent, Friendship> leadershipStructure =
                         generateLeadershipGraph(minorityGame);
 
@@ -128,21 +114,15 @@ public class InfluenceAndChoiceAttendance {
         }
 
         Workbook resultsWorkbook = populateWorkbook(
-            settleMeasurements,
-            choiceAttendanceMeasurements,
-            leadershipStructureMeasurements
-        );
+                settleMeasurements,
+                choiceAttendanceMeasurements,
+                leadershipStructureMeasurements);
 
         return resultsWorkbook;
     }
 
-    private static void saveResultsForPropertySet(
-        Workbook workbook, Properties propertySet
-    ) throws FileNotFoundException, IOException
-    {
-        FileOutputStream outputStream = new FileOutputStream(
-            getFilePathForPropertySet(propertySet)
-        );
+    private static void saveResultsForPropertySet(Workbook workbook, Properties propertySet) throws IOException {
+        FileOutputStream outputStream = new FileOutputStream(getFilePathForPropertySet(propertySet));
         workbook.write(outputStream);
         outputStream.close();
     }
@@ -150,24 +130,12 @@ public class InfluenceAndChoiceAttendance {
     private static Properties getPropertySetForCurrentIndex() {
         Properties propertiesForCurrentIndex = new Properties();
 
-        propertiesForCurrentIndex.setProperty(
-            "number-of-agents", propertySets[propertySetIndex][0]
-        );
-        propertiesForCurrentIndex.setProperty(
-            "agent-type", "networked"
-        );
-        propertiesForCurrentIndex.setProperty(
-            "number-of-strategies-per-agent", "2"
-        );
-        propertiesForCurrentIndex.setProperty(
-            "network-type", "scale-free"
-        );
-        propertiesForCurrentIndex.setProperty(
-            "average-number-of-friends", propertySets[propertySetIndex][1]
-        );
-        propertiesForCurrentIndex.setProperty(
-            "agent-memory-size", "6"
-        );
+        propertiesForCurrentIndex.setProperty("number-of-agents", propertySets[propertySetIndex][0]);
+        propertiesForCurrentIndex.setProperty("agent-type", "networked");
+        propertiesForCurrentIndex.setProperty("number-of-strategies-per-agent", "2");
+        propertiesForCurrentIndex.setProperty("network-type", "scale-free");
+        propertiesForCurrentIndex.setProperty("average-number-of-friends", propertySets[propertySetIndex][1]);
+        propertiesForCurrentIndex.setProperty("agent-memory-size", "6");
 
         return propertiesForCurrentIndex;
     }
@@ -177,28 +145,25 @@ public class InfluenceAndChoiceAttendance {
     }
 
     private static String getFilePathForPropertySet(Properties propertySet) {
-        return resultsRoot + "scale-free-networked-game-" + "N=" +
-            propertySet.getProperty("number-of-agents") + "-<k>=" +
-            propertySet.getProperty("average-number-of-friends") + ".xls";
+        return new StringBuilder(resultsRoot).append("scale-free-networked-game-")
+                .append("N=").append(propertySet.getProperty("number-of-agents"))
+                .append("-<k>=").append(propertySet.getProperty("average-number-of-friends"))
+                .append(".xls")
+                .toString();
     }
 
     private static Workbook initialiseWorkbook() {
         return new HSSFWorkbook();
     }
 
-    private static Sheet initialiseChoiceAttendanceSheet(
-        Workbook workbook, String sheetName, int numberOfRows
-    ) {
+    private static Sheet initialiseChoiceAttendanceSheet(Workbook workbook, String sheetName, int numberOfRows) {
         Sheet sheet = workbook.createSheet(sheetName);
 
         CellStyle bottomBorderCellStyle = getBottomBorderCellStyle(workbook);
         CellStyle leftBorderCellStyle = getLeftBorderCellStyle(workbook);
-        CellStyle bottomLeftBorderCellStyle =
-            getBottomLeftBorderCellStyle(workbook);
-        CellStyle bottomRightBorderCellStyle =
-            getBottomRightBorderCellStyle(workbook);
-        CellStyle rightBorderCellStyle =
-            getRightBorderCellStyle(workbook);
+        CellStyle bottomLeftBorderCellStyle = getBottomLeftBorderCellStyle(workbook);
+        CellStyle bottomRightBorderCellStyle = getBottomRightBorderCellStyle(workbook);
+        CellStyle rightBorderCellStyle = getRightBorderCellStyle(workbook);
 
         Row verticalHeaderRow = sheet.createRow(0);
 
@@ -209,31 +174,26 @@ public class InfluenceAndChoiceAttendance {
         timeLabel.setCellValue("time:");
         timeLabel.setCellStyle(timeLabelCellStyle);
 
-        CellStyle otherVerticalLabelCellStyle =
-            getVerticalLabelCellStyle(workbook);
+        CellStyle otherVerticalLabelCellStyle = getVerticalLabelCellStyle(workbook);
         otherVerticalLabelCellStyle.setBorderLeft(CellStyle.BORDER_MEDIUM);
 
         Cell runAverageLabel = verticalHeaderRow.createCell(numberOfRuns+2);
         runAverageLabel.setCellValue("run mean:");
         runAverageLabel.setCellStyle(otherVerticalLabelCellStyle);
 
-        Cell runStandardDeviationLabel =
-            verticalHeaderRow.createCell(numberOfRuns+3);
+        Cell runStandardDeviationLabel = verticalHeaderRow.createCell(numberOfRuns+3);
         runStandardDeviationLabel.setCellValue("run standard deviation:");
         runStandardDeviationLabel.setCellStyle(otherVerticalLabelCellStyle);
 
-        Cell runVarianceLabel =
-            verticalHeaderRow.createCell(numberOfRuns+4);
+        Cell runVarianceLabel = verticalHeaderRow.createCell(numberOfRuns+4);
         runVarianceLabel.setCellValue("run variance:");
         runVarianceLabel.setCellStyle(otherVerticalLabelCellStyle);
 
-        Cell runSkewnessLabel =
-            verticalHeaderRow.createCell(numberOfRuns+5);
+        Cell runSkewnessLabel = verticalHeaderRow.createCell(numberOfRuns+5);
         runSkewnessLabel.setCellValue("run skewness:");
         runSkewnessLabel.setCellStyle(otherVerticalLabelCellStyle);
 
-        Cell runKurtosisLabel =
-            verticalHeaderRow.createCell(numberOfRuns+6);
+        Cell runKurtosisLabel = verticalHeaderRow.createCell(numberOfRuns+6);
         runKurtosisLabel.setCellValue("run kurtosis:");
         runKurtosisLabel.setCellStyle(otherVerticalLabelCellStyle);
 
@@ -255,33 +215,17 @@ public class InfluenceAndChoiceAttendance {
         varianceRowLabel.setCellValue("variance:");
         varianceRowLabel.setCellStyle(bottomBorderCellStyle);
 
-        runLabelRow.createCell(1).setCellStyle(
-            bottomRightBorderCellStyle
-        );
-        meanRow.createCell(1).setCellStyle(
-            rightBorderCellStyle
-        );
-        standardDeviationRow.createCell(1).setCellStyle(
-            rightBorderCellStyle
-        );
-        varianceRow.createCell(1).setCellStyle(
-            bottomRightBorderCellStyle
-        );
+        runLabelRow.createCell(1).setCellStyle(bottomRightBorderCellStyle);
+        meanRow.createCell(1).setCellStyle(rightBorderCellStyle);
+        standardDeviationRow.createCell(1).setCellStyle(rightBorderCellStyle);
+        varianceRow.createCell(1).setCellStyle(bottomRightBorderCellStyle);
 
         for(int i = 0; i < 5; i++) {
             int columnIndex = numberOfRuns + 2 + i;
-            runLabelRow.
-                createCell(columnIndex).
-                setCellStyle(bottomLeftBorderCellStyle);
-            meanRow.
-                createCell(columnIndex).
-                setCellStyle(leftBorderCellStyle);
-            standardDeviationRow.
-                createCell(columnIndex).
-                setCellStyle(leftBorderCellStyle);
-            varianceRow.
-                createCell(columnIndex).
-                setCellStyle(bottomLeftBorderCellStyle);
+            runLabelRow.createCell(columnIndex).setCellStyle(bottomLeftBorderCellStyle);
+            meanRow.createCell(columnIndex).setCellStyle(leftBorderCellStyle);
+            standardDeviationRow.createCell(columnIndex).setCellStyle(leftBorderCellStyle);
+            varianceRow.createCell(columnIndex).setCellStyle(bottomLeftBorderCellStyle);
         }
 
         for(int r = 1; r <= numberOfRuns; r++) {
@@ -289,23 +233,16 @@ public class InfluenceAndChoiceAttendance {
             runHeaderCell.setCellValue(r);
             runHeaderCell.setCellStyle(bottomBorderCellStyle);
 
-            CellRangeAddress rangeForFormula =
-                new CellRangeAddress(5, numberOfRows + 4, r+1, r+1);
+            CellRangeAddress rangeForFormula = new CellRangeAddress(5, numberOfRows + 4, r+1, r+1);
 
             Cell mean = meanRow.createCell(r+1);
-            mean.setCellFormula(
-                "AVERAGE(" + rangeForFormula.formatAsString() + ")"
-            );
+            mean.setCellFormula("AVERAGE(" + rangeForFormula.formatAsString() + ")");
 
             Cell standardDeviation = standardDeviationRow.createCell(r+1);
-            standardDeviation.setCellFormula(
-                "STDEV(" + rangeForFormula.formatAsString() + ")"
-            );
+            standardDeviation.setCellFormula("STDEV(" + rangeForFormula.formatAsString() + ")");
 
             Cell variance = varianceRow.createCell(r+1);
-            variance.setCellFormula(
-                "VAR(" + rangeForFormula.formatAsString() + ")"
-            );
+            variance.setCellFormula("VAR(" + rangeForFormula.formatAsString() + ")");
             variance.setCellStyle(bottomBorderCellStyle);
         }
 
@@ -316,39 +253,26 @@ public class InfluenceAndChoiceAttendance {
             timeLabelCell.setCellValue(t);
             timeLabelCell.setCellStyle(rightBorderCellStyle);
 
-            CellRangeAddress rangeForFormulae = new CellRangeAddress(
-                t+4, t+4, 2, numberOfRuns+1
-            );
+            CellRangeAddress rangeForFormulae = new CellRangeAddress(t+4, t+4, 2, numberOfRuns+1);
 
             Cell runAverage = attendanceRow.createCell(numberOfRuns+2);
-            runAverage.setCellFormula(
-                "AVERAGE(" + rangeForFormulae.formatAsString() + ")"
-            );
+            runAverage.setCellFormula("AVERAGE(" + rangeForFormulae.formatAsString() + ")");
             runAverage.setCellStyle(leftBorderCellStyle);
 
-            Cell runStandardDeviation =
-                attendanceRow.createCell(numberOfRuns+3);
-            runStandardDeviation.setCellFormula(
-                "STDEV(" + rangeForFormulae.formatAsString() + ")"
-            );
+            Cell runStandardDeviation = attendanceRow.createCell(numberOfRuns+3);
+            runStandardDeviation.setCellFormula("STDEV(" + rangeForFormulae.formatAsString() + ")");
             runStandardDeviation.setCellStyle(leftBorderCellStyle);
 
             Cell runVariance = attendanceRow.createCell(numberOfRuns+4);
-            runVariance.setCellFormula(
-                "VAR(" + rangeForFormulae.formatAsString() + ")"
-            );
+            runVariance.setCellFormula("VAR(" + rangeForFormulae.formatAsString() + ")");
             runVariance.setCellStyle(leftBorderCellStyle);
 
             Cell runSkewness = attendanceRow.createCell(numberOfRuns+5);
-            runSkewness.setCellFormula(
-                "SKEW(" + rangeForFormulae.formatAsString() + ")"
-            );
+            runSkewness.setCellFormula("SKEW(" + rangeForFormulae.formatAsString() + ")");
             runSkewness.setCellStyle(leftBorderCellStyle);
 
             Cell runKurtosis = attendanceRow.createCell(numberOfRuns+6);
-            runKurtosis.setCellFormula(
-                "KURT(" + rangeForFormulae.formatAsString() + ")"
-            );
+            runKurtosis.setCellFormula("KURT(" + rangeForFormulae.formatAsString() + ")");
             runKurtosis.setCellStyle(leftBorderCellStyle);
         }
 
@@ -357,19 +281,14 @@ public class InfluenceAndChoiceAttendance {
         return sheet;
     }
 
-    private static Sheet initialiseLeadershipStructureSheet(
-        Workbook workbook, String sheetName
-    ) {
+    private static Sheet initialiseLeadershipStructureSheet(Workbook workbook, String sheetName) {
         Sheet sheet = workbook.createSheet(sheetName);
 
         CellStyle bottomBorderCellStyle = getBottomBorderCellStyle(workbook);
         CellStyle leftBorderCellStyle = getLeftBorderCellStyle(workbook);
-        CellStyle bottomLeftBorderCellStyle =
-            getBottomLeftBorderCellStyle(workbook);
-        CellStyle bottomRightBorderCellStyle =
-            getBottomRightBorderCellStyle(workbook);
-        CellStyle rightBorderCellStyle =
-            getRightBorderCellStyle(workbook);
+        CellStyle bottomLeftBorderCellStyle = getBottomLeftBorderCellStyle(workbook);
+        CellStyle bottomRightBorderCellStyle = getBottomRightBorderCellStyle(workbook);
+        CellStyle rightBorderCellStyle = getRightBorderCellStyle(workbook);
 
         Row verticalHeadersRow = sheet.createRow(0);
 
@@ -383,17 +302,13 @@ public class InfluenceAndChoiceAttendance {
         CellStyle verticalLabelCellStyle = getVerticalLabelCellStyle(workbook);
         verticalLabelCellStyle.setBorderLeft(CellStyle.BORDER_MEDIUM);
 
-        Cell degreeCountAverageLabel =
-            verticalHeadersRow.createCell(numberOfRuns+2);
+        Cell degreeCountAverageLabel = verticalHeadersRow.createCell(numberOfRuns+2);
         degreeCountAverageLabel.setCellValue("average:");
         degreeCountAverageLabel.setCellStyle(verticalLabelCellStyle);
 
-        Cell normalisedDegreeCountAverageLabel =
-            verticalHeadersRow.createCell(numberOfRuns+3);
+        Cell normalisedDegreeCountAverageLabel = verticalHeadersRow.createCell(numberOfRuns+3);
         normalisedDegreeCountAverageLabel.setCellValue("normalised average:");
-        normalisedDegreeCountAverageLabel.setCellStyle(
-            verticalLabelCellStyle
-        );
+        normalisedDegreeCountAverageLabel.setCellStyle(verticalLabelCellStyle);
 
         Row runLabelRow = sheet.createRow(1);
 
@@ -403,12 +318,8 @@ public class InfluenceAndChoiceAttendance {
 
         runLabelRow.createCell(1).setCellStyle(bottomRightBorderCellStyle);
 
-        runLabelRow.createCell(numberOfRuns+2).setCellStyle(
-            bottomLeftBorderCellStyle
-        );
-        runLabelRow.createCell(numberOfRuns+3).setCellStyle(
-            bottomLeftBorderCellStyle
-        );
+        runLabelRow.createCell(numberOfRuns+2).setCellStyle(bottomLeftBorderCellStyle);
+        runLabelRow.createCell(numberOfRuns+3).setCellStyle(bottomLeftBorderCellStyle);
 
         for(int r = 1; r <= numberOfRuns; r++) {
             Cell runHeaderCell = runLabelRow.createCell(r+1);
@@ -423,32 +334,26 @@ public class InfluenceAndChoiceAttendance {
             attendanceHeaderCell.setCellValue(n);
             attendanceHeaderCell.setCellStyle(rightBorderCellStyle);
             
-            CellRangeAddress degreeRange = 
-                new CellRangeAddress(n+2, n+2, 2, numberOfRuns+1);
+            CellRangeAddress degreeRange = new CellRangeAddress(n+2, n+2, 2, numberOfRuns+1);
 
             Cell degreeCountAverage = attendanceRow.createCell(numberOfRuns+2);
-            degreeCountAverage.setCellFormula(
-                "AVERAGE(" + degreeRange.formatAsString() + ")"
-            );
+            degreeCountAverage.setCellFormula("AVERAGE(" + degreeRange.formatAsString() + ")");
             degreeCountAverage.setCellStyle(leftBorderCellStyle);
 
-            CellReference followerCountReference =
-                new CellReference(n+2, numberOfRuns+2);
-            CellReference normalisationCountReference =
-                new CellReference(3, numberOfRuns+2, true, true);
+            CellReference followerCountReference = new CellReference(n+2, numberOfRuns+2);
+            CellReference normalisationCountReference = new CellReference(3, numberOfRuns+2, true, true);
 
-            Cell normalisedDegreeCountAverage =
-                attendanceRow.createCell(numberOfRuns+3);
-            normalisedDegreeCountAverage.setCellFormula(
-                followerCountReference.formatAsString() + "/" +
-                normalisationCountReference.formatAsString()
-            );
-            normalisedDegreeCountAverage.setCellStyle(
-                leftBorderCellStyle
-            );
+            Cell normalisedDegreeCountAverage = attendanceRow.createCell(numberOfRuns+3);
+            String countAverageFormula = new StringBuilder()
+                    .append(followerCountReference.formatAsString())
+                    .append("/")
+                    .append(normalisationCountReference.formatAsString())
+                    .toString();
+            normalisedDegreeCountAverage.setCellFormula(countAverageFormula);
+            normalisedDegreeCountAverage.setCellStyle(leftBorderCellStyle);
         }
 
-        sheet.createFreezePane(numberOfRuns+2, 2);
+        sheet.createFreezePane(numberOfRuns + 2, 2);
 
         return sheet;
     }
@@ -457,8 +362,7 @@ public class InfluenceAndChoiceAttendance {
         return Math.max(
             numberOfChoiceAttendanceMeasurements,
             (numberOfLeadershipStructureMeasurements *
-            leadershipStructureMeasurementInterval)
-        );
+            leadershipStructureMeasurementInterval));
     }
 
     private static int getNumberOfDegreeRows() {
@@ -477,9 +381,7 @@ public class InfluenceAndChoiceAttendance {
         return t < numberOfChoiceAttendanceMeasurements;
     }
 
-    private static boolean shouldCollectLeadershipStructureThisTimeStep(
-        int t, int measurementCount
-    ) {
+    private static boolean shouldCollectLeadershipStructureThisTimeStep(int t, int measurementCount) {
         return stillCollectingLeadershipStructureData(measurementCount) &&
             correctIntervalSinceLastMeasurement(t);
     }
@@ -488,17 +390,12 @@ public class InfluenceAndChoiceAttendance {
         return (t % leadershipStructureMeasurementInterval == 0);
     }
 
-    private static boolean stillCollectingLeadershipStructureData(
-        int measurementCount
-    ) {
+    private static boolean stillCollectingLeadershipStructureData(int measurementCount) {
         return measurementCount < numberOfLeadershipStructureMeasurements;
     }
 
-    private static DirectedGraph<Agent, Friendship> generateLeadershipGraph(
-        MinorityGame minorityGame
-    ) {
-        DirectedGraph<Agent,Friendship> leadershipStructure =
-            new DirectedSparseGraph<Agent, Friendship>();
+    private static DirectedGraph<Agent, Friendship> generateLeadershipGraph(MinorityGame minorityGame) {
+        DirectedGraph<Agent,Friendship> leadershipStructure = new DirectedSparseGraph<Agent, Friendship>();
 
         for(Agent agent : minorityGame.getAgents()) {
             leadershipStructure.addVertex(agent);
@@ -509,14 +406,9 @@ public class InfluenceAndChoiceAttendance {
                 continue;
             }
 
-            NetworkedAgent networkedAgent =
-                (NetworkedAgent) agent;
+            NetworkedAgent networkedAgent = (NetworkedAgent) agent;
 
-            if(
-                networkedAgent.
-                    getBestFriend().
-                    equals(networkedAgent)
-            ) {
+            if(networkedAgent.getBestFriend().equals(networkedAgent)) {
                 continue;
             }
 
@@ -536,60 +428,47 @@ public class InfluenceAndChoiceAttendance {
     }
 
     private static Workbook populateWorkbook(
-        double[][] settleMeasurements,
-        double[][] choiceAttendanceMeasurements,
-        double[][] leadershipStructureMeasurements
-    ) {
+            double[][] settleMeasurements,
+            double[][] choiceAttendanceMeasurements,
+            double[][] leadershipStructureMeasurements) {
         Workbook workbook = initialiseWorkbook();
 
-        Sheet currentChoiceAttendanceSheet =
-            initialiseChoiceAttendanceSheet(
+        Sheet currentChoiceAttendanceSheet = initialiseChoiceAttendanceSheet(
                 workbook,
                 "Choice Attendance",
-                numberOfChoiceAttendanceMeasurements
-            );
+                numberOfChoiceAttendanceMeasurements);
 
-        Sheet currentSettleSheet =
-            initialiseChoiceAttendanceSheet(
+        Sheet currentSettleSheet = initialiseChoiceAttendanceSheet(
                 workbook,
                 "Settling",
-                numberOfSettleMeasurements
-            );
+                numberOfSettleMeasurements);
 
-        Sheet currentLeadershipStructureSheet =
-            initialiseLeadershipStructureSheet(
+        Sheet currentLeadershipStructureSheet = initialiseLeadershipStructureSheet(
                 workbook,
-                "Leadership Structure"
-            );
+                "Leadership Structure");
 
         for(int c = 0; c < numberOfRuns; c++) {
             for(int r = 0; r < numberOfSettleMeasurements; r++) {
-                currentSettleSheet.
-                    getRow(getChoiceAttendanceRowIndex(r)).
-                    createCell(getChoiceAttendanceColumnIndex(c)).
-                    setCellValue(settleMeasurements[c][r]);
+                currentSettleSheet
+                        .getRow(getChoiceAttendanceRowIndex(r))
+                        .createCell(getChoiceAttendanceColumnIndex(c))
+                        .setCellValue(settleMeasurements[c][r]);
             }
             for(int r = 0; r < numberOfChoiceAttendanceMeasurements; r++) {
-                currentChoiceAttendanceSheet.
-                    getRow(getChoiceAttendanceRowIndex(r)).
-                    createCell(getChoiceAttendanceColumnIndex(c)).
-                    setCellValue(choiceAttendanceMeasurements[c][r]);
+                currentChoiceAttendanceSheet
+                        .getRow(getChoiceAttendanceRowIndex(r))
+                        .createCell(getChoiceAttendanceColumnIndex(c))
+                        .setCellValue(choiceAttendanceMeasurements[c][r]);
             }
             for(int r = 0; r < getNumberOfDegreeRows(); r++) {
-                currentLeadershipStructureSheet.
-                    getRow(getLeadershipStructureRowIndex(r)).
-                    createCell(getLeadershipStructureColumnIndex(c)).
-                    setCellValue(leadershipStructureMeasurements[c][r]);
+                currentLeadershipStructureSheet
+                        .getRow(getLeadershipStructureRowIndex(r))
+                        .createCell(getLeadershipStructureColumnIndex(c))
+                        .setCellValue(leadershipStructureMeasurements[c][r]);
             }
-            currentSettleSheet.autoSizeColumn(
-                getChoiceAttendanceColumnIndex(c)
-            );
-            currentChoiceAttendanceSheet.autoSizeColumn(
-                getChoiceAttendanceColumnIndex(c)
-            );
-            currentLeadershipStructureSheet.autoSizeColumn(
-                getLeadershipStructureColumnIndex(c)
-            );
+            currentSettleSheet.autoSizeColumn(getChoiceAttendanceColumnIndex(c));
+            currentChoiceAttendanceSheet.autoSizeColumn(getChoiceAttendanceColumnIndex(c));
+            currentLeadershipStructureSheet.autoSizeColumn(getLeadershipStructureColumnIndex(c));
         }
 
         return workbook;

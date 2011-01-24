@@ -21,7 +21,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 public class GraphAnalysis {
-    public static void main(String[] args) throws FileNotFoundException, IOException {
+    public static void main(String[] args) throws IOException {
         int[] numberOfAgents = {201, 201, 601, 601, 1001};
         double[] linkProbability = {0.1, 0.2, 0.1, 0.2, 0.1};
 
@@ -43,9 +43,7 @@ public class GraphAnalysis {
         headerRow.createCell(4).setCellValue("Maximum Degree");
         headerRow.createCell(5).setCellValue("Diameter");
         headerRow.createCell(6).setCellValue("Average Distance");
-        headerRow.createCell(7).setCellValue(
-            "Average Clustering Coefficient"
-        );
+        headerRow.createCell(7).setCellValue("Average Clustering Coefficient");
 
         for(int i = 0; i < numberOfPropertySets; i++) {
             int currentNumberOfAgents = numberOfAgents[i];
@@ -55,16 +53,14 @@ public class GraphAnalysis {
                 agentFactory,
                 friendshipFactory,
                 currentNumberOfAgents,
-                currentLinkProbability
-            );
+                currentLinkProbability);
 
             StaticBin1D averageDegrees = new StaticBin1D();
             StaticBin1D minimumDegrees = new StaticBin1D();
             StaticBin1D maximumDegrees = new StaticBin1D();
             StaticBin1D diameters = new StaticBin1D();
             StaticBin1D averageDistances = new StaticBin1D();
-            StaticBin1D averageClusteringCoefficients =
-                new StaticBin1D();
+            StaticBin1D averageClusteringCoefficients = new StaticBin1D();
 
             for(int j = 0; j < numberOfGraphsToAverage; j++) {
                 graph = graphFactory.create();
@@ -74,9 +70,7 @@ public class GraphAnalysis {
                 maximumDegrees.add(getMaximumDegree(graph));
                 diameters.add(getDiameter(graph));
                 averageDistances.add(getAverageDistance(graph));
-                averageClusteringCoefficients.add(
-                    getAverageClusteringCoefficient(graph)
-                );
+                averageClusteringCoefficients.add(getAverageClusteringCoefficient(graph));
             }
 
             Row dataRow = sheet.createRow(i + 1);
@@ -87,34 +81,29 @@ public class GraphAnalysis {
             dataRow.createCell(4).setCellValue(maximumDegrees.mean());
             dataRow.createCell(5).setCellValue(diameters.mean());
             dataRow.createCell(6).setCellValue(averageDistances.mean());
-            dataRow.createCell(7).setCellValue(
-                averageClusteringCoefficients.mean()
-            );
+            dataRow.createCell(7).setCellValue(averageClusteringCoefficients.mean());
         }
 
         FileOutputStream outputStream = new FileOutputStream(
             "/Users/tobyclemson/Documents/Degree Work/4th Year/MSci Project" +
-            "/Results/Anghel Game/graph-analysis.xls"
-        );
+            "/Results/Anghel Game/graph-analysis.xls");
         workbook.write(outputStream);
         outputStream.close();
     }
 
-    private static double getAverageDegree(Graph<Agent,Friendship> graph) {
+    private static double getAverageDegree(Graph<Agent, Friendship> graph) {
         return (2.0 * graph.getEdgeCount()) / graph.getVertexCount();
     }
 
-    private static int getMaximumDegree(Graph<Agent,Friendship> graph) {
+    private static int getMaximumDegree(Graph<Agent, Friendship> graph) {
         return (int) getDegrees(graph).max();
     }
 
-    private static int getMinimumDegree(Graph<Agent,Friendship> graph) {
+    private static int getMinimumDegree(Graph<Agent, Friendship> graph) {
         return (int) getDegrees(graph).min();
     }
 
-    private static StaticBin1D getDegrees(
-        Graph<Agent,Friendship> graph
-    ) {
+    private static StaticBin1D getDegrees(Graph<Agent, Friendship> graph) {
         StaticBin1D degrees = new StaticBin1D();
 
         for(Agent vertex : graph.getVertices()) {
@@ -124,13 +113,12 @@ public class GraphAnalysis {
         return degrees;
     }
 
-    private static int getDiameter(Graph<Agent,Friendship> graph) {
+    private static int getDiameter(Graph<Agent, Friendship> graph) {
         return (int) DistanceStatistics.diameter(graph);
     }
 
-    private static double getAverageDistance(Graph<Agent,Friendship> graph) {
-        Transformer<Agent,Double> averageDistanceMaps =
-            DistanceStatistics.averageDistances(graph);
+    private static double getAverageDistance(Graph<Agent, Friendship> graph) {
+        Transformer<Agent,Double> averageDistanceMaps = DistanceStatistics.averageDistances(graph);
 
         StaticBin1D averageDistances = new StaticBin1D();
 
@@ -141,11 +129,8 @@ public class GraphAnalysis {
         return averageDistances.mean();
     }
 
-    private static double getAverageClusteringCoefficient(
-        Graph<Agent,Friendship> graph
-    ) {
-        Map<Agent,Double> clusteringCoefficientMap =
-            Metrics.clusteringCoefficients(graph);
+    private static double getAverageClusteringCoefficient(Graph<Agent, Friendship> graph) {
+        Map<Agent,Double> clusteringCoefficientMap = Metrics.clusteringCoefficients(graph);
         StaticBin1D clusteringCoefficients = new StaticBin1D();
 
         for(Agent agent : graph.getVertices()) {
