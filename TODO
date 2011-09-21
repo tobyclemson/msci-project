@@ -1,0 +1,4 @@
+* MinorityGame should be generic over an agent type
+* MinorityGame should take a Community at construction and there should be different types of Community depending on
+  whether the agents contained within are Networked or Basic or whatever
+* Community is an interface

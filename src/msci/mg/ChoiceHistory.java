@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChoiceHistory {
-
     private static Choice choiceSet[] = {Choice.A, Choice.B};
     private static AbstractDistribution randomNumberGenerator;
 
